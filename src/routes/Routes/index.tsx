@@ -7,6 +7,8 @@ import Home from '../../pages/Home/Home';
 import NotFound from '../../pages/NotFound/NotFound';
 import Login from '../../pages/Login/Login';
 import Registration from '../../pages/Registration/Registration';
+import { Users } from '../../pages/Users/Users';
+import { Profile } from '../../pages/Profile/Profile';
 
 export default function Routers() {
   const auth = {
@@ -18,6 +20,8 @@ export default function Routers() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/sign-up" element={<Registration />} />
+      <Route path="/users" element={<Users />} />
+      <Route path="/profile" element={<Profile />} />
 
       <Route path="/not-found" element={<NotFound />} />
       <Route path="*" element={<NotFound />} />

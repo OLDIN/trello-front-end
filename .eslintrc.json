@@ -15,7 +15,8 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
-    "prettier" // prettier
+    "prettier", // prettier
+    "plugin:@tanstack/eslint-plugin-query/recommended" // query
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -26,6 +27,6 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "react", "prettier"],
+  "plugins": ["@typescript-eslint", "react", "prettier", "@tanstack/query"],
   "rules": {}
 }

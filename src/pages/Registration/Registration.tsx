@@ -13,6 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // import schema from './validation';
 import api from '../../services/api';
 import useAuth from '../../hooks/useAuth';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function Registration() {
   const {
@@ -26,6 +27,7 @@ export default function Registration() {
   });
   const auth = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
 
   const onSubmit = async (data: unknown) => {
     try {
@@ -33,7 +35,7 @@ export default function Registration() {
       await api.auth.registration(data);
       const { data: loginData } = await api.auth.login(data);
       auth.setToken(loginData.token);
-      auth.setUser(loginData.user);
+      queryClient.setQueryData(['me'], loginData.user);
     } catch (e: any) {
       if (e.response.status === 422) {
         Object.keys(e.response.data.errors).forEach((key) => {

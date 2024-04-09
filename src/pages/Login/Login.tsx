@@ -13,7 +13,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import schema from './validation';
 import api from '../../services/api';
 import useAuth from '../../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function Login() {
   const {
@@ -25,6 +26,8 @@ export default function Login() {
     resolver: yupResolver(schema),
   });
   const auth = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const onSubmit = async (data: unknown) => {
     console.log(data);
@@ -33,8 +36,12 @@ export default function Login() {
 
     console.log(loginData);
 
+    localStorage.setItem('token', loginData.token);
+    localStorage.setItem('refreshToken', loginData.refreshToken);
+
     auth.setToken(loginData.token);
-    auth.setUser(loginData.user);
+    queryClient.setQueryData(['me'], loginData.user);
+    navigate('/');
   };
 
   return (
