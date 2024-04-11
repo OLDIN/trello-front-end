@@ -11,17 +11,23 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './services/query-client';
+import { AuthProvider } from './providers/AuthProvider/AuthProvider';
+import AxiosErrorHandler from './providers/AxiosErrorHandler/AxiosErrorHandler';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
 );
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Router>
-        <App />
-      </Router>
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AxiosErrorHandler>
+          <Router>
+            <App />
+          </Router>
+        </AxiosErrorHandler>
+      </QueryClientProvider>
+    </AuthProvider>
   </React.StrictMode>,
 );
 

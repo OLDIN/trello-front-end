@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -15,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import authApi from '../../services/api/endpoints/auth';
-import { AuthContext } from '../../contexts/AuthContext';
+import useAuth from '../../hooks/useAuth';
 
 const pages = [{ title: 'Home', to: '/' }];
 const settings = [
@@ -26,7 +26,7 @@ const settings = [
 export default function Header() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const { setToken, token } = useContext(AuthContext);
+  const { setToken, token } = useAuth();
   const queryClient = useQueryClient();
   const { data: profile } = useQuery({
     queryKey: ['me'],
@@ -64,8 +64,6 @@ export default function Header() {
     if (to === '/logout') {
       setToken(null);
       queryClient.setQueryData(['me'], null);
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
     } else if (to === '/profile') {
       navigate(to);
     }

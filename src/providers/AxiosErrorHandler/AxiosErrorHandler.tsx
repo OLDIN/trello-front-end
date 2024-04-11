@@ -1,12 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import { useEffect } from 'react';
+import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../services/api/axios';
 
 let isRefreshTokenInProgress = false;
 
 const AxiosErrorHandler = ({ children }: any) => {
-  const { setToken, token } = useContext(AuthContext);
+  const { setToken, token } = useAuth();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -38,12 +38,11 @@ const AxiosErrorHandler = ({ children }: any) => {
 
               console.log('inter response data = ', data);
 
-              localStorage.setItem('token', data.token);
-              localStorage.setItem('refreshToken', data.refreshToken);
+              // localStorage.setItem('refreshToken', data.refreshToken);
               setToken(data.token);
             } catch (refreshError) {
-              localStorage.removeItem('token');
-              localStorage.removeItem('refreshToken');
+              setToken(null);
+              // localStorage.removeItem('refreshToken');
               queryClient.setQueryData(['me'], null);
 
               return Promise.reject(error);

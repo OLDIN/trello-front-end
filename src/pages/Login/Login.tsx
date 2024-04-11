@@ -20,26 +20,21 @@ export default function Login() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const auth = useAuth();
+  const { setToken } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const onSubmit = async (data: unknown) => {
-    console.log(data);
-
     const { data: loginData } = await api.auth.login(data);
 
-    console.log(loginData);
+    // localStorage.setItem('token', loginData.token);
+    // localStorage.setItem('refreshToken', loginData.refreshToken);
 
-    localStorage.setItem('token', loginData.token);
-    localStorage.setItem('refreshToken', loginData.refreshToken);
-
-    auth.setToken(loginData.token);
+    setToken(loginData.token);
     queryClient.setQueryData(['me'], loginData.user);
     navigate('/');
   };
