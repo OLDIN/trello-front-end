@@ -63,7 +63,7 @@ const AxiosErrorHandler = ({ children }: any) => {
     return () => {
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
-  }, [setToken]);
+  }, []);
 
   return children;
 };

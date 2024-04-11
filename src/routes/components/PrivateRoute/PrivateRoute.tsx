@@ -11,7 +11,7 @@ export default function PrivateRoute() {
 
   return (
     <>
-      {!profile?.data ? (
+      {!profile ? (
         <Navigate
           to={{
             pathname: '/login',

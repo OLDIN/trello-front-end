@@ -10,7 +10,7 @@ export default function GuestRoute() {
 
   return (
     <>
-      {profile?.data ? (
+      {profile ? (
         <Navigate to={url.get('redirect') ?? '/'} replace />
       ) : (
         <Outlet />

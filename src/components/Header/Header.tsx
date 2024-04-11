@@ -166,9 +166,7 @@ export default function Header() {
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar
-                      alt={
-                        profile.data?.firstName + ' ' + profile.data?.lastName
-                      }
+                      alt={profile?.firstName + ' ' + profile?.lastName}
                       src="/static/images/avatar/2.jpg"
                     />
                   </IconButton>

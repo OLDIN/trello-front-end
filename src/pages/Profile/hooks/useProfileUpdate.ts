@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 
 import authApi from '../../../services/api/endpoints/auth';
+import { IProfile } from '../../../types/Profile';
 
 interface IUseProfileUpdate {
-  onSuccess?: () => Promise<unknown> | unknown;
+  onSuccess?: (data: IProfile) => Promise<unknown> | unknown;
 }
 
 export default function useProfileUpdate({
