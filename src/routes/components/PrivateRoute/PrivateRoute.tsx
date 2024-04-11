@@ -1,9 +1,27 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import useProfile from '../../../hooks/useProfile/useProfile';
 
 export default function PrivateRoute() {
   const { data: profile } = useProfile();
+  const location = useLocation();
 
-  return <>{!profile?.data ? <Navigate to="/" replace /> : <Outlet />}</>;
+  const url = new URLSearchParams();
+  url.set('redirect', location.pathname + location.search);
+
+  return (
+    <>
+      {!profile?.data ? (
+        <Navigate
+          to={{
+            pathname: '/login',
+            search: url.toString(),
+          }}
+          replace
+        />
+      ) : (
+        <Outlet />
+      )}
+    </>
+  );
 }
