@@ -20,16 +20,20 @@ export default function Routers() {
 
   return auth.isLoaded ? (
     <Routes>
+      {/* Public routes */}
       <Route path="/" element={<Home />} />
       <Route path="/confirm-email" element={<ConfirmEmail />} />
-
+      {/* Guest routes */}
       <Route element={<GuestRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<Registration />} />
       </Route>
-
-      <Route element={<PrivateRoute />}>
+      {/* Admin routes */}
+      <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
         <Route path="/users" element={<Users />} />
+      </Route>
+      {/* User routes */}
+      <Route element={<PrivateRoute />}>
         <Route path="/profile" element={<Profile />} />
       </Route>
 

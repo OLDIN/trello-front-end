@@ -14,10 +14,25 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+
 import authApi from '../../services/api/endpoints/auth';
 import useAuth from '../../hooks/useAuth';
+import type { IProfile } from '../../types/Profile';
 
-const pages = [{ title: 'Home', to: '/' }];
+interface IPage {
+  title: string;
+  to: string;
+  allowed?: (profile: IProfile) => boolean;
+}
+
+const pages: IPage[] = [
+  { title: 'Home', to: '/' },
+  {
+    title: 'Users',
+    to: '/users',
+    allowed: (profile) => profile?.role.name === 'Admin',
+  },
+];
 const settings = [
   { title: 'Profile', to: '/profile' },
   { title: 'Logout', to: '/logout' },
@@ -152,15 +167,19 @@ export default function Header() {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map(({ title, to }) => (
-              <Button
-                key={title}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                <Link to={to}>{title}</Link>
-              </Button>
-            ))}
+            {pages
+              .filter(
+                ({ allowed }) => (profile && allowed?.(profile)) || !allowed,
+              )
+              .map(({ title, to }) => (
+                <Button
+                  key={title}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  <Link to={to}>{title}</Link>
+                </Button>
+              ))}
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
