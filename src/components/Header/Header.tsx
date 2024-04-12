@@ -62,7 +62,10 @@ export default function Header() {
 
   const handleUserMenu = (to: string) => {
     if (to === '/logout') {
-      setToken(null);
+      setToken({
+        token: null,
+        refreshToken: null,
+      });
       queryClient.setQueryData(['me'], null);
     } else if (to === '/profile') {
       navigate(to);

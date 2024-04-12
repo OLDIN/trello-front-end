@@ -7,18 +7,29 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+interface ISetTokenData {
+  token: string | null;
+  refreshToken: string | null;
+}
+
 export function AuthProvider(props: AuthProviderProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [token, setTokenData] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-  const setToken = useCallback((token: string | null) => {
+  const setToken = useCallback(({ token, refreshToken }: ISetTokenData) => {
     setTokenData(token);
 
     if (token) {
       Cookies.set('token', token);
     } else {
       Cookies.remove('token');
+    }
+
+    if (refreshToken) {
+      Cookies.set('refreshToken', refreshToken);
+    } else {
+      Cookies.remove('refreshToken');
     }
   }, []);
 

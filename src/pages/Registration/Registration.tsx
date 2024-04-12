@@ -33,9 +33,12 @@ export default function Registration() {
     try {
       setIsLoading(true);
       await api.auth.registration(data);
-      const { data: loginData } = await api.auth.login(data);
-      auth.setToken(loginData.token);
-      queryClient.setQueryData(['me'], loginData.user);
+      const { user, token, refreshToken } = await api.auth.login(data);
+      auth.setToken({
+        token,
+        refreshToken,
+      });
+      queryClient.setQueryData(['me'], user);
     } catch (e: any) {
       if (e.response.status === 422) {
         Object.keys(e.response.data.errors).forEach((key) => {

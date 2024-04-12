@@ -18,6 +18,12 @@ const AxiosErrorHandler = ({ children }: any) => {
         console.log('error = ', error);
         const refreshToken = localStorage.getItem('refreshToken');
 
+        console.log('refreshToken = ', {
+          status: error.response.status === 401,
+          Authorization: error.config.headers.Authorization,
+          refreshToken,
+        });
+
         if (!isRefreshTokenInProgress) {
           isRefreshTokenInProgress = true;
           if (
@@ -41,7 +47,10 @@ const AxiosErrorHandler = ({ children }: any) => {
               // localStorage.setItem('refreshToken', data.refreshToken);
               setToken(data.token);
             } catch (refreshError) {
-              setToken(null);
+              setToken({
+                token: null,
+                refreshToken: null,
+              });
               // localStorage.removeItem('refreshToken');
               queryClient.setQueryData(['me'], null);
 

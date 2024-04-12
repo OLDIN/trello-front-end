@@ -5,7 +5,10 @@ interface IAuthContext {
   token: string | null;
   refreshToken: string | null;
   // setToken: React.Dispatch<React.SetStateAction<string | null>>;
-  setToken: (token: string | null) => void;
+  setToken: (data: {
+    token: string | null;
+    refreshToken: string | null;
+  }) => void;
 }
 
 export const AuthContext = createContext<IAuthContext>({} as IAuthContext);

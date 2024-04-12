@@ -28,13 +28,16 @@ export default function Login() {
   const queryClient = useQueryClient();
 
   const onSubmit = async (data: unknown) => {
-    const { data: loginData } = await api.auth.login(data);
+    const { token, refreshToken, user } = await api.auth.login(data);
 
     // localStorage.setItem('token', loginData.token);
     // localStorage.setItem('refreshToken', loginData.refreshToken);
 
-    setToken(loginData.token);
-    queryClient.setQueryData(['me'], loginData.user);
+    setToken({
+      token,
+      refreshToken,
+    });
+    queryClient.setQueryData(['me'], user);
   };
 
   return (

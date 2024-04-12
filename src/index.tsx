@@ -5,6 +5,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import './index.scss';
 import App from './App';
@@ -13,6 +14,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './services/query-client';
 import { AuthProvider } from './providers/AuthProvider/AuthProvider';
 import AxiosErrorHandler from './providers/AxiosErrorHandler/AxiosErrorHandler';
+import { SnackbarProvider } from 'notistack';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -23,7 +25,10 @@ root.render(
       <QueryClientProvider client={queryClient}>
         <AxiosErrorHandler>
           <Router>
-            <App />
+            <SnackbarProvider maxSnack={3}>
+              <App />
+            </SnackbarProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
           </Router>
         </AxiosErrorHandler>
       </QueryClientProvider>

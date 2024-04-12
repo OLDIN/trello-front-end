@@ -11,6 +11,7 @@ import { Users } from '../../pages/Users/Users';
 import { Profile } from '../../pages/Profile/Profile';
 import PrivateRoute from '../components/PrivateRoute/PrivateRoute';
 import GuestRoute from '../components/GuestRoute/GuestRoute';
+import ConfirmEmail from '../../pages/ConfirmEmail/ConfirmEmail';
 
 export default function Routers() {
   const auth = {
@@ -20,6 +21,7 @@ export default function Routers() {
   return auth.isLoaded ? (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/confirm-email" element={<ConfirmEmail />} />
 
       <Route element={<GuestRoute />}>
         <Route path="/login" element={<Login />} />

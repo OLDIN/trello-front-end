@@ -101,7 +101,7 @@ export function Profile() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} style={{ padding: 150 }}>
         <Grid item xs={12} container spacing={2}>
           <Grid item sm={6} md={4} alignSelf="right">
             {mode === 'edit' ? (
@@ -129,6 +129,7 @@ export function Profile() {
                       ? profile.photo.path
                       : 'https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png'
                   }
+                  style={{ height: '100%', width: '100%' }}
                 />
               </Paper>
             )}
