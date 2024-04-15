@@ -12,13 +12,12 @@ import { Profile } from '../../pages/Profile/Profile';
 import PrivateRoute from '../components/PrivateRoute/PrivateRoute';
 import GuestRoute from '../components/GuestRoute/GuestRoute';
 import ConfirmEmail from '../../pages/ConfirmEmail/ConfirmEmail';
+import useAuth from '../../hooks/useAuth';
 
 export default function Routers() {
-  const auth = {
-    isLoaded: true,
-  };
+  const { isLoaded } = useAuth();
 
-  return auth.isLoaded ? (
+  return isLoaded ? (
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<Home />} />

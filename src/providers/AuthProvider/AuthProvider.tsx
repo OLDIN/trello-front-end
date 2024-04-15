@@ -2,6 +2,7 @@ import React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';
 import { AuthContext } from '../../contexts/AuthContext';
+import useProfile from '../../hooks/useProfile/useProfile';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function AuthProvider(props: AuthProviderProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [token, setTokenData] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const { refetch: refetchProfile } = useProfile({ enabled: false });
 
   const setToken = useCallback(({ token, refreshToken }: ISetTokenData) => {
     setTokenData(token);
@@ -33,9 +35,13 @@ export function AuthProvider(props: AuthProviderProps) {
     }
   }, []);
 
-  const loadData = useCallback(() => {
+  const loadData = useCallback(async () => {
     const token = Cookies.get('token') ?? null;
     setTokenData(token);
+
+    await refetchProfile();
+
+    setIsLoaded(true);
   }, []);
 
   const logOut = useCallback(() => {
@@ -44,7 +50,7 @@ export function AuthProvider(props: AuthProviderProps) {
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, []);
 
   const contextValue = useMemo(
     () => ({

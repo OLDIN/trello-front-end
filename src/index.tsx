@@ -21,8 +21,8 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
         <AxiosErrorHandler>
           <Router>
             <SnackbarProvider maxSnack={3}>
@@ -31,8 +31,8 @@ root.render(
             <ReactQueryDevtools initialIsOpen={false} />
           </Router>
         </AxiosErrorHandler>
-      </QueryClientProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 );
 
