@@ -59,7 +59,7 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
     return () => {
       const responseInterceptor = axiosInstance.interceptors.response.use(
         (response) => response,
-        async (error) => {
+        async () => {
           queryClient.setQueryData(['me'], null);
         },
       );

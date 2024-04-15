@@ -31,7 +31,6 @@ interface IProfilePayload {
 
 export const Profile: FC = (): ReactElement => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
-  const [url, setUrl] = useState();
   const { data: profile } = useQuery({
     queryKey: ['me'],
     queryFn: authApi.getProfile,
@@ -41,7 +40,6 @@ export const Profile: FC = (): ReactElement => {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
   } = useForm<IProfilePayload>({
     resolver: yupResolver<
       Pick<IProfile, 'firstName' | 'lastName'> & {
