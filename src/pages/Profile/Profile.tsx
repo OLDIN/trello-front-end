@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Button,
@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { Resolver, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import schema from './editProfileValidation';
@@ -29,7 +29,7 @@ interface IProfilePayload {
   avatar: FileList;
 }
 
-export function Profile() {
+export const Profile: FC = (): ReactElement => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
   const [url, setUrl] = useState();
   const { data: profile } = useQuery({
@@ -43,7 +43,11 @@ export function Profile() {
     formState: { errors },
     setValue,
   } = useForm<IProfilePayload>({
-    // resolver: yupResolver<IProfile>(schema),
+    resolver: yupResolver<
+      Pick<IProfile, 'firstName' | 'lastName'> & {
+        avatar: FileList;
+      }
+    >(schema),
     defaultValues: {
       firstName: profile?.firstName,
       lastName: profile?.lastName,
@@ -209,4 +213,4 @@ export function Profile() {
       </Grid>
     </form>
   );
-}
+};
