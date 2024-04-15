@@ -41,9 +41,13 @@ export function AuthProvider(props: AuthProviderProps) {
 
   const loadData = useCallback(async () => {
     const token = Cookies.get('token') ?? null;
+    const refreshToken = Cookies.get('refreshToken') ?? null;
     const persistUser = getPersistUser();
 
-    setTokenData(token);
+    setToken({
+      token,
+      refreshToken,
+    });
 
     if (persistUser) {
       queryClient.setQueryData(['me'], persistUser);

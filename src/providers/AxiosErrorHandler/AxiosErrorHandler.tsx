@@ -1,12 +1,17 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../services/api/axios';
+import Cookies from 'js-cookie';
 
 let isRefreshTokenInProgress = false;
 
-const AxiosErrorHandler = ({ children }: any) => {
-  const { setToken, token } = useAuth();
+interface AxiosErrorHandlerProps {
+  children: React.ReactNode;
+}
+
+const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
+  const { setToken, logOut } = useAuth();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -15,14 +20,7 @@ const AxiosErrorHandler = ({ children }: any) => {
         return response;
       },
       async (error) => {
-        console.log('error = ', error);
-        const refreshToken = localStorage.getItem('refreshToken');
-
-        console.log('refreshToken = ', {
-          status: error.response.status === 401,
-          Authorization: error.config.headers.Authorization,
-          refreshToken,
-        });
+        const refreshToken = Cookies.get('refreshToken');
 
         if (!isRefreshTokenInProgress) {
           isRefreshTokenInProgress = true;
@@ -42,17 +40,12 @@ const AxiosErrorHandler = ({ children }: any) => {
                 },
               );
 
-              console.log('inter response data = ', data);
-
-              // localStorage.setItem('refreshToken', data.refreshToken);
-              setToken(data.token);
-            } catch (refreshError) {
               setToken({
-                token: null,
-                refreshToken: null,
+                token: data.token,
+                refreshToken: data.refreshToken,
               });
-              // localStorage.removeItem('refreshToken');
-              queryClient.setQueryData(['me'], null);
+            } catch (refreshError) {
+              logOut();
 
               return Promise.reject(error);
             } finally {
@@ -62,19 +55,19 @@ const AxiosErrorHandler = ({ children }: any) => {
         }
       },
     );
-    const responseInterceptor = axiosInstance.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        queryClient.setQueryData(['me'], null);
-      },
-    );
 
     return () => {
+      const responseInterceptor = axiosInstance.interceptors.response.use(
+        (response) => response,
+        async (error) => {
+          queryClient.setQueryData(['me'], null);
+        },
+      );
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
-  }, []);
+  }, [setToken]);
 
-  return children;
+  return <>{children}</>;
 };
 
 export default AxiosErrorHandler;
