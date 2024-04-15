@@ -9,6 +9,7 @@ interface IAuthContext {
     token: string | null;
     refreshToken: string | null;
   }) => void;
+  logOut: () => void;
 }
 
 export const AuthContext = createContext<IAuthContext>({} as IAuthContext);

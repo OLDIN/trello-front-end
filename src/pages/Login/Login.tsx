@@ -15,6 +15,7 @@ import api from '../../services/api';
 import useAuth from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { setPersistUser } from '../../providers/AuthProvider/helpers';
 
 export default function Login() {
   const {
@@ -30,14 +31,12 @@ export default function Login() {
   const onSubmit = async (data: unknown) => {
     const { token, refreshToken, user } = await api.auth.login(data);
 
-    // localStorage.setItem('token', loginData.token);
-    // localStorage.setItem('refreshToken', loginData.refreshToken);
-
     setToken({
       token,
       refreshToken,
     });
     queryClient.setQueryData(['me'], user);
+    setPersistUser(user);
   };
 
   return (

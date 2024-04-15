@@ -21,6 +21,7 @@ import authApi from '../../services/api/endpoints/auth';
 import useProfileUpdate from './hooks/useProfileUpdate';
 import useFileUpload from '../../hooks/useFileUpload/useFileUpload';
 import { IProfile } from '../../types/Profile';
+import { setPersistUser } from '../../providers/AuthProvider/helpers';
 
 interface IProfilePayload {
   firstName: string;
@@ -53,21 +54,20 @@ export function Profile() {
     onSuccess: (data) => {
       setMode('view');
       queryClient.setQueryData<unknown, ['me'], IProfile>(['me'], data);
+      setPersistUser(data);
     },
   });
   const { mutateAsync: uploadPhotoMutate } = useFileUpload({
     onSuccess: ({ file }) => {
       console.log('file on success', file);
-      queryClient.setQueryData<unknown, ['me'], IProfile>(
-        ['me'],
-        (savedProfile) => {
-          if (savedProfile) {
-            savedProfile.photo = file;
-          }
+      queryClient.setQueryData<unknown, ['me'], IProfile>(['me'], (profile) => {
+        if (profile) {
+          profile.photo = file;
+          setPersistUser(profile);
+        }
 
-          return savedProfile;
-        },
-      );
+        return profile;
+      });
     },
   });
 

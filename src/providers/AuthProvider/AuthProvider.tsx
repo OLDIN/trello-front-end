@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';
 import { AuthContext } from '../../contexts/AuthContext';
 import useProfile from '../../hooks/useProfile/useProfile';
+import { useQueryClient } from '@tanstack/react-query';
+import { getPersistUser, setPersistUser } from './helpers';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -18,9 +20,11 @@ export function AuthProvider(props: AuthProviderProps) {
   const [token, setTokenData] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const { refetch: refetchProfile } = useProfile({ enabled: false });
+  const queryClient = useQueryClient();
 
   const setToken = useCallback(({ token, refreshToken }: ISetTokenData) => {
     setTokenData(token);
+    setRefreshToken(refreshToken);
 
     if (token) {
       Cookies.set('token', token);
@@ -37,7 +41,13 @@ export function AuthProvider(props: AuthProviderProps) {
 
   const loadData = useCallback(async () => {
     const token = Cookies.get('token') ?? null;
+    const persistUser = getPersistUser();
+
     setTokenData(token);
+
+    if (persistUser) {
+      queryClient.setQueryData(['me'], persistUser);
+    }
 
     await refetchProfile();
 
@@ -45,7 +55,12 @@ export function AuthProvider(props: AuthProviderProps) {
   }, []);
 
   const logOut = useCallback(() => {
-    setTokenData(null);
+    setToken({
+      token: null,
+      refreshToken: null,
+    });
+    setPersistUser(null);
+    queryClient.setQueryData(['me'], null);
   }, [setToken]);
 
   useEffect(() => {

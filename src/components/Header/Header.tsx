@@ -41,7 +41,7 @@ const settings = [
 export default function Header() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const { setToken, token } = useAuth();
+  const { token, logOut } = useAuth();
   const queryClient = useQueryClient();
   const { data: profile } = useQuery({
     queryKey: ['me'],
@@ -77,11 +77,7 @@ export default function Header() {
 
   const handleUserMenu = (to: string) => {
     if (to === '/logout') {
-      setToken({
-        token: null,
-        refreshToken: null,
-      });
-      queryClient.setQueryData(['me'], null);
+      logOut();
     } else if (to === '/profile') {
       navigate(to);
     }
