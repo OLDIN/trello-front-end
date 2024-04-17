@@ -1,3 +1,13 @@
+export interface IUserStatus {
+  id: number;
+  name: string;
+}
+
+export interface IUserRole {
+  id: number;
+  name: string;
+}
+
 export interface IUser {
   id: number;
   firstName: string;
@@ -7,14 +17,8 @@ export interface IUser {
     id: string;
   };
   email: string;
-  role: {
-    id: number;
-    name: string;
-  };
-  status: {
-    id: number;
-    name: string;
-  };
+  role: IUserRole;
+  status: IUserStatus;
   createdAt: string;
   updatedAt: string;
   provider: string;

@@ -56,7 +56,7 @@ export default function EditToolbar() {
           Add User
         </Button>
       </GridToolbarContainer>
-      <Drawer open={open} onClose={toggleDrawer(false)}>
+      <Drawer open={open} onClose={toggleDrawer(false)} anchor="right">
         <Box
           component="form"
           autoComplete="off"

@@ -1,3 +1,5 @@
+import { GridFilterModel, GridSortModel } from '@mui/x-data-grid';
+import { QueryFunctionContext } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { IUser } from '../../../types/User';
 import axios from '../axios';
@@ -15,13 +17,58 @@ export type CreateUserPayload = Pick<
 };
 
 export default {
-  list: () =>
-    axios
-      .get<IUserResponse, AxiosResponse<IUserResponse>>('/v1/users')
-      .then((res) => res.data),
+  list: ({
+    queryKey: [
+      _,
+      {
+        sortModel: sort,
+        filterModel: { items: filters },
+      },
+      { page, pageSize: limit },
+    ],
+  }: QueryFunctionContext<
+    [
+      'users',
+      { sortModel: GridSortModel; filterModel: GridFilterModel },
+      { page: number; pageSize: number },
+    ]
+  >) => {
+    const sortFormatted = JSON.stringify(
+      sort.map(({ field, sort }) => ({
+        orderBy: field,
+        order: sort,
+      })),
+    );
+    const filtersFormatted = JSON.stringify(
+      filters.reduce((acc, { field, value }) => {
+        if (field === 'role' && value >= 1) {
+          return {
+            ...acc,
+            roles: [{ id: value }],
+          };
+        }
+
+        return acc;
+      }, {}),
+    );
+
+    return axios
+      .get<
+        IUserResponse,
+        AxiosResponse<IUserResponse>
+      >(`/v1/users?sort=${sortFormatted}&page=${page + 1}&limit=${limit}&filters=${filtersFormatted}`)
+      .then((res) => res.data);
+  },
   delete: (id: number) => axios.delete(`/v1/users/${id}`),
   create: (data: CreateUserPayload) =>
     axios
       .post<IUser, AxiosResponse<IUser>>('/v1/users', data)
       .then((res) => res.data),
+  count: () =>
+    axios
+      .get<
+        { count: number },
+        AxiosResponse<{ count: number }>
+      >(`/v1/users/count`)
+      .then((res) => res.data.count),
 };
