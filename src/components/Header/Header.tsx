@@ -58,8 +58,6 @@ export default function Header() {
     }
   }, [token]);
 
-  console.log('profile', profile);
-
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -185,7 +183,10 @@ export default function Header() {
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar
                       alt={profile?.firstName + ' ' + profile?.lastName}
-                      src="/static/images/avatar/2.jpg"
+                      src={
+                        profile?.photo?.path ??
+                        'https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png'
+                      }
                     />
                   </IconButton>
                 </Tooltip>
