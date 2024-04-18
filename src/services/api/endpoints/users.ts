@@ -14,6 +14,9 @@ export type CreateUserPayload = Pick<
   'firstName' | 'lastName' | 'email'
 > & {
   password: string;
+  photo?: {
+    id: string;
+  };
 };
 
 export type UpdateUserPayload = Pick<

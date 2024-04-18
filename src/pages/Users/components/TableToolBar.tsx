@@ -10,18 +10,34 @@ import schema from '../validations/addUserValidation';
 import usersApi, {
   type CreateUserPayload,
 } from '../../../services/api/endpoints/users';
+import useFileUpload from '../../../hooks/useFileUpload/useFileUpload';
+
+interface CreateUserPayloadForm
+  extends Pick<
+    CreateUserPayload,
+    'email' | 'firstName' | 'lastName' | 'password'
+  > {
+  avatar: FileList;
+}
 
 export default function EditToolbar() {
   const [open, setOpen] = useState(false);
+  const [avatarPreview, setAvatarPreview] = React.useState<string>(
+    'https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png',
+  );
   const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<CreateUserPayload>({
-    resolver: yupResolver<CreateUserPayload>(schema),
+  } = useForm<CreateUserPayloadForm>({
+    resolver: yupResolver<CreateUserPayloadForm>(schema),
   });
+
+  const { mutateAsync: uploadPhotoMutate, isPending: isPendingUploadAvatar } =
+    useFileUpload();
   const { mutate: createUserMutate } = useMutation({
     mutationFn: (data: CreateUserPayload) => usersApi.create(data),
     onSuccess: () => {
@@ -41,8 +57,34 @@ export default function EditToolbar() {
     }
   };
 
-  const onSubmit = (data: CreateUserPayload) => {
+  const onSubmit = async (data: CreateUserPayloadForm) => {
+    if (data.avatar.length > 0) {
+      const formData = new FormData();
+      formData.set('file', data.avatar[0]);
+      const { file } = await uploadPhotoMutate(formData);
+
+      if (file) {
+        createUserMutate({
+          ...data,
+          photo: {
+            id: file.id,
+          },
+        });
+        return;
+      }
+    }
+
     createUserMutate(data);
+  };
+
+  const handleAvatarChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const file = 'files' in e.target ? e.target.files?.[0] : null;
+
+    if (file) {
+      setAvatarPreview(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -68,6 +110,25 @@ export default function EditToolbar() {
           }}
           onSubmit={handleSubmit(onSubmit)}
         >
+          <TextField
+            type="file"
+            error={!!errors.avatar}
+            {...register('avatar')}
+            helperText={errors.avatar?.message}
+            fullWidth
+            label="Avatar"
+            variant="outlined"
+            onChange={(e) => handleAvatarChange(e)}
+            InputProps={{
+              startAdornment: (
+                <img
+                  src={avatarPreview}
+                  alt="avatar"
+                  style={{ width: 30, height: 30, marginRight: 10 }}
+                />
+              ),
+            }}
+          />
           <TextField
             error={!!errors.firstName}
             {...register('firstName', { required: 'First name is required' })}

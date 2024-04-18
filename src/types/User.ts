@@ -17,8 +17,8 @@ export interface IUser {
     id: string;
   };
   email: string;
-  role: IUserRole;
-  status: IUserStatus;
+  role?: IUserRole;
+  status?: IUserStatus;
   createdAt: string;
   updatedAt: string;
   provider: string;
