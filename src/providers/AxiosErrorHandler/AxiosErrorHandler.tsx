@@ -28,36 +28,51 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
         return response;
       },
       async (error) => {
+        const originalRequest = error.config;
         const refreshToken = Cookies.get('refreshToken');
 
-        if (!isRefreshTokenInProgress) {
-          isRefreshTokenInProgress = true;
-          if (
-            error.response.status === 401 &&
-            error.config.headers.Authorization &&
-            refreshToken
-          ) {
-            try {
-              const { data } = await axiosInstance.post(
-                '/v1/auth/refresh',
-                null,
-                {
-                  headers: {
-                    Authorization: `Bearer ${refreshToken}`,
+        console.log({
+          isRefreshTokenInProgress,
+          status: error.response.status === 401,
+          Authorization: error.config.headers.Authorization,
+          refreshToken,
+        });
+
+        if (
+          error.response.status === 401 &&
+          error.config.headers.Authorization &&
+          !originalRequest._retry
+        ) {
+          originalRequest._retry = true;
+
+          if (!isRefreshTokenInProgress) {
+            isRefreshTokenInProgress = true;
+
+            if (refreshToken) {
+              try {
+                const { data } = await axiosInstance.post(
+                  '/v1/auth/refresh',
+                  null,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${refreshToken}`,
+                    },
                   },
-                },
-              );
+                );
 
-              setToken({
-                token: data.token,
-                refreshToken: data.refreshToken,
-              });
-            } catch (refreshError) {
-              logOut();
+                setToken({
+                  token: data.token,
+                  refreshToken: data.refreshToken,
+                });
+                originalRequest.headers.Authorization = `Bearer ${data.token}`;
+                return axiosInstance(originalRequest);
+              } catch (refreshError) {
+                logOut();
 
-              return Promise.reject(error);
-            } finally {
-              isRefreshTokenInProgress = false;
+                return Promise.reject(error);
+              } finally {
+                isRefreshTokenInProgress = false;
+              }
             }
           }
         }
@@ -77,12 +92,13 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
       const responseInterceptor = axiosInstance.interceptors.response.use(
         (response) => response,
         async () => {
+          console.log('interceptor');
           queryClient.setQueryData(['me'], null);
         },
       );
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
-  }, [setToken]);
+  }, []);
 
   return (
     <>
