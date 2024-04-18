@@ -3,6 +3,7 @@ import React, { FC, useEffect } from 'react';
 import useAuth from '../../hooks/useAuth';
 import axiosInstance from '../../services/api/axios';
 import Cookies from 'js-cookie';
+import { Alert, Snackbar } from '@mui/material';
 
 let isRefreshTokenInProgress = false;
 
@@ -13,6 +14,13 @@ interface AxiosErrorHandlerProps {
 const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
   const { setToken, logOut } = useAuth();
   const queryClient = useQueryClient();
+  const [snackbarSettings, setSnackbarSettings] = React.useState<{
+    open: boolean;
+    message: string | null;
+  }>({
+    open: false,
+    message: null,
+  });
 
   useEffect(() => {
     axiosInstance.interceptors.response.use(
@@ -53,6 +61,15 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
             }
           }
         }
+
+        if (error.response.status === 422) {
+          setSnackbarSettings({
+            open: true,
+            message: Object.entries(error.response.data.errors)
+              .map(([_, value]) => value)
+              .join(', '), // This will join all the error messages with a comma
+          });
+        }
       },
     );
 
@@ -67,7 +84,36 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
     };
   }, [setToken]);
 
-  return <>{children}</>;
+  return (
+    <>
+      <Snackbar
+        open={snackbarSettings.open}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        onClose={() =>
+          setSnackbarSettings({
+            open: false,
+            message: null,
+          })
+        }
+      >
+        <Alert
+          onClose={() =>
+            setSnackbarSettings({
+              open: false,
+              message: null,
+            })
+          }
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {snackbarSettings.message}
+        </Alert>
+      </Snackbar>
+      {children}
+    </>
+  );
 };
 
 export default AxiosErrorHandler;

@@ -155,7 +155,7 @@ export function Users() {
       sortable: false,
       width: 100,
       valueFormatter: (value: IUserRole | null) => {
-        return value?.name;
+        return value?.name ?? '--None--';
       },
       filterable: true,
       filterOperators: [operator],
@@ -167,7 +167,7 @@ export function Users() {
       sortable: false,
       width: 100,
       valueFormatter: (value: IUserStatus | null) => {
-        return value?.name;
+        return value?.name ?? '--None--';
       },
       filterable: false,
     },
