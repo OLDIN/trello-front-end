@@ -6,6 +6,7 @@ import {
   Drawer,
   Grid,
   IconButton,
+  Paper,
   TextField,
   Typography,
 } from '@mui/material';
@@ -13,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+import './UserDetails.scss';
 import { IUser } from '../../../types/User';
 import { formatDate } from '../../../utils/formatDate';
 import { UpdateUserPayload } from '../../../services/api/endpoints/users';
@@ -126,7 +128,7 @@ export default function UserDetails({
         }}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <Typography variant="h4" gutterBottom>
+        <Typography className="Typography" variant="h4" gutterBottom>
           User Details
         </Typography>
         <Grid
@@ -159,7 +161,23 @@ export default function UserDetails({
                 }}
               />
             ) : (
-              <Typography>First Name: {user.firstName}</Typography>
+              <Paper
+                style={{
+                  border: '2px solid',
+                  height: '200px',
+                  width: '200px',
+                  margin: '0 auto',
+                }}
+              >
+                <img
+                  src={
+                    user?.photo
+                      ? user.photo.path
+                      : 'https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png'
+                  }
+                  style={{ height: '100%', width: '100%' }}
+                />
+              </Paper>
             )}
           </Grid>
           <Grid item>
@@ -176,7 +194,10 @@ export default function UserDetails({
                 variant="outlined"
               />
             ) : (
-              <Typography>First Name: {user.firstName}</Typography>
+              <Typography className="Typography">
+                <span>First Name: </span>
+                {user.firstName}
+              </Typography>
             )}
           </Grid>
           <Grid item>
@@ -193,7 +214,10 @@ export default function UserDetails({
                 variant="outlined"
               />
             ) : (
-              <Typography>Last Name: {user.lastName}</Typography>
+              <Typography className="Typography">
+                <span>Last Name: </span>
+                {user.lastName}
+              </Typography>
             )}
           </Grid>
           <Grid item>
@@ -210,7 +234,10 @@ export default function UserDetails({
                 variant="outlined"
               />
             ) : (
-              <Typography>Email: {user.email}</Typography>
+              <Typography className="Typography">
+                <span>Email: </span>
+                {user.email}
+              </Typography>
             )}
           </Grid>
           <Grid item>
@@ -218,11 +245,17 @@ export default function UserDetails({
               <TextField
                 fullWidth
                 label="Status"
-                value={user.status.name}
+                value={user.status?.name ?? 'No status'}
                 variant="outlined"
+                disabled={true}
               />
             ) : (
-              <Typography>Status: {user.status.name}</Typography>
+              <Typography className="Typography">
+                <span>Status: </span>
+                {user.status?.name ?? (
+                  <span className="no-value">No status</span>
+                )}
+              </Typography>
             )}
           </Grid>
           <Grid item>
@@ -230,16 +263,20 @@ export default function UserDetails({
               <TextField
                 fullWidth
                 label="Role"
-                value={user.role.name}
+                value={user.role?.name ?? 'No role'}
                 variant="outlined"
+                disabled={true}
               />
             ) : (
-              <Typography>Role: {user.role.name}</Typography>
+              <Typography className="Typography">
+                <span>Role: </span>
+                {user.role?.name ?? <span className="no-value">No role</span>}
+              </Typography>
             )}
           </Grid>
           <Grid item>
-            <Typography>
-              Created at:{' '}
+            <Typography className="Typography">
+              <span>Created at: </span>
               {formatDate(new Date(user.createdAt), 'StandardWithHours')}
             </Typography>
           </Grid>
