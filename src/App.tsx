@@ -16,6 +16,9 @@ import Header from './components/Header/Header';
 import { orange } from '@mui/material/colors';
 
 const theme = createTheme({
+  palette: {
+    mode: 'light',
+  },
   // status: {
   //   danger: orange[500],
   // },

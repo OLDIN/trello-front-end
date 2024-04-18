@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import AppBar from '@mui/material/AppBar';
+import AppBarBase from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -18,6 +18,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import authApi from '../../services/api/endpoints/auth';
 import useAuth from '../../hooks/useAuth';
 import type { IProfile } from '../../types/Profile';
+import { styled } from '@mui/material';
 
 interface IPage {
   title: string;
@@ -37,6 +38,12 @@ const settings = [
   { title: 'Profile', to: '/profile' },
   { title: 'Logout', to: '/logout' },
 ];
+
+const AppBar = styled(AppBarBase)(({ theme }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  position: 'fixed',
+  top: 0,
+}));
 
 export default function Header() {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
