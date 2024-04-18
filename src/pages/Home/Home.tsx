@@ -4,7 +4,6 @@ import {
   Container,
   Divider,
   Drawer,
-  Grid,
   IconButton,
   List,
   ListItem,
@@ -25,46 +24,34 @@ import MailIcon from '@mui/icons-material/Mail';
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  Droppable,
+  Draggable,
+  DragDropContext,
+  DropResult,
+} from 'react-beautiful-dnd';
 
 import './Home.scss';
 import TaskView from './TaskView/TaskView';
 import boardsApi from '../../services/api/endpoints/boards';
 import taskListsApi from '../../services/api/endpoints/task-lists';
+import tasksApi from '../../services/api/endpoints/tasks';
+import { TaskList } from '../../types/TaskList';
+import { type Task } from '../../types/Task';
 
 const drawerWidth = 240;
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#ebecf0',
   ...theme.typography.body2,
-  // display: 'flex',
-  // flexDirection: 'column',
-  // rowGap: '8px',
   padding: theme.spacing(1),
   textAlign: 'center',
-  // color: theme.palette.text.secondary,
   minWidth: '272px',
   height: '100%',
 
-  // background-color: var(--accent-background, var(--tr-background-list, #ebecf0));
   borderRadius: '12px',
-  // box-shadow: var(--ds-shadow-raised, 0px 1px 1px #091e4240, 0px 0px 1px #091e424f);
   color: '#44546f',
-  // display: flex;
-  // justify-content: space-between;
-  // max-height: 100%;
-  // flex-direction: column;
-  // flex-grow: 0;
-  // flex-shrink: 0;
-  // flex-basis: 272px;
-  // align-self: start;
-  // padding-bottom: 8px;
-  // position: relative;
-  // scroll-margin: 8px;
-  // white-space: normal;
-  // width: 272px;
-  // box-sizing: border-box;
-  // vertical-align: top;
 }));
 
 const Task = styled(ListItem)(({ theme }) => ({
@@ -133,6 +120,7 @@ export default function Home() {
   const theme = useTheme();
   const [open, setOpen] = useState(true);
   const [selectedBoardId, setSelectedBoardId] = useState<number>(0);
+  const queryClient = useQueryClient();
 
   const [taskModalSettings, setTaskModalSettings] = useState<
     | {
@@ -159,6 +147,11 @@ export default function Home() {
     enabled: !!selectedBoardId,
   });
 
+  const { mutate: taskUpdateMutate } = useMutation({
+    mutationKey: ['taskLists', selectedBoardId],
+    mutationFn: tasksApi.partialUpdate,
+  });
+
   useEffect(() => {
     if (boards.length) {
       setSelectedBoardId(boards[0].id);
@@ -171,6 +164,48 @@ export default function Home() {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+
+    // dropped outside the list
+    if (!destination) {
+      return;
+    }
+
+    const task = taskLists.find(
+      (list) => list.id === Number(source.droppableId),
+    )?.tasks?.[source.index];
+
+    console.log('drag end result = ', result, { task });
+
+    if (!task) {
+      return;
+    }
+
+    taskUpdateMutate({
+      id: task.id,
+      taskListId: Number(destination.droppableId),
+    });
+
+    queryClient.setQueryData(
+      ['taskLists', selectedBoardId],
+      (oldData: TaskList[]) => {
+        const newTaskLists = [...oldData];
+        const sourceList = newTaskLists.find(
+          (list) => list.id === +source.droppableId,
+        );
+        const destinationList = newTaskLists.find(
+          (list) => list.id === +destination.droppableId,
+        );
+
+        const [removed] = sourceList?.tasks?.splice(source.index, 1) ?? [];
+        destinationList?.tasks.splice(destination.index, 0, removed);
+
+        return newTaskLists;
+      },
+    );
   };
 
   return (
@@ -247,38 +282,56 @@ export default function Home() {
             spacing={2}
             style={{ overflow: 'scroll', minHeight: '100vh' }}
           >
-            {taskLists.map((list) => (
-              <Item key={list.id} elevation={4}>
-                <Typography variant="h6" gutterBottom>
-                  {list.name}
-                </Typography>
+            <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
+              {taskLists.map((list) => (
+                <Droppable key={list.id} droppableId={list.id.toString()}>
+                  {(provided, snapshot) => (
+                    <Item elevation={4} ref={provided.innerRef}>
+                      <Typography variant="h6" gutterBottom>
+                        {list.name}
+                      </Typography>
 
-                <List
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    rowGap: '8px',
-                  }}
-                >
-                  {list.tasks &&
-                    list.tasks.map((task) => (
-                      <Task
-                        key={task.id}
-                        onClick={() =>
-                          setTaskModalSettings({
-                            open: true,
-                            taskId: task.id,
-                          })
-                        }
+                      <List
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          rowGap: '8px',
+                        }}
                       >
-                        {task.name}
-                      </Task>
-                    ))}
-                </List>
+                        {list.tasks &&
+                          list.tasks.map((task, index) => (
+                            <Draggable
+                              key={task.id}
+                              draggableId={task.id.toString()}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <Task
+                                  ref={provided.innerRef}
+                                  key={task.id}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  onClick={() =>
+                                    setTaskModalSettings({
+                                      open: true,
+                                      taskId: task.id,
+                                    })
+                                  }
+                                >
+                                  {task.name}
+                                </Task>
+                              )}
+                            </Draggable>
+                          ))}
+                        {provided.placeholder}
+                      </List>
 
-                <Button>+ Add a task</Button>
-              </Item>
-            ))}
+                      <Button>+ Add a task</Button>
+                    </Item>
+                  )}
+                </Droppable>
+              ))}
+            </DragDropContext>
           </Stack>
         </Main>
         {taskModalSettings.taskId && (
