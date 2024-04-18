@@ -9,8 +9,6 @@ import {
   GridFilterModel,
   GridFilterOperator,
   GridRowId,
-  GridRowModes,
-  GridRowModesModel,
   GridRowParams,
   GridSlots,
   GridSortModel,
@@ -18,8 +16,6 @@ import {
 import { Box, Button, Container, Grid, Popover } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
 
 import { IUser, IUserRole, IUserStatus } from '../../types/User';
 import EditToolbar from './components/TableToolBar';
@@ -27,7 +23,6 @@ import TableFilterOperatorRolesList from './components/TableFilterOperatorRolesL
 import UserDetails from './components/UserDetails';
 
 export function Users() {
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
@@ -43,8 +38,15 @@ export function Users() {
       items: [],
     },
   });
-  const [userDetailsOpened, setUserDetailsOpened] = useState(false);
-  const [user, setUser] = useState<IUser | null>(null);
+  const [userDetails, setUserDetails] = useState<{
+    isOpen: boolean;
+    user: IUser | null;
+    mode: 'view' | 'edit';
+  }>({
+    isOpen: false,
+    user: null,
+    mode: 'view',
+  });
 
   const operator: GridFilterOperator<any, number> = {
     label: 'only role',
@@ -81,7 +83,10 @@ export function Users() {
   const open = Boolean(anchorEl);
 
   const {
-    data: users,
+    data: users = {
+      data: [],
+      hasNextPage: false,
+    },
     refetch: refetchUsers,
     isLoading,
   } = useQuery({
@@ -89,7 +94,7 @@ export function Users() {
     queryFn: usersApi.list,
     placeholderData: keepPreviousData,
   });
-  const { data: usersCount } = useQuery({
+  const { data: usersCount = 0 } = useQuery({
     queryKey: ['users', 'count'],
     queryFn: usersApi.count,
   });
@@ -98,20 +103,12 @@ export function Users() {
     mutationFn: (id: number) => usersApi.delete(id),
   });
 
-  const handleEditClick = (id: GridRowId) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
-  };
-
-  const handleCancelClick = (id: GridRowId) => () => {
-    setRowModesModel({
-      ...rowModesModel,
-      [id]: { mode: GridRowModes.View, ignoreModifications: true },
+  const handleEditClick = (row: IUser) => () => {
+    setUserDetails({
+      isOpen: true,
+      user: row,
+      mode: 'edit',
     });
-
-    // const editedRow = rows.find((row) => row.id === id);
-    // if (editedRow!.isNew) {
-    //   setRows(rows.filter((row) => row.id !== id));
-    // }
   };
 
   const handlePreDeleteClick = async (
@@ -120,8 +117,6 @@ export function Users() {
   ) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
     setOpenedId(id);
-    // await deleteMutate(id);
-    // refetchUsers();
   };
 
   const handleDeleteClick = async () => {
@@ -133,8 +128,11 @@ export function Users() {
   };
 
   const handleRowClick = (row: GridRowParams<IUser>) => {
-    setUserDetailsOpened(true);
-    setUser(row.row);
+    setUserDetails({
+      isOpen: true,
+      user: row.row,
+      mode: 'view',
+    });
   };
 
   const columns: GridColDef<IUser>[] = [
@@ -180,49 +178,23 @@ export function Users() {
       width: 100,
       cellClassName: 'actions',
       filterable: false,
-      getActions: ({ id }) => {
-        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-        if (isInEditMode) {
-          return [
-            <GridActionsCellItem
-              key={'save'}
-              icon={<SaveIcon />}
-              label="Save"
-              sx={{
-                color: 'primary.main',
-              }}
-              // onClick={handleSaveClick(id)}
-            />,
-            <GridActionsCellItem
-              key={'cancel'}
-              icon={<CancelIcon />}
-              label="Cancel"
-              className="textPrimary"
-              onClick={handleCancelClick(id)}
-              color="inherit"
-            />,
-          ];
-        }
-
-        return [
-          <GridActionsCellItem
-            key={'edit'}
-            icon={<EditIcon />}
-            label="Edit"
-            className="textPrimary"
-            onClick={handleEditClick(id)}
-            color="inherit"
-          />,
-          <GridActionsCellItem
-            key={'delete'}
-            icon={<DeleteIcon color="error" />}
-            label="Delete"
-            onClick={(e) => handlePreDeleteClick(Number(id), e)}
-            color="inherit"
-          />,
-        ];
-      },
+      getActions: ({ id, row }) => [
+        <GridActionsCellItem
+          key={'edit'}
+          icon={<EditIcon />}
+          label="Edit"
+          className="textPrimary"
+          onClick={handleEditClick(row)}
+          color="inherit"
+        />,
+        <GridActionsCellItem
+          key={'delete'}
+          icon={<DeleteIcon color="error" />}
+          label="Delete"
+          onClick={(e) => handlePreDeleteClick(Number(id), e)}
+          color="inherit"
+        />,
+      ],
     },
   ];
 
@@ -235,8 +207,8 @@ export function Users() {
           <div style={{ height: 400, width: '100%', alignItems: 'center' }}>
             <DataGrid
               style={{ width: 800, margin: '0 auto' }}
-              rows={users?.data ?? []}
-              rowCount={usersCount ?? 0}
+              rows={users.data}
+              rowCount={usersCount}
               columns={columns}
               paginationMode="server"
               sortingMode="server"
@@ -300,11 +272,12 @@ export function Users() {
           </Box>
         </Popover>
       </Container>
-      {user && (
+      {userDetails.user && (
         <UserDetails
-          isOpen={userDetailsOpened}
-          user={user}
-          setIsOpen={setUserDetailsOpened}
+          isOpen={userDetails.isOpen}
+          user={userDetails.user}
+          setIsOpen={setUserDetails}
+          mode={userDetails.mode}
         />
       )}
     </>

@@ -4,7 +4,7 @@ import { AxiosResponse } from 'axios';
 import { IUser } from '../../../types/User';
 import axios from '../axios';
 
-interface IUserResponse {
+export interface IUserResponse {
   data: IUser[];
   hasNextPage: boolean;
 }
@@ -15,6 +15,8 @@ export type CreateUserPayload = Pick<
 > & {
   password: string;
 };
+
+export type UpdateUserPayload = Pick<IUser, 'firstName' | 'lastName' | 'email'>;
 
 export default {
   list: ({
@@ -63,6 +65,10 @@ export default {
   create: (data: CreateUserPayload) =>
     axios
       .post<IUser, AxiosResponse<IUser>>('/v1/users', data)
+      .then((res) => res.data),
+  update: (id: number, data: UpdateUserPayload) =>
+    axios
+      .patch<IUser, AxiosResponse<IUser>>(`/v1/users/${id}`, data)
       .then((res) => res.data),
   count: () =>
     axios

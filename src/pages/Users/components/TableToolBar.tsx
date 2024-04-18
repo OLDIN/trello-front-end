@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import schema from '../addUserValidation';
+import schema from '../validations/addUserValidation';
 import usersApi, {
   type CreateUserPayload,
 } from '../../../services/api/endpoints/users';
