@@ -62,7 +62,7 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
           }
         }
 
-        if (error.response.status === 422) {
+        if (error.response?.status === 422) {
           setSnackbarSettings({
             open: true,
             message: Object.entries(error.response.data.errors)

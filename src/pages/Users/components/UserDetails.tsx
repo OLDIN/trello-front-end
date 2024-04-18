@@ -2,8 +2,10 @@ import React, { Dispatch } from 'react';
 import {
   Box,
   Button,
+  CircularProgress,
   Drawer,
   Grid,
+  IconButton,
   TextField,
   Typography,
 } from '@mui/material';
@@ -16,6 +18,7 @@ import { formatDate } from '../../../utils/formatDate';
 import { UpdateUserPayload } from '../../../services/api/endpoints/users';
 import schema from '../validations/editUserValidation';
 import usersApi from '../../../services/api/endpoints/users';
+import useFileUpload from '../../../hooks/useFileUpload/useFileUpload';
 
 interface UserDetailsProps {
   isOpen: boolean;
@@ -30,6 +33,13 @@ interface UserDetailsProps {
   mode: 'view' | 'edit';
 }
 
+type UpdateUserPayloadForm = Pick<
+  UpdateUserPayload,
+  'email' | 'firstName' | 'lastName'
+> & {
+  avatar: FileList;
+};
+
 export default function UserDetails({
   isOpen,
   user,
@@ -41,21 +51,28 @@ export default function UserDetails({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<UpdateUserPayload>({
-    resolver: yupResolver<UpdateUserPayload>(schema),
+  } = useForm<UpdateUserPayloadForm>({
+    resolver: yupResolver<UpdateUserPayloadForm>(schema),
   });
   const queryClient = useQueryClient();
+  const [avatarPreview, setAvatarPreview] = React.useState<string>(
+    user.photo?.path ??
+      'https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png',
+  );
 
-  const { mutate: updateUserMutate } = useMutation({
-    mutationFn: (data: UpdateUserPayload) => usersApi.update(user.id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['users'],
-      });
-      handleClose();
-      reset();
-    },
-  });
+  const { mutate: updateUserMutate, isPending: isPendingUpdateUser } =
+    useMutation({
+      mutationFn: (data: UpdateUserPayload) => usersApi.update(user.id, data),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ['users'],
+        });
+        handleClose();
+        reset();
+      },
+    });
+  const { mutateAsync: uploadPhotoMutate, isPending: isPendingUploadAvatar } =
+    useFileUpload();
 
   const handleClose = () => {
     setIsOpen({
@@ -65,8 +82,35 @@ export default function UserDetails({
     });
   };
 
-  const onSubmit = (data: UpdateUserPayload) => {
+  const onSubmit = async (data: UpdateUserPayloadForm) => {
+    // if photo is not selected then send the data without avatar
+    if (data.avatar.length > 0) {
+      const formData = new FormData();
+      formData.set('file', data.avatar[0]);
+      const { file } = await uploadPhotoMutate(formData);
+
+      if (file) {
+        updateUserMutate({
+          ...data,
+          photo: {
+            id: file.id,
+          },
+        });
+        return;
+      }
+    }
+
     updateUserMutate(data);
+  };
+
+  const handleAvatarChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const file = 'files' in e.target ? e.target.files?.[0] : null;
+
+    if (file) {
+      setAvatarPreview(URL.createObjectURL(file));
+    }
   };
 
   return (
@@ -93,6 +137,31 @@ export default function UserDetails({
             flexDirection: 'column',
           }}
         >
+          <Grid item>
+            {mode === 'edit' ? (
+              <TextField
+                type="file"
+                error={!!errors.avatar}
+                {...register('avatar')}
+                helperText={errors.avatar?.message}
+                fullWidth
+                label="Avatar"
+                variant="outlined"
+                onChange={(e) => handleAvatarChange(e)}
+                InputProps={{
+                  startAdornment: (
+                    <img
+                      src={avatarPreview}
+                      alt="avatar"
+                      style={{ width: 30, height: 30, marginRight: 10 }}
+                    />
+                  ),
+                }}
+              />
+            ) : (
+              <Typography>First Name: {user.firstName}</Typography>
+            )}
+          </Grid>
           <Grid item>
             {mode === 'edit' ? (
               <TextField
@@ -176,9 +245,17 @@ export default function UserDetails({
           </Grid>
           {mode === 'edit' && (
             <Grid item>
-              <Button type="submit" variant="contained">
-                Save
-              </Button>
+              {isPendingUpdateUser || isPendingUploadAvatar ? (
+                <IconButton
+                  style={{ backgroundColor: '#594f8d', marginLeft: '1rem' }}
+                >
+                  <CircularProgress style={{ color: 'white' }} />
+                </IconButton>
+              ) : (
+                <Button type="submit" variant="contained">
+                  Save
+                </Button>
+              )}
             </Grid>
           )}
         </Grid>

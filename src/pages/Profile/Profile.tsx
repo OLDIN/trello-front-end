@@ -61,7 +61,6 @@ export const Profile: FC = (): ReactElement => {
   });
   const { mutateAsync: uploadPhotoMutate } = useFileUpload({
     onSuccess: ({ file }) => {
-      console.log('file on success', file);
       queryClient.setQueryData<unknown, ['me'], IProfile>(['me'], (profile) => {
         if (profile) {
           profile.photo = file;
@@ -78,14 +77,11 @@ export const Profile: FC = (): ReactElement => {
   };
 
   const onSubmit = async (data: IProfilePayload) => {
-    console.log('data', data);
     // if photo is not selected then send the data without avatar
     if (data.avatar.length > 0) {
       const formData = new FormData();
       formData.set('file', data.avatar[0]);
       const { file } = await uploadPhotoMutate(formData);
-
-      console.log('uploaded file = ', file);
 
       if (file) {
         mutate({
