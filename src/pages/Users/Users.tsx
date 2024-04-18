@@ -1,5 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import usersApi from '../../services/api/endpoints/users';
 import {
@@ -8,7 +13,6 @@ import {
   GridColDef,
   GridFilterModel,
   GridFilterOperator,
-  GridRowId,
   GridRowParams,
   GridSlots,
   GridSortModel,
@@ -33,7 +37,12 @@ export function Users() {
     sortModel: GridSortModel;
     filterModel: GridFilterModel;
   }>({
-    sortModel: [],
+    sortModel: [
+      {
+        field: 'id',
+        sort: 'asc',
+      },
+    ],
     filterModel: {
       items: [],
     },
@@ -47,6 +56,7 @@ export function Users() {
     user: null,
     mode: 'view',
   });
+  const queryClient = useQueryClient();
 
   const operator: GridFilterOperator<any, number> = {
     label: 'only role',
@@ -123,6 +133,10 @@ export function Users() {
     if (!openedId) return;
     await deleteMutate(openedId);
     refetchUsers();
+    queryClient.setQueryData(
+      ['users', 'count'],
+      (oldCount: number) => oldCount - 1,
+    );
     setOpenedId(null);
     setAnchorEl(null);
   };
