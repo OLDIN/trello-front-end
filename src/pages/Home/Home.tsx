@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Button,
+  Avatar,
+  AvatarGroup,
   Container,
   Divider,
   Drawer,
@@ -10,7 +11,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Paper,
   Stack,
   styled,
   Toolbar,
@@ -24,45 +24,27 @@ import MailIcon from '@mui/icons-material/Mail';
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  Droppable,
-  Draggable,
-  DragDropContext,
-  DropResult,
-} from 'react-beautiful-dnd';
+  DefaultError,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 
 import './Home.scss';
-import TaskView from './TaskView/TaskView';
+import TaskView from './elements/TaskView/TaskView';
 import boardsApi from '../../services/api/endpoints/boards';
 import taskListsApi from '../../services/api/endpoints/task-lists';
 import tasksApi from '../../services/api/endpoints/tasks';
 import { TaskList } from '../../types/TaskList';
-import { type Task } from '../../types/Task';
+import { TaskListItem } from './elements/TaskListItem';
+import { useTaskStore } from '../../store/boards/tasks/task.store';
+import { IUser } from '../../types/User';
+import usersApi, { IUserResponse } from '../../services/api/endpoints/users';
+import { Task } from '../../types/Task';
 
 const drawerWidth = 240;
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#ebecf0',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  minWidth: '272px',
-  height: '100%',
-
-  borderRadius: '12px',
-  color: '#44546f',
-}));
-
-const Task = styled(ListItem)(({ theme }) => ({
-  padding: theme.spacing(2),
-  backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#ffffff',
-  borderRadius: '8px',
-  boxShadow: '0px 1px 1px #091e4240, 0px 0px 1px #091e424f',
-  minHeight: '36px',
-  cursor: 'pointer',
-  color: '#172b4d',
-}));
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -121,20 +103,11 @@ export default function Home() {
   const [open, setOpen] = useState(true);
   const [selectedBoardId, setSelectedBoardId] = useState<number>(0);
   const queryClient = useQueryClient();
+  const [selectedAssigneeId, setSelectedAssigneeId] = useState<
+    number | undefined
+  >(undefined);
 
-  const [taskModalSettings, setTaskModalSettings] = useState<
-    | {
-        open: false;
-        taskId: null;
-      }
-    | {
-        open: true;
-        taskId: number;
-      }
-  >({
-    open: false,
-    taskId: null,
-  });
+  const { taskModalSettings, setTaskModalSettings } = useTaskStore();
 
   const { data: boards = [] } = useQuery({
     queryKey: ['boards'],
@@ -142,13 +115,107 @@ export default function Home() {
   });
 
   const { data: taskLists = [] } = useQuery({
-    queryKey: ['taskLists', selectedBoardId],
+    queryKey: ['taskLists', { selectedBoardId }],
     queryFn: () => taskListsApi.getAll(selectedBoardId),
-    enabled: !!selectedBoardId,
+    enabled: selectedBoardId > 0,
   });
 
+  const { data: users = [] } = useQuery<
+    IUser[],
+    DefaultError,
+    IUser[],
+    [
+      'users',
+      {
+        boardId: number;
+      },
+    ]
+  >({
+    queryKey: ['users', { boardId: selectedBoardId }],
+    queryFn: () =>
+      usersApi.listSimple({
+        filter: {
+          field: 'tasks.taskList.boardId',
+          operator: 'eq',
+          value: selectedBoardId,
+        },
+        join: [
+          {
+            field: 'tasks',
+            select: ['id'],
+          },
+          {
+            field: 'tasks.taskList',
+            select: ['id'],
+          },
+          {
+            field: 'photo',
+          },
+        ],
+        sort: [
+          {
+            field: 'firstName',
+            order: 'ASC',
+          },
+          {
+            field: 'lastName',
+            order: 'ASC',
+          },
+        ],
+      }),
+    enabled: selectedBoardId > 0,
+  });
+  const { data: tasks = [] } = useQuery({
+    queryKey: [
+      'tasks',
+      { boardId: selectedBoardId, assigneeId: selectedAssigneeId },
+    ],
+    queryFn: () =>
+      tasksApi.list({
+        filter: [
+          {
+            field: 'boardId',
+            operator: 'eq',
+            value: selectedBoardId,
+          },
+          ...(selectedAssigneeId
+            ? [
+                {
+                  field: 'assigneeId',
+                  operator: 'eq',
+                  value: selectedAssigneeId,
+                },
+              ]
+            : []),
+        ],
+        join: [
+          {
+            field: 'assignee',
+          },
+          {
+            field: 'assignee.photo',
+          },
+        ],
+      }),
+    enabled: selectedBoardId > 0,
+  });
+
+  const tasksByTaskListIdMap = useMemo(() => {
+    const map = new Map<number, Task[]>();
+
+    tasks?.forEach((task) => {
+      if (map.has(task.taskListId)) {
+        map.get(task.taskListId)?.push(task);
+      } else {
+        map.set(task.taskListId, [task]);
+      }
+    });
+
+    return map;
+  }, [tasks]);
+
   const { mutate: taskUpdateMutate } = useMutation({
-    mutationKey: ['taskLists', selectedBoardId],
+    mutationKey: ['taskLists', { selectedBoardId }],
     mutationFn: tasksApi.partialUpdate,
   });
 
@@ -166,6 +233,14 @@ export default function Home() {
     setOpen(false);
   };
 
+  const handleBoardClick = (id: number) => {
+    setSelectedBoardId(id);
+  };
+
+  const toggleSelectedAssigneeId = (id: number) => {
+    setSelectedAssigneeId((prev) => (prev === id ? undefined : id));
+  };
+
   const onDragEnd = (result: DropResult) => {
     const { source, destination } = result;
 
@@ -174,11 +249,7 @@ export default function Home() {
       return;
     }
 
-    const task = taskLists.find(
-      (list) => list.id === Number(source.droppableId),
-    )?.tasks?.[source.index];
-
-    console.log('drag end result = ', result, { task });
+    const task = tasks.find((task) => task.id === +result.draggableId);
 
     if (!task) {
       return;
@@ -190,18 +261,14 @@ export default function Home() {
     });
 
     queryClient.setQueryData(
-      ['taskLists', selectedBoardId],
-      (oldData: TaskList[]) => {
+      ['tasks', { boardId: selectedBoardId, assigneeId: selectedAssigneeId }],
+      (oldData: Task[]) => {
         const newTaskLists = [...oldData];
-        const sourceList = newTaskLists.find(
-          (list) => list.id === +source.droppableId,
-        );
-        const destinationList = newTaskLists.find(
-          (list) => list.id === +destination.droppableId,
-        );
-
-        const [removed] = sourceList?.tasks?.splice(source.index, 1) ?? [];
-        destinationList?.tasks.splice(destination.index, 0, removed);
+        const taskIndex = newTaskLists.findIndex((t) => t.id === task.id);
+        newTaskLists[taskIndex] = {
+          ...task,
+          taskListId: Number(destination.droppableId),
+        };
 
         return newTaskLists;
       },
@@ -224,6 +291,36 @@ export default function Home() {
           <Typography variant="h6" noWrap component="div">
             Persistent drawer
           </Typography>
+          <AvatarGroup
+            total={users.length}
+            max={4}
+            slotProps={{
+              additionalAvatar: {
+                sx: { width: 36, height: 36 },
+              },
+            }}
+          >
+            {users.map((assignee) => (
+              <Avatar
+                key={assignee.id}
+                sx={{
+                  width: 36,
+                  height: 36,
+                  cursor: 'pointer',
+                  ':hover': { opacity: 0.8 },
+                  opacity:
+                    selectedAssigneeId && selectedAssigneeId !== assignee.id
+                      ? 0.8
+                      : 1,
+                }}
+                onClick={() => toggleSelectedAssigneeId(assignee.id)}
+                alt={assignee.firstName + ' ' + assignee.lastName}
+                src={assignee.photo?.path}
+              >
+                {assignee.firstName[0] + assignee.lastName[0]}
+              </Avatar>
+            ))}
+          </AvatarGroup>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -265,7 +362,10 @@ export default function Home() {
         <List>
           {boards.map(({ id, name }) => (
             <ListItem key={id} disablePadding>
-              <ListItemButton>
+              <ListItemButton
+                selected={selectedBoardId === id}
+                onClick={() => handleBoardClick(id)}
+              >
                 <ListItemIcon>
                   <DashboardCustomize />
                 </ListItemIcon>
@@ -283,64 +383,23 @@ export default function Home() {
             style={{ overflow: 'scroll', minHeight: '100vh' }}
           >
             <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
-              {taskLists.map((list) => (
-                <Droppable key={list.id} droppableId={list.id.toString()}>
-                  {(provided, snapshot) => (
-                    <Item elevation={4} ref={provided.innerRef}>
-                      <Typography variant="h6" gutterBottom>
-                        {list.name}
-                      </Typography>
-
-                      <List
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          rowGap: '8px',
-                        }}
-                      >
-                        {list.tasks &&
-                          list.tasks.map((task, index) => (
-                            <Draggable
-                              key={task.id}
-                              draggableId={task.id.toString()}
-                              index={index}
-                            >
-                              {(provided, snapshot) => (
-                                <Task
-                                  ref={provided.innerRef}
-                                  key={task.id}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  onClick={() =>
-                                    setTaskModalSettings({
-                                      open: true,
-                                      taskId: task.id,
-                                    })
-                                  }
-                                >
-                                  {task.name}
-                                </Task>
-                              )}
-                            </Draggable>
-                          ))}
-                        {provided.placeholder}
-                      </List>
-
-                      <Button>+ Add a task</Button>
-                    </Item>
-                  )}
-                </Droppable>
+              {taskLists.map((taskListItem) => (
+                <TaskListItem
+                  key={taskListItem.id}
+                  taskListItem={taskListItem}
+                  tasks={tasksByTaskListIdMap.get(taskListItem.id) ?? []}
+                />
               ))}
             </DragDropContext>
           </Stack>
         </Main>
         {taskModalSettings.taskId && (
           <TaskView
-            open={taskModalSettings.open}
+            open={taskModalSettings.isOpen}
             taskId={taskModalSettings.taskId}
             onClose={() =>
               setTaskModalSettings({
-                open: false,
+                isOpen: false,
                 taskId: null,
               })
             }

@@ -1,3 +1,6 @@
+import { Board } from './Board';
+import { IUser } from './User';
+
 export enum TaskPriorityEnum {
   LOW = 'low',
   MEDIUM = 'medium',
@@ -12,6 +15,9 @@ export interface Task {
   priority: TaskPriorityEnum;
   createdAt: string;
   updatedAt: string;
-  assigneeId: number;
+  assigneeId?: number;
   taskListId: number;
+  assignee?: IUser;
+  boardId: number;
+  board?: Board;
 }

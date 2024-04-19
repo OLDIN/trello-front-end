@@ -8,6 +8,6 @@ export default {
       .get<
         TaskList[],
         AxiosResponse<TaskList[]>
-      >(`/v1/task-lists?filter=boardId||eq||${boardId}&join=tasks`)
+      >(`/v1/task-lists?filter=boardId||eq||${boardId}`)
       .then((res) => res.data),
 };

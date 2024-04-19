@@ -3,6 +3,10 @@ import { QueryFunctionContext } from '@tanstack/react-query';
 import { AxiosResponse } from 'axios';
 import { IUser } from '../../../types/User';
 import axios from '../axios';
+import {
+  type CreateQueryParams,
+  RequestQueryBuilder,
+} from '@dataui/crud-request';
 
 export interface IUserResponse {
   data: IUser[];
@@ -29,6 +33,22 @@ export type UpdateUserPayload = Pick<
 };
 
 export default {
+  listSimple: (query: CreateQueryParams) => {
+    const qb = RequestQueryBuilder.create(query);
+    const queryString = qb.query();
+
+    return axios
+      .get<IUser[], AxiosResponse<IUser[]>>(`/v1/users?${queryString}`)
+      .then((res) => res.data);
+  },
+  /*
+   *
+   *
+   *
+   *
+   *
+   *
+   */
   list: ({
     queryKey: [
       _,
