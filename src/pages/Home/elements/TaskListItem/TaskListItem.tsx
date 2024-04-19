@@ -1,6 +1,15 @@
 import React from 'react';
-import { Button, List, Paper, styled, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  IconButton,
+  List,
+  Paper,
+  styled,
+  Typography,
+} from '@mui/material';
 import { Droppable } from 'react-beautiful-dnd';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useQuery } from '@tanstack/react-query';
 
 import { TaskList } from '../../../../types/TaskList';
@@ -20,6 +29,20 @@ const Item = styled(Paper)(({ theme }) => ({
   color: '#44546f',
 }));
 
+const ItemName = styled(Typography)`
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  margin: 0;
+  padding: 6px 8px 6px 12px;
+  background-color: transparent;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  cursor: pointer;
+`;
+
 interface TaskListItemProps {
   taskListItem: TaskList;
   tasks: Task[];
@@ -30,12 +53,22 @@ export function TaskListItem({ taskListItem: list, tasks }: TaskListItemProps) {
     <Droppable key={list.id} droppableId={list.id.toString()}>
       {(provided, snapshot) => (
         <Item elevation={4} ref={provided.innerRef}>
-          <Typography variant="h6" gutterBottom>
-            {list.name}
-          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
+            <ItemName variant="subtitle1" gutterBottom>
+              {list.name}
+            </ItemName>
+            <IconButton>
+              <MoreHorizIcon />
+            </IconButton>
+          </Box>
 
           <List
-            style={{
+            sx={{
               display: 'flex',
               flexDirection: 'column',
               rowGap: '8px',
@@ -53,7 +86,29 @@ export function TaskListItem({ taskListItem: list, tasks }: TaskListItemProps) {
             {provided.placeholder}
           </List>
 
-          <Button>+ Add a task</Button>
+          <Button
+            sx={{
+              width: '100%',
+              backgroundColor: 'transparent',
+              borderRadius: '8px',
+              color: '#44546f',
+              textTransform: 'none',
+              padding: '6px 12px 6px 8px',
+              textDecoration: 'none',
+              userSelect: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              flexGrow: 1,
+              margin: 0,
+              '&:hover': {
+                backgroundColor: '#091e4224',
+                color: '#172b4d',
+              },
+            }}
+          >
+            + Add a task
+          </Button>
         </Item>
       )}
     </Droppable>

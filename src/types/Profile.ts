@@ -1,11 +1,10 @@
+import { IFile } from './File';
+
 export interface IProfile {
   id: number;
   firstName: string;
   lastName: string;
-  photo?: {
-    path: string;
-    id: string;
-  };
+  photo?: IFile;
   email: string;
   role: {
     id: number;

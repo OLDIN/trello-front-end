@@ -3,6 +3,7 @@ import {
   RequestQueryBuilder,
 } from '@dataui/crud-request';
 import { AxiosResponse } from 'axios';
+
 import { Task } from '../../../types/Task';
 import axios from '../axios';
 
@@ -17,7 +18,10 @@ export default {
       .then((res) => res.data),
   getById: (id: number) =>
     axios
-      .get<Task, AxiosResponse<Task>>(`/v1/tasks/${id}`)
+      .get<
+        Task,
+        AxiosResponse<Task>
+      >(`/v1/tasks/${id}?join=assignee&join=assignee.photo&join=cover&join=attachments`)
       .then((res) => res.data),
   list: (query: CreateQueryParams) => {
     const qb = RequestQueryBuilder.create(query);

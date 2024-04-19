@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
+  alpha,
   Avatar,
   AvatarGroup,
+  Box,
   Container,
   Divider,
   Drawer,
@@ -11,6 +13,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Paper,
   Stack,
   styled,
   Toolbar,
@@ -31,6 +34,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import SearchIcon from '@mui/icons-material/Search';
+import InputBase from '@mui/material/InputBase';
 
 import './Home.scss';
 import TaskView from './elements/TaskView/TaskView';
@@ -43,6 +48,7 @@ import { useTaskStore } from '../../store/boards/tasks/task.store';
 import { IUser } from '../../types/User';
 import usersApi, { IUserResponse } from '../../services/api/endpoints/users';
 import { Task } from '../../types/Task';
+import { Board } from '../../types/Board';
 
 const drawerWidth = 240;
 
@@ -98,10 +104,50 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   marginTop: '68px',
 }));
 
+const Search = styled('div')(({ theme }) => ({
+  position: 'relative',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  '&:hover': {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: '100%',
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: theme.spacing(3),
+    width: 'auto',
+  },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      width: '20ch',
+    },
+  },
+}));
+
 export default function Home() {
   const theme = useTheme();
   const [open, setOpen] = useState(true);
-  const [selectedBoardId, setSelectedBoardId] = useState<number>(0);
+  const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
   const queryClient = useQueryClient();
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<
     number | undefined
@@ -115,9 +161,10 @@ export default function Home() {
   });
 
   const { data: taskLists = [] } = useQuery({
-    queryKey: ['taskLists', { selectedBoardId }],
-    queryFn: () => taskListsApi.getAll(selectedBoardId),
-    enabled: selectedBoardId > 0,
+    queryKey: ['taskLists', { boardId: selectedBoard?.id }],
+    // FIXME: drop [as number]
+    queryFn: () => taskListsApi.getAll(selectedBoard?.id ?? 0),
+    enabled: !!selectedBoard?.id,
   });
 
   const { data: users = [] } = useQuery<
@@ -131,13 +178,14 @@ export default function Home() {
       },
     ]
   >({
-    queryKey: ['users', { boardId: selectedBoardId }],
+    // FIXME: drop [as number]
+    queryKey: ['users', { boardId: selectedBoard?.id ?? 0 }],
     queryFn: () =>
       usersApi.listSimple({
         filter: {
           field: 'tasks.taskList.boardId',
           operator: 'eq',
-          value: selectedBoardId,
+          value: selectedBoard?.id,
         },
         join: [
           {
@@ -163,12 +211,12 @@ export default function Home() {
           },
         ],
       }),
-    enabled: selectedBoardId > 0,
+    enabled: !!selectedBoard?.id,
   });
   const { data: tasks = [] } = useQuery({
     queryKey: [
       'tasks',
-      { boardId: selectedBoardId, assigneeId: selectedAssigneeId },
+      { boardId: selectedBoard?.id, assigneeId: selectedAssigneeId },
     ],
     queryFn: () =>
       tasksApi.list({
@@ -176,7 +224,7 @@ export default function Home() {
           {
             field: 'boardId',
             operator: 'eq',
-            value: selectedBoardId,
+            value: selectedBoard?.id,
           },
           ...(selectedAssigneeId
             ? [
@@ -195,9 +243,18 @@ export default function Home() {
           {
             field: 'assignee.photo',
           },
+          {
+            field: 'cover',
+          },
+          {
+            field: 'attachments',
+          },
+          {
+            field: 'comments',
+          },
         ],
       }),
-    enabled: selectedBoardId > 0,
+    enabled: !!selectedBoard?.id,
   });
 
   const tasksByTaskListIdMap = useMemo(() => {
@@ -215,13 +272,13 @@ export default function Home() {
   }, [tasks]);
 
   const { mutate: taskUpdateMutate } = useMutation({
-    mutationKey: ['taskLists', { selectedBoardId }],
+    mutationKey: ['taskLists', { boardId: selectedBoard?.id }],
     mutationFn: tasksApi.partialUpdate,
   });
 
   useEffect(() => {
     if (boards.length) {
-      setSelectedBoardId(boards[0].id);
+      setSelectedBoard(boards[0]);
     }
   }, [boards]);
 
@@ -233,8 +290,8 @@ export default function Home() {
     setOpen(false);
   };
 
-  const handleBoardClick = (id: number) => {
-    setSelectedBoardId(id);
+  const handleBoardClick = (board: Board) => {
+    setSelectedBoard(board);
   };
 
   const toggleSelectedAssigneeId = (id: number) => {
@@ -261,7 +318,7 @@ export default function Home() {
     });
 
     queryClient.setQueryData(
-      ['tasks', { boardId: selectedBoardId, assigneeId: selectedAssigneeId }],
+      ['tasks', { boardId: selectedBoard?.id, assigneeId: selectedAssigneeId }],
       (oldData: Task[]) => {
         const newTaskLists = [...oldData];
         const taskIndex = newTaskLists.findIndex((t) => t.id === task.id);
@@ -278,49 +335,74 @@ export default function Home() {
   return (
     <>
       <AppBar open={open}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Persistent drawer
-          </Typography>
-          <AvatarGroup
-            total={users.length}
-            max={4}
-            slotProps={{
-              additionalAvatar: {
-                sx: { width: 36, height: 36 },
-              },
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
-            {users.map((assignee) => (
-              <Avatar
-                key={assignee.id}
-                sx={{
-                  width: 36,
-                  height: 36,
-                  cursor: 'pointer',
-                  ':hover': { opacity: 0.8 },
-                  opacity:
-                    selectedAssigneeId && selectedAssigneeId !== assignee.id
-                      ? 0.8
-                      : 1,
-                }}
-                onClick={() => toggleSelectedAssigneeId(assignee.id)}
-                alt={assignee.firstName + ' ' + assignee.lastName}
-                src={assignee.photo?.path}
-              >
-                {assignee.firstName[0] + assignee.lastName[0]}
-              </Avatar>
-            ))}
-          </AvatarGroup>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={{ mr: 2, ...(open && { display: 'none' }) }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              {selectedBoard?.name ?? 'Select a board'}
+            </Typography>
+            <AvatarGroup
+              total={users.length}
+              max={4}
+              slotProps={{
+                additionalAvatar: {
+                  sx: { width: 36, height: 36 },
+                },
+              }}
+              sx={{ marginLeft: 3 }}
+            >
+              {users.map((assignee) => (
+                <Avatar
+                  key={assignee.id}
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    cursor: 'pointer',
+                    ':hover': { opacity: 0.8 },
+                    opacity:
+                      selectedAssigneeId && selectedAssigneeId !== assignee.id
+                        ? 0.8
+                        : 1,
+                  }}
+                  onClick={() => toggleSelectedAssigneeId(assignee.id)}
+                  alt={assignee.firstName + ' ' + assignee.lastName}
+                  src={assignee.photo?.path}
+                >
+                  {assignee.firstName[0] + assignee.lastName[0]}
+                </Avatar>
+              ))}
+            </AvatarGroup>
+          </Box>
+          <Box>
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </Search>
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -360,16 +442,16 @@ export default function Home() {
         </List>
         <Divider textAlign="left">Your Boards</Divider>
         <List>
-          {boards.map(({ id, name }) => (
-            <ListItem key={id} disablePadding>
+          {boards.map((board) => (
+            <ListItem key={board.id} disablePadding>
               <ListItemButton
-                selected={selectedBoardId === id}
-                onClick={() => handleBoardClick(id)}
+                selected={selectedBoard?.id === board.id}
+                onClick={() => handleBoardClick(board)}
               >
                 <ListItemIcon>
                   <DashboardCustomize />
                 </ListItemIcon>
-                <ListItemText primary={name} />
+                <ListItemText primary={board.name} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -391,6 +473,7 @@ export default function Home() {
                 />
               ))}
             </DragDropContext>
+            {/* <Paper>+ Add another list</Paper> */}
           </Stack>
         </Main>
         {taskModalSettings.taskId && (

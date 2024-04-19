@@ -1,4 +1,6 @@
 import { Board } from './Board';
+import { IFile } from './File';
+import { TaskComment } from './TaskComment';
 import { IUser } from './User';
 
 export enum TaskPriorityEnum {
@@ -20,4 +22,7 @@ export interface Task {
   assignee?: IUser;
   boardId: number;
   board?: Board;
+  cover?: IFile;
+  attachments?: IFile[];
+  comments?: TaskComment[];
 }

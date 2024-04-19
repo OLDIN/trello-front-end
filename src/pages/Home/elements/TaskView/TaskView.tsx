@@ -1,4 +1,4 @@
-import { Box, Modal, styled, Typography } from '@mui/material';
+import { Box, Modal, Typography } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
@@ -10,21 +10,21 @@ interface TaskViewProps {
   taskId: number;
 }
 
-const TaskBody = styled(Box)(() => ({
-  // position: 'absolute' as const,
+const style = {
+  position: 'absolute' as const,
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '768px',
-  // bgcolor: 'background.paper',
-  borderRadius: '12px',
-  // boxShadow: 24,
-  // p: 4,
-  backgroundColor: '#ffffff',
+  width: 768,
+  bgcolor: '#091e420f',
+  // border: '2px solid #000',
+  borderRadius: 3,
+  minHeight: 600,
+  boxShadow: 24,
   boxSizing: 'border-box',
   overflow: 'hidden',
-  position: 'relative',
-}));
+  p: 4,
+};
 
 export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
   const { data: task, isLoading } = useQuery({
@@ -39,22 +39,29 @@ export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <TaskBody>
-        {isLoading ? (
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Loading...
-          </Typography>
-        ) : (
-          <>
+      <Box
+        sx={{
+          ...style,
+          bgcolor: '#ffffff',
+        }}
+      >
+        <Box sx={style}>
+          {isLoading ? (
             <Typography id="modal-modal-title" variant="h6" component="h2">
-              name: {task?.name}
+              Loading...
             </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              description: {task?.description}
-            </Typography>
-          </>
-        )}
-      </TaskBody>
+          ) : (
+            <>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                name: {task?.name}
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                description: {task?.description}
+              </Typography>
+            </>
+          )}
+        </Box>
+      </Box>
     </Modal>
   );
 }

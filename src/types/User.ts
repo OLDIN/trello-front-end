@@ -1,3 +1,5 @@
+import { IFile } from './File';
+
 export interface IUserStatus {
   id: number;
   name: string;
@@ -12,10 +14,7 @@ export interface IUser {
   id: number;
   firstName: string;
   lastName: string;
-  photo?: {
-    path: string;
-    id: string;
-  };
+  photo?: IFile;
   email: string;
   role?: IUserRole;
   status?: IUserStatus;
