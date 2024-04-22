@@ -23,7 +23,6 @@ import { Attachment } from './elements/Attachment';
 import { TaskLabel } from './elements/TaskLabel';
 import { CheckList } from './elements/CheckList';
 import { useTaskDetails } from './hooks/useTaskDetails';
-import styled from '@emotion/styled';
 import { TaskComment } from './elements/TaskComment';
 import { RightSideBtns } from './elements/RightSideBtns';
 

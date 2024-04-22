@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, memo, useCallback, useRef } from 'react';
+import React, { CSSProperties, FC, useCallback, useRef } from 'react';
 import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
