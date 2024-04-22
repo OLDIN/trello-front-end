@@ -1,12 +1,14 @@
-import { GridFilterModel, GridSortModel } from '@mui/x-data-grid';
 import { QueryFunctionContext } from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
-import { IUser } from '../../../types/User';
 import axios from '../axios';
+import { AxiosResponse } from 'axios';
+
+import { IUser } from '../../../types/User';
+
 import {
   type CreateQueryParams,
   RequestQueryBuilder,
 } from '@dataui/crud-request';
+import { GridFilterModel, GridSortModel } from '@mui/x-data-grid';
 
 export interface IUserResponse {
   data: IUser[];

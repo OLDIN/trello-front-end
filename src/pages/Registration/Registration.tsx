@@ -1,4 +1,14 @@
 import React, { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+// import schema from './validation';
+import api from '../../services/api';
+
+import useAuth from '../../hooks/useAuth';
+
+import { Link, Sheet, Typography } from '@mui/joy';
 import {
   Button,
   CssBaseline,
@@ -7,13 +17,6 @@ import {
   FormLabel,
   Input,
 } from '@mui/material';
-import { Link, Sheet, Typography } from '@mui/joy';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-// import schema from './validation';
-import api from '../../services/api';
-import useAuth from '../../hooks/useAuth';
-import { useQueryClient } from '@tanstack/react-query';
 
 export default function Registration() {
   const {

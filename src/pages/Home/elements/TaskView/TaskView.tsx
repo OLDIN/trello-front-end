@@ -1,4 +1,20 @@
 import React from 'react';
+
+import { TextEditor } from '../../../../components/TextEditor';
+
+import { useTaskDetails } from './hooks/useTaskDetails';
+import { IUser } from '../../../../types/User';
+import { Attachment } from './elements/Attachment';
+import { CheckList } from './elements/CheckList';
+import { RightSideBtns } from './elements/RightSideBtns';
+import { TaskComment } from './elements/TaskComment';
+import { TaskLabel } from './elements/TaskLabel';
+import { StyledTaskBlock, TaskCover } from './styles';
+
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Avatar,
   Button,
@@ -10,21 +26,6 @@ import {
   Input,
   Typography,
 } from '@mui/material';
-
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import CloseIcon from '@mui/icons-material/Close';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AddIcon from '@mui/icons-material/Add';
-
-import { IUser } from '../../../../types/User';
-import { TextEditor } from '../../../../components/TextEditor';
-import { StyledTaskBlock, TaskCover } from './styles';
-import { Attachment } from './elements/Attachment';
-import { TaskLabel } from './elements/TaskLabel';
-import { CheckList } from './elements/CheckList';
-import { useTaskDetails } from './hooks/useTaskDetails';
-import { TaskComment } from './elements/TaskComment';
-import { RightSideBtns } from './elements/RightSideBtns';
 
 interface TaskViewProps {
   open: boolean;
@@ -79,7 +80,7 @@ const checkLists = [
   },
 ];
 
-export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
+export function TaskView({ open, onClose, taskId }: TaskViewProps) {
   const { data: task, isLoading } = useTaskDetails({ taskId });
 
   return (

@@ -7,6 +7,16 @@ import {
 } from '@tanstack/react-query';
 
 import usersApi from '../../services/api/endpoints/users';
+
+import TableFilterOperatorRolesList from './components/TableFilterOperatorRolesList';
+import EditToolbar from './components/TableToolBar';
+import UserDetails from './components/UserDetails';
+
+import { IUser, IUserRole, IUserStatus } from '../../types/User';
+
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import EditIcon from '@mui/icons-material/Edit';
+import { Box, Button, Container, Grid, Popover } from '@mui/material';
 import {
   DataGrid,
   GridActionsCellItem,
@@ -17,14 +27,6 @@ import {
   GridSlots,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { Box, Button, Container, Grid, Popover } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-
-import { IUser, IUserRole, IUserStatus } from '../../types/User';
-import EditToolbar from './components/TableToolBar';
-import TableFilterOperatorRolesList from './components/TableFilterOperatorRolesList';
-import UserDetails from './components/UserDetails';
 
 export function Users() {
   const [paginationModel, setPaginationModel] = useState({

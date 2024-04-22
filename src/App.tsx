@@ -1,20 +1,24 @@
 import React from 'react';
+
+import { useBoardStore } from './store/boards/board.store';
+
+import Header from './components/Header/Header';
+
+import {
+  Box,
+  createTheme,
+  CssBaseline,
+  GlobalStyles,
+  ThemeProvider,
+} from '@mui/material';
+
+import Routers from './routes/Routes';
+
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import {
-  CssBaseline,
-  GlobalStyles,
-  ThemeProvider,
-  createTheme,
-  Box,
-} from '@mui/material';
-
 import './App.scss';
-import Routers from './routes/Routes';
-import Header from './components/Header/Header';
-import { useBoardStore } from './store/boards/board.store';
 
 const theme = createTheme({
   components: {

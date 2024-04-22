@@ -1,10 +1,11 @@
 import React from 'react';
-import { Checkbox, Grid, IconButton, styled, Typography } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 import type { TaskCheckListItem } from '../../../../../types/TaskChecklist';
+
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import { Checkbox, Grid, IconButton, styled, Typography } from '@mui/material';
 
 interface CheckListItemProps {
   item: TaskCheckListItem;

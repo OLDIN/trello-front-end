@@ -5,8 +5,8 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { fontSizeOptions } from './constants/fontSizeOptions';
 import { headingOptions } from './constants/headingOptions';
 import { toolbarItems } from './constants/toolbarItems';
-import * as Styled from './styles';
 import { typedMemo } from '../../types/typedMemo';
+import * as Styled from './styles';
 
 export interface TextEditorProps {
   data?: string;

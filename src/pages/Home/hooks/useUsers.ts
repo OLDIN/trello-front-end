@@ -1,4 +1,5 @@
 import { type DefaultError, useQuery } from '@tanstack/react-query';
+
 import { usersApi } from 'services/api';
 import type { IUser } from 'types/User';
 

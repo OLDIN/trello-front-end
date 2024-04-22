@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-import useAuth from '../useAuth';
 import authApi from '../../services/api/endpoints/auth';
+
+import useAuth from '../useAuth';
 
 export default function useProfile({ enabled = true } = {}) {
   const { token } = useAuth();

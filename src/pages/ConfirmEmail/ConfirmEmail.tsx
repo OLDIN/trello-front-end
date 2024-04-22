@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+
+import authApi from '../../services/api/endpoints/auth';
+
+import HTTP_CODES_ENUM from '../../types/http-codes';
 
 import { Box, CircularProgress, Container, Grid } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-
-import authApi from '../../services/api/endpoints/auth';
-import HTTP_CODES_ENUM from '../../types/http-codes';
 
 export default function ConfirmEmail() {
   const { enqueueSnackbar } = useSnackbar();
@@ -40,6 +41,7 @@ export default function ConfirmEmail() {
     };
 
     confirm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

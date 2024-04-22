@@ -1,16 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+import { queryClient } from './services/query-client';
+
 import { SnackbarProvider } from 'notistack';
 
-import './index.scss';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { queryClient } from './services/query-client';
 import { AuthProvider } from './providers/AuthProvider/AuthProvider';
 import AxiosErrorHandler from './providers/AxiosErrorHandler/AxiosErrorHandler';
+import reportWebVitals from './reportWebVitals';
+
+import './index.scss';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,

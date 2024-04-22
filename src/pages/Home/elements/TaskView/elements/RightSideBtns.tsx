@@ -1,18 +1,19 @@
 import React from 'react';
-import { Grid, Typography } from '@mui/material';
-import Person2Icon from '@mui/icons-material/Person2';
-import LabelIcon from '@mui/icons-material/Label';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import AttachmentIcon from '@mui/icons-material/Attachment';
-import PowerInputIcon from '@mui/icons-material/PowerInput';
-import EastIcon from '@mui/icons-material/East';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import ShareIcon from '@mui/icons-material/Share';
 
 import { StyledButton, StyledDivider } from '../styles';
+
+import ArchiveIcon from '@mui/icons-material/Archive';
+import AttachmentIcon from '@mui/icons-material/Attachment';
+import ChecklistIcon from '@mui/icons-material/Checklist';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
+import EastIcon from '@mui/icons-material/East';
+import LabelIcon from '@mui/icons-material/Label';
+import Person2Icon from '@mui/icons-material/Person2';
+import PowerInputIcon from '@mui/icons-material/PowerInput';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import ShareIcon from '@mui/icons-material/Share';
+import { Grid, Typography } from '@mui/material';
 
 export function RightSideBtns() {
   return (

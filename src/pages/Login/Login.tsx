@@ -1,4 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import api from '../../services/api';
+
+import useAuth from '../../hooks/useAuth';
+
+import { Sheet, Typography } from '@mui/joy';
 import {
   Button,
   CssBaseline,
@@ -7,15 +17,9 @@ import {
   FormLabel,
   Input,
 } from '@mui/material';
-import { Sheet, Typography } from '@mui/joy';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import schema from './validation';
-import api from '../../services/api';
-import useAuth from '../../hooks/useAuth';
-import { Link } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+
 import { setPersistUser } from '../../providers/AuthProvider/helpers';
+import schema from './validation';
 
 export default function Login() {
   const {

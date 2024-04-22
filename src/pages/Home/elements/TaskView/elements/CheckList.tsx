@@ -1,10 +1,12 @@
 import React from 'react';
-import { Button, Grid, LinearProgress, Typography } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 
 import { TaskCheckList } from '../../../../../types/TaskChecklist';
-import { CheckListItem } from './CheckListItem';
+
 import styled from '@emotion/styled';
+import AddIcon from '@mui/icons-material/Add';
+import { Button, Grid, LinearProgress, Typography } from '@mui/material';
+
+import { CheckListItem } from './CheckListItem';
 
 interface CheckListProps {
   checkList: TaskCheckList;

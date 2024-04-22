@@ -1,11 +1,12 @@
+import axios from '../axios';
+import { AxiosResponse } from 'axios';
+
+import { Task } from '../../../types/Task';
+
 import {
   type CreateQueryParams,
   RequestQueryBuilder,
 } from '@dataui/crud-request';
-import { AxiosResponse } from 'axios';
-
-import { Task } from '../../../types/Task';
-import axios from '../axios';
 
 export type PartialUpdateTask = Partial<
   Pick<Task, 'name' | 'description' | 'taskListId' | 'id'>

@@ -1,7 +1,9 @@
-import { Button, Grid, Typography } from '@mui/material';
 import React from 'react';
-import type { TaskComment } from '../../../../../types/TaskComment';
+
 import { formatDate } from '../../../../../utils/formatDate';
+import type { TaskComment } from '../../../../../types/TaskComment';
+
+import { Button, Grid, Typography } from '@mui/material';
 
 interface TaskCommentProps {
   comment: TaskComment;

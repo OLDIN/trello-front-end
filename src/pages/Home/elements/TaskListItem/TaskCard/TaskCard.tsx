@@ -1,4 +1,14 @@
 import React from 'react';
+import { Draggable } from 'react-beautiful-dnd';
+
+import { useTaskStore } from '../../../../../store/boards/tasks/task.store';
+
+import type { Task } from '../../../../../types/Task';
+import { TaskCover } from './elements/TaskCover';
+
+import AttachFile from '@mui/icons-material/AttachFile';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import RemoveRedEye from '@mui/icons-material/RemoveRedEye';
 import {
   Badge,
   BadgeProps,
@@ -8,15 +18,7 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import { Draggable } from 'react-beautiful-dnd';
 import Avatar from '@mui/material/Avatar';
-import RemoveRedEye from '@mui/icons-material/RemoveRedEye';
-import AttachFile from '@mui/icons-material/AttachFile';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-
-import { useTaskStore } from '../../../../../store/boards/tasks/task.store';
-import type { Task } from '../../../../../types/Task';
-import { TaskCover } from './elements/TaskCover';
 
 interface TaskCardProps {
   task: Task;

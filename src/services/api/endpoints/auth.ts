@@ -1,6 +1,7 @@
-import { AxiosResponse } from 'axios';
-import { IProfile } from 'types/Profile';
 import axios from '../axios';
+import { AxiosResponse } from 'axios';
+
+import { IProfile } from 'types/Profile';
 
 interface IAuthLoginResponse {
   token: string;

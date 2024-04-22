@@ -1,6 +1,6 @@
-import { Box, css, styled } from '@mui/material';
 import { CSSProperties } from 'react';
-// import { css, styled } from 'styled-components';
+
+import { Box, css, styled } from '@mui/material';
 
 export const TextEditorWrapper = styled(Box)<{
   isReadOnly?: boolean;

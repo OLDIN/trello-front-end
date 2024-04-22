@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { Box, Button, Drawer, TextField } from '@mui/material';
-import { GridToolbarContainer } from '@mui/x-data-grid';
-import AddIcon from '@mui/icons-material/Add';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-import schema from '../validations/addUserValidation';
 import usersApi, {
   type CreateUserPayload,
 } from '../../../services/api/endpoints/users';
+
 import useFileUpload from '../../../hooks/useFileUpload/useFileUpload';
+
+import AddIcon from '@mui/icons-material/Add';
+import { Box, Button, Drawer, TextField } from '@mui/material';
+import { GridToolbarContainer } from '@mui/x-data-grid';
+
+import schema from '../validations/addUserValidation';
 
 interface CreateUserPayloadForm
   extends Pick<

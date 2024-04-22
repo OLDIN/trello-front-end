@@ -1,7 +1,9 @@
-import { CreateQueryParams, RequestQueryBuilder } from '@dataui/crud-request';
-import { AxiosResponse } from 'axios';
-import { Board } from '../../../types/Board';
 import axios from '../axios';
+import { AxiosResponse } from 'axios';
+
+import { Board } from '../../../types/Board';
+
+import { CreateQueryParams, RequestQueryBuilder } from '@dataui/crud-request';
 
 export default {
   getBoards: (query?: CreateQueryParams) => {

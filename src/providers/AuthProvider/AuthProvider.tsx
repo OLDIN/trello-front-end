@@ -1,9 +1,10 @@
-import React from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Cookies from 'js-cookie';
-import { AuthContext } from '../../contexts/AuthContext';
-import useProfile from '../../hooks/useProfile/useProfile';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import Cookies from 'js-cookie';
+
+import useProfile from '../../hooks/useProfile/useProfile';
+
+import { AuthContext } from '../../contexts/AuthContext';
 import { getPersistUser, setPersistUser } from './helpers';
 
 interface AuthProviderProps {
@@ -56,6 +57,7 @@ export function AuthProvider(props: AuthProviderProps) {
     await refetchProfile();
 
     setIsLoaded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const logOut = useCallback(() => {
@@ -65,10 +67,11 @@ export function AuthProvider(props: AuthProviderProps) {
     });
     setPersistUser(null);
     queryClient.setQueryData(['me'], null);
-  }, [setToken]);
+  }, [queryClient, setToken]);
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const contextValue = useMemo(

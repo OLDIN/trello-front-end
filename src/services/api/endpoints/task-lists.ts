@@ -1,6 +1,7 @@
-import { AxiosResponse } from 'axios';
-import { TaskList } from '../../../types/TaskList';
 import axios from '../axios';
+import { AxiosResponse } from 'axios';
+
+import { TaskList } from '../../../types/TaskList';
 
 export default {
   getAll: (boardId: number) =>

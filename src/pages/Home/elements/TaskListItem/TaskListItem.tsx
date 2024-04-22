@@ -1,4 +1,13 @@
 import React from 'react';
+import { Droppable } from 'react-beautiful-dnd';
+import { useQuery } from '@tanstack/react-query';
+
+import tasksApi from '../../../../services/api/endpoints/tasks';
+
+import { Task } from '../../../../types/Task';
+import { TaskList } from '../../../../types/TaskList';
+
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import {
   Box,
   Button,
@@ -8,14 +17,8 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import { Droppable } from 'react-beautiful-dnd';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { useQuery } from '@tanstack/react-query';
 
-import { TaskList } from '../../../../types/TaskList';
 import { TaskCard } from './TaskCard';
-import tasksApi from '../../../../services/api/endpoints/tasks';
-import { Task } from '../../../../types/Task';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#ebecf0',

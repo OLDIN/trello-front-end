@@ -1,4 +1,35 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import tasksApi from 'services/api/endpoints/tasks';
+import { Board } from 'types/Board';
+import { Task } from 'types/Task';
+import { useBoardStore } from 'store/boards/board.store';
+import { useTaskStore } from 'store/boards/tasks/task.store';
+
+import { useBoards, useTaskLists } from './hooks';
+import { useTasks } from './hooks/useTasks';
+import { useUsers } from './hooks/useUsers';
+import { drawerWidth } from './constants';
+import { TaskListItem } from './elements/TaskListItem';
+import { TaskView } from './elements/TaskView';
+import {
+  AppBar,
+  DrawerHeader,
+  Main,
+  Search,
+  SearchIconWrapper,
+  StyledInputBase,
+} from './styles';
+
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
+import MailIcon from '@mui/icons-material/Mail';
+import MenuIcon from '@mui/icons-material/Menu';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Avatar,
   AvatarGroup,
@@ -16,36 +47,8 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import SearchIcon from '@mui/icons-material/Search';
 
 import './Home.scss';
-import TaskView from './elements/TaskView/TaskView';
-import tasksApi from 'services/api/endpoints/tasks';
-import { TaskListItem } from './elements/TaskListItem';
-import { useTaskStore } from 'store/boards/tasks/task.store';
-import { Task } from 'types/Task';
-import { Board } from 'types/Board';
-import { useBoardStore } from 'store/boards/board.store';
-import { useBoards, useTaskLists } from './hooks';
-import { useUsers } from './hooks/useUsers';
-import { useTasks } from './hooks/useTasks';
-import {
-  AppBar,
-  DrawerHeader,
-  Main,
-  Search,
-  SearchIconWrapper,
-  StyledInputBase,
-} from './styles';
-import { drawerWidth } from './constants';
 
 export default function Home() {
   const theme = useTheme();
@@ -98,7 +101,7 @@ export default function Home() {
         boards[0].backgroundImage?.path ?? null,
       );
     }
-  }, [boards]);
+  }, [boards, setSelectedBoardBackgroundImagePath]);
 
   const handleDrawerOpen = () => {
     setOpen(true);

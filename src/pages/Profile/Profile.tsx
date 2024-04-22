@@ -1,5 +1,15 @@
 import React, { FC, ReactElement, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import authApi from '../../services/api/endpoints/auth';
+
+import useFileUpload from '../../hooks/useFileUpload/useFileUpload';
+import useProfileUpdate from './hooks/useProfileUpdate';
+import { IProfile } from '../../types/Profile';
+
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   CircularProgress,
@@ -13,16 +23,9 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 
-import schema from './editProfileValidation';
-import authApi from '../../services/api/endpoints/auth';
-import useProfileUpdate from './hooks/useProfileUpdate';
-import useFileUpload from '../../hooks/useFileUpload/useFileUpload';
-import { IProfile } from '../../types/Profile';
 import { setPersistUser } from '../../providers/AuthProvider/helpers';
+import schema from './editProfileValidation';
 
 interface IProfilePayload {
   firstName: string;

@@ -1,8 +1,11 @@
-import { useQueryClient } from '@tanstack/react-query';
 import React, { FC, useEffect } from 'react';
-import useAuth from '../../hooks/useAuth';
-import axiosInstance from '../../services/api/axios';
+import { useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
+
+import axiosInstance from '../../services/api/axios';
+
+import useAuth from '../../hooks/useAuth';
+
 import { Alert, Snackbar } from '@mui/material';
 
 let isRefreshTokenInProgress = false;
@@ -98,6 +101,7 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
       );
       axiosInstance.interceptors.response.eject(responseInterceptor);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

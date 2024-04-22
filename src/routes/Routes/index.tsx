@@ -1,18 +1,21 @@
 import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+
+import GuestRoute from '../components/GuestRoute/GuestRoute';
+import PrivateRoute from '../components/PrivateRoute/PrivateRoute';
+
+import useAuth from '../../hooks/useAuth';
 
 import { CircularProgress, Grid } from '@mui/material';
 import { Container } from '@mui/system';
-import { Route, Routes } from 'react-router-dom';
+
+import ConfirmEmail from '../../pages/ConfirmEmail/ConfirmEmail';
 import Home from '../../pages/Home/Home';
-import NotFound from '../../pages/NotFound/NotFound';
 import Login from '../../pages/Login/Login';
+import NotFound from '../../pages/NotFound/NotFound';
+import { Profile } from '../../pages/Profile/Profile';
 import Registration from '../../pages/Registration/Registration';
 import { Users } from '../../pages/Users/Users';
-import { Profile } from '../../pages/Profile/Profile';
-import PrivateRoute from '../components/PrivateRoute/PrivateRoute';
-import GuestRoute from '../components/GuestRoute/GuestRoute';
-import ConfirmEmail from '../../pages/ConfirmEmail/ConfirmEmail';
-import useAuth from '../../hooks/useAuth';
 
 export default function Routers() {
   const { isLoaded } = useAuth();

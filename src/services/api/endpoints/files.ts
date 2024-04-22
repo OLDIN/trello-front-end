@@ -1,6 +1,7 @@
-import type { AxiosResponse } from 'axios';
-import { IFile } from '../../../types/File';
 import axios from '../axios';
+import type { AxiosResponse } from 'axios';
+
+import { IFile } from '../../../types/File';
 
 export interface IUploadData {
   file: File;

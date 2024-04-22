@@ -1,4 +1,16 @@
 import React, { Dispatch } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import usersApi, {
+  UpdateUserPayload,
+} from '../../../services/api/endpoints/users';
+
+import useFileUpload from '../../../hooks/useFileUpload/useFileUpload';
+import { formatDate } from '../../../utils/formatDate';
+import { IUser } from '../../../types/User';
+
 import {
   Box,
   Button,
@@ -10,17 +22,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import schema from '../validations/editUserValidation';
 
 import './UserDetails.scss';
-import { IUser } from '../../../types/User';
-import { formatDate } from '../../../utils/formatDate';
-import { UpdateUserPayload } from '../../../services/api/endpoints/users';
-import schema from '../validations/editUserValidation';
-import usersApi from '../../../services/api/endpoints/users';
-import useFileUpload from '../../../hooks/useFileUpload/useFileUpload';
 
 interface UserDetailsProps {
   isOpen: boolean;

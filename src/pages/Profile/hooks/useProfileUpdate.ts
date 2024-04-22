@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 
 import authApi from '../../../services/api/endpoints/auth';
+
 import { IProfile } from '../../../types/Profile';
 
 interface IUseProfileUpdate {

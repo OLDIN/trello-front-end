@@ -1,6 +1,7 @@
+import { drawerWidth } from './constants';
+
 import { alpha, Input, styled } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import { drawerWidth } from './constants';
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;

@@ -1,10 +1,12 @@
 import React from 'react';
-import { Button, Grid, styled, Typography } from '@mui/material';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
 
-import { AttachmentBtn } from './AttachmentBtn';
 import { formatDate } from '../../../../../utils/formatDate';
 import { IFile } from '../../../../../types/File';
+
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import { Button, Grid, styled, Typography } from '@mui/material';
+
+import { AttachmentBtn } from './AttachmentBtn';
 
 interface AttachmentProps {
   attachment: IFile;
