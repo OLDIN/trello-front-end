@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  alpha,
   Avatar,
   AvatarGroup,
   Box,
@@ -13,7 +12,6 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
-  styled,
   Toolbar,
   Typography,
   useTheme,
@@ -23,128 +21,38 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import MenuIcon from '@mui/icons-material/Menu';
-import {
-  DefaultError,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
 
 import './Home.scss';
 import TaskView from './elements/TaskView/TaskView';
-import { boardsApi } from 'services/api/endpoints';
-import taskListsApi from 'services/api/endpoints/task-lists';
 import tasksApi from 'services/api/endpoints/tasks';
 import { TaskListItem } from './elements/TaskListItem';
 import { useTaskStore } from 'store/boards/tasks/task.store';
-import { IUser } from 'types/User';
-import usersApi from 'services/api/endpoints/users';
 import { Task } from 'types/Task';
 import { Board } from 'types/Board';
 import { useBoardStore } from 'store/boards/board.store';
-
-const drawerWidth = 240;
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
-  open?: boolean;
-}>(({ theme, open }) => ({
-  flexGrow: 1,
-  padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  marginLeft: `-${drawerWidth}px`,
-  ...(open && {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
-  }),
-}));
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
-  position: 'relative',
-  transition: theme.transitions.create(['margin', 'width'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
-}));
-
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(3),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
-  },
-}));
+import { useBoards, useTaskLists } from './hooks';
+import { useUsers } from './hooks/useUsers';
+import { useTasks } from './hooks/useTasks';
+import {
+  AppBar,
+  DrawerHeader,
+  Main,
+  Search,
+  SearchIconWrapper,
+  StyledInputBase,
+} from './styles';
+import { drawerWidth } from './constants';
 
 export default function Home() {
   const theme = useTheme();
+  const queryClient = useQueryClient();
+
   const [open, setOpen] = useState(true);
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
-  const queryClient = useQueryClient();
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<
     number | undefined
   >(undefined);
@@ -152,113 +60,20 @@ export default function Home() {
   const { taskModalSettings, setTaskModalSettings } = useTaskStore();
   const { setSelectedBoardBackgroundImagePath } = useBoardStore();
 
-  const { data: boards = [] } = useQuery({
-    queryKey: ['boards'],
-    queryFn: () =>
-      boardsApi.getBoards({
-        join: [
-          {
-            field: 'backgroundImage',
-          },
-        ],
-      }),
+  const { data: boards = [] } = useBoards();
+  const { data: taskLists = [] } = useTaskLists({
+    boardId: selectedBoard?.id ?? 0,
   });
-
-  const { data: taskLists = [] } = useQuery({
-    queryKey: ['taskLists', { boardId: selectedBoard?.id }],
-    // FIXME: drop [as number]
-    queryFn: () => taskListsApi.getAll(selectedBoard?.id ?? 0),
-    enabled: !!selectedBoard?.id,
+  const { data: users = [] } = useUsers({
+    boardId: selectedBoard?.id ?? 0,
   });
-
-  const { data: users = [] } = useQuery<
-    IUser[],
-    DefaultError,
-    IUser[],
-    [
-      'users',
-      {
-        boardId: number;
-      },
-    ]
-  >({
-    // FIXME: drop [as number]
-    queryKey: ['users', { boardId: selectedBoard?.id ?? 0 }],
-    queryFn: () =>
-      usersApi.listSimple({
-        filter: {
-          field: 'tasks.taskList.boardId',
-          operator: 'eq',
-          value: selectedBoard?.id,
-        },
-        join: [
-          {
-            field: 'tasks',
-            select: ['id'],
-          },
-          {
-            field: 'tasks.taskList',
-            select: ['id'],
-          },
-          {
-            field: 'photo',
-          },
-        ],
-        sort: [
-          {
-            field: 'firstName',
-            order: 'ASC',
-          },
-          {
-            field: 'lastName',
-            order: 'ASC',
-          },
-        ],
-      }),
-    enabled: !!selectedBoard?.id,
+  const { data: tasks = [] } = useTasks({
+    boardId: selectedBoard?.id ?? 0,
+    assigneeId: selectedAssigneeId,
   });
-  const { data: tasks = [] } = useQuery({
-    queryKey: [
-      'tasks',
-      { boardId: selectedBoard?.id, assigneeId: selectedAssigneeId },
-    ],
-    queryFn: () =>
-      tasksApi.list({
-        filter: [
-          {
-            field: 'boardId',
-            operator: 'eq',
-            value: selectedBoard?.id,
-          },
-          ...(selectedAssigneeId
-            ? [
-                {
-                  field: 'assigneeId',
-                  operator: 'eq',
-                  value: selectedAssigneeId,
-                },
-              ]
-            : []),
-        ],
-        join: [
-          {
-            field: 'assignee',
-          },
-          {
-            field: 'assignee.photo',
-          },
-          {
-            field: 'cover',
-          },
-          {
-            field: 'attachments',
-          },
-          {
-            field: 'comments',
-          },
-        ],
-      }),
-    enabled: !!selectedBoard?.id,
+  const { mutate: taskUpdateMutate } = useMutation({
+    mutationKey: ['taskLists', { boardId: selectedBoard?.id }],
+    mutationFn: tasksApi.partialUpdate,
   });
 
   const tasksByTaskListIdMap = useMemo(() => {
@@ -274,11 +89,6 @@ export default function Home() {
 
     return map;
   }, [tasks]);
-
-  const { mutate: taskUpdateMutate } = useMutation({
-    mutationKey: ['taskLists', { boardId: selectedBoard?.id }],
-    mutationFn: tasksApi.partialUpdate,
-  });
 
   useEffect(() => {
     if (boards.length) {
