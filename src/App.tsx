@@ -17,6 +17,15 @@ import Header from './components/Header/Header';
 import { useBoardStore } from './store/boards/board.store';
 
 const theme = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+  },
   palette: {
     mode: 'light',
     text: {

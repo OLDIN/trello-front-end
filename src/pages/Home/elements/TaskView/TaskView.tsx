@@ -1,144 +1,37 @@
 import React from 'react';
 import {
   Avatar,
-  Box,
+  Button,
   Button as ButtonBase,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
-  Divider as DividerBase,
   Grid,
   IconButton,
   Input,
-  LinearProgress,
-  Modal,
-  styled,
   Typography,
 } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
-import Person2Icon from '@mui/icons-material/Person2';
-import LabelIcon from '@mui/icons-material/Label';
-import ChecklistIcon from '@mui/icons-material/Checklist';
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import AttachmentIcon from '@mui/icons-material/Attachment';
-import PowerInputIcon from '@mui/icons-material/PowerInput';
-import EastIcon from '@mui/icons-material/East';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import ShareIcon from '@mui/icons-material/Share';
+
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AddIcon from '@mui/icons-material/Add';
 
-import tasksApi from '../../../../services/api/endpoints/tasks';
 import { IUser } from '../../../../types/User';
 import { TextEditor } from '../../../../components/TextEditor';
-import { formatDate } from '../../../../utils/formatDate';
-import { AttachmentBtn } from './elements/AttachmentBtn';
-import { TaskCover } from './styles';
+import { StyledTaskBlock, TaskCover } from './styles';
+import { Attachment } from './elements/Attachment';
+import { TaskLabel } from './elements/TaskLabel';
+import { CheckList } from './elements/CheckList';
+import { useTaskDetails } from './hooks/useTaskDetails';
+import styled from '@emotion/styled';
+import { TaskComment } from './elements/TaskComment';
+import { RightSideBtns } from './elements/RightSideBtns';
 
 interface TaskViewProps {
   open: boolean;
   onClose: () => void;
   taskId: number;
 }
-
-const style = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 768,
-  // bgcolor: '#091e420f',
-  bgcolor: '#ffffff',
-  // border: '2px solid #000',
-  borderRadius: 3,
-  minHeight: 600,
-  boxShadow: 24,
-  boxSizing: 'border-box',
-  overflow: 'hidden',
-};
-
-const Button = styled(ButtonBase)`
-  background-color: #091e420f;
-  border: none;
-  border-radius: 3px;
-  box-shadow: none;
-  box-sizing: border-box;
-  color: #172b4d;
-  cursor: pointer;
-  font-weight: 500;
-  height: 32px;
-  margin-top: 8px;
-  max-width: 300px;
-  overflow: hidden;
-  padding: 6px 12px;
-  position: relative;
-  text-decoration: none;
-  text-overflow: ellipsis;
-  transition-duration: 85ms;
-  transition-property: background-color, border-color, box-shadow;
-  transition-timing-function: ease;
-  -webkit-user-select: none;
-  user-select: none;
-  white-space: nowrap;
-  text-transform: none;
-  max-width: 300px;
-  width: 100%;
-  justify-content: flex-start;
-  &:hover {
-    border: none;
-    box-shadow: none;
-    color: #172b4d;
-    background-color: #091e4224;
-    text-decoration: none;
-  }
-`;
-
-const Divider = styled(DividerBase)`
-  background-color: #091e4224;
-`;
-
-const Label = styled(Typography)`
-  display: inline-block;
-  position: relative;
-  margin-bottom: 0;
-  border-radius: 3px;
-  padding: 0 12px;
-  max-width: 100%;
-  min-width: 48px;
-  height: 32px;
-  box-sizing: border-box;
-  background-color: #091e420f;
-  line-height: 32px;
-  color: #172b4d;
-  font-size: 14px;
-  font-weight: 500;
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &.color-red {
-    background-color: #f44336;
-    color: #fff;
-  }
-
-  &.color-yellow {
-    background-color: #ffeb3b;
-    color: #172b4d;
-  }
-
-  &.color-purple {
-    background-color: #9c27b0;
-    color: #fff;
-  }
-`;
 
 const members: IUser[] = [
   {
@@ -188,38 +81,7 @@ const checkLists = [
 ];
 
 export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
-  const { data: task, isLoading } = useQuery({
-    queryKey: ['task', taskId],
-    queryFn: () =>
-      tasksApi.getById(taskId, {
-        join: [
-          {
-            field: 'assignee',
-          },
-          {
-            field: 'assignee.photo',
-          },
-          {
-            field: 'cover',
-          },
-          {
-            field: 'attachments',
-          },
-          {
-            field: 'taskList',
-          },
-          {
-            field: 'labels',
-          },
-          {
-            field: 'comments',
-          },
-          {
-            field: 'comments.author',
-          },
-        ],
-      }),
-  });
+  const { data: task, isLoading } = useTaskDetails({ taskId });
 
   return (
     <Dialog
@@ -231,6 +93,10 @@ export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
       scroll="body"
       sx={{
         padding: 0,
+
+        '& .MuiDialog-paper': {
+          borderRadius: '10px',
+        },
       }}
     >
       <IconButton
@@ -271,12 +137,11 @@ export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
           <Grid
             container
             sx={{
-              bgcolor: '#ffffff',
+              bgcolor: '#ededed',
             }}
           >
             <Grid item xs={12}>
               <TaskCover src={task?.cover?.path ?? ''} />
-              <ButtonBase></ButtonBase>
             </Grid>
             <Grid item xs={12} padding={4}>
               <Grid
@@ -358,11 +223,7 @@ export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
                       </Typography>
                       <Grid item container gap="2px">
                         {task?.labels?.map((label) => (
-                          <Grid item key={label.id}>
-                            <Label noWrap className={`color-${label.color}`}>
-                              {label.name}
-                            </Label>
-                          </Grid>
+                          <TaskLabel key={label.id} label={label} />
                         ))}
                         <IconButton>
                           <AddIcon />
@@ -389,105 +250,32 @@ export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
                       isReadOnly={true}
                     />
                   </Grid>
-                  <Grid item container direction="column">
+                  <StyledTaskBlock item container direction="column">
                     <Grid item>
                       <Typography variant="subtitle2">Attachments</Typography>
                     </Grid>
                     <Grid item container direction="column">
                       {task?.attachments?.map((attachment) => (
-                        <Grid
-                          item
-                          container
+                        <Attachment
                           key={attachment.id}
-                          wrap="nowrap"
-                          sx={{
-                            '&:hover': {
-                              backgroundColor: '#091e420f',
-                            },
-                          }}
-                        >
-                          <Grid item>
-                            <img alt="Remy Sharp" src={attachment.path} />
-                          </Grid>
-                          <Grid item container direction="column">
-                            <Grid item>
-                              <Typography variant="body2">
-                                {attachment.name}
-                              </Typography>
-                            </Grid>
-                            <Grid item>
-                              <Typography variant="caption">
-                                <span>
-                                  Added{' '}
-                                  <span>
-                                    {formatDate(
-                                      new Date(attachment.createdAt),
-                                      'StandardWithHours',
-                                    )}
-                                  </span>
-                                </span>
-                                <span>
-                                  <AttachmentBtn>Comment</AttachmentBtn>
-                                </span>
-                                <span>
-                                  <AttachmentBtn>Download</AttachmentBtn>
-                                </span>
-                                <span>
-                                  <AttachmentBtn>Delete</AttachmentBtn>
-                                </span>
-                                <span>
-                                  <AttachmentBtn>Edit</AttachmentBtn>
-                                </span>
-                              </Typography>
-                            </Grid>
-                            <Grid item>
-                              <ButtonBase size="small">Make cover</ButtonBase>
-                            </Grid>
-                          </Grid>
-                        </Grid>
+                          attachment={attachment}
+                        />
                       ))}
                     </Grid>
-                  </Grid>
-                  <Grid item container direction="column">
+                  </StyledTaskBlock>
+                  <StyledTaskBlock item container direction="column">
                     {checkLists.map((checkList) => (
-                      <Grid item key={checkList.id}>
-                        <Grid item>
-                          <Typography variant="subtitle2">
-                            {checkList.name}
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          <LinearProgress
-                            variant="determinate"
-                            value={
-                              (checkList.items.filter((i) => i.checked).length /
-                                checkList.items.length) *
-                              100
-                            }
-                          />
-                        </Grid>
-                        <Grid item container direction="column">
-                          {checkList.items.map((item) => (
-                            <Grid item key={item.id}>
-                              <Grid item>
-                                <Typography variant="body2">
-                                  {item.name}
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                          ))}
-                        </Grid>
-                        <Grid item>
-                          <ButtonBase size="small" startIcon={<AddIcon />}>
-                            Add an item
-                          </ButtonBase>
-                        </Grid>
-                      </Grid>
+                      <CheckList key={checkList.id} checkList={checkList} />
                     ))}
-                  </Grid>
-                  <Grid item container direction="column">
-                    <Grid item>
-                      <Typography variant="subtitle2">Activity</Typography>
+                  </StyledTaskBlock>
+                  <StyledTaskBlock item container direction="column">
+                    <Grid item container justifyContent="space-between">
+                      <Grid item>
+                        <Typography variant="subtitle2">Activity</Typography>
+                      </Grid>
+                      <Grid item>
+                        <Button size="small">Show details</Button>
+                      </Grid>
                     </Grid>
                     <Grid item>
                       <Input
@@ -496,86 +284,11 @@ export default function TaskView({ open, onClose, taskId }: TaskViewProps) {
                       />
                     </Grid>
                     {task?.comments?.map((comment) => (
-                      <Grid item key={comment.id} container direction="column">
-                        <Grid item>
-                          <span>
-                            {comment.author.firstName +
-                              ' ' +
-                              comment.author.lastName}
-                          </span>
-                          <span>
-                            {formatDate(
-                              new Date(comment.createdAt),
-                              'StandardWithHours',
-                            )}
-                          </span>
-                        </Grid>
-                        <Grid item>
-                          <Typography variant="body2">
-                            {comment.message}
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          {/* emoji */}
-                          <ButtonBase size="small">Edit</ButtonBase>
-                          <ButtonBase size="small">Delete</ButtonBase>
-                        </Grid>
-                      </Grid>
+                      <TaskComment key={comment.id} comment={comment} />
                     ))}
-                  </Grid>
+                  </StyledTaskBlock>
                 </Grid>
-                <Grid container item xs={3}>
-                  <Grid
-                    item
-                    container
-                    direction="column"
-                    alignItems="flex-start"
-                  >
-                    <Typography variant="subtitle2">Add to card</Typography>
-                    <Button size="small" startIcon={<Person2Icon />}>
-                      Members
-                    </Button>
-                    <Button size="small" startIcon={<LabelIcon />}>
-                      Labels
-                    </Button>
-                    <Button size="small" startIcon={<ChecklistIcon />}>
-                      Checklist
-                    </Button>
-                    <Button size="small" startIcon={<ScheduleIcon />}>
-                      Dates
-                    </Button>
-                    <Button size="small" startIcon={<AttachmentIcon />}>
-                      Attachment
-                    </Button>
-                    <Button size="small" startIcon={<PowerInputIcon />}>
-                      Custom fields
-                    </Button>
-                  </Grid>
-                  <Grid
-                    item
-                    container
-                    direction="column"
-                    alignItems="flex-start"
-                  >
-                    <Typography variant="subtitle2">Actions</Typography>
-                    <Button size="small" startIcon={<EastIcon />}>
-                      Move
-                    </Button>
-                    <Button size="small" startIcon={<ContentCopyIcon />}>
-                      Copy
-                    </Button>
-                    <Button size="small" startIcon={<DashboardCustomizeIcon />}>
-                      Make template
-                    </Button>
-                    <Divider flexItem sx={{ marginTop: '8px' }} />
-                    <Button size="small" startIcon={<ArchiveIcon />}>
-                      Archive
-                    </Button>
-                    <Button size="small" startIcon={<ShareIcon />}>
-                      Share
-                    </Button>
-                  </Grid>
-                </Grid>
+                <RightSideBtns />
               </Grid>
             </Grid>
           </Grid>

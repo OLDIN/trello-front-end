@@ -37,16 +37,16 @@ import InputBase from '@mui/material/InputBase';
 
 import './Home.scss';
 import TaskView from './elements/TaskView/TaskView';
-import boardsApi from '../../services/api/endpoints/boards';
-import taskListsApi from '../../services/api/endpoints/task-lists';
-import tasksApi from '../../services/api/endpoints/tasks';
+import { boardsApi } from 'services/api/endpoints';
+import taskListsApi from 'services/api/endpoints/task-lists';
+import tasksApi from 'services/api/endpoints/tasks';
 import { TaskListItem } from './elements/TaskListItem';
-import { useTaskStore } from '../../store/boards/tasks/task.store';
-import { IUser } from '../../types/User';
-import usersApi from '../../services/api/endpoints/users';
-import { Task } from '../../types/Task';
-import { Board } from '../../types/Board';
-import { useBoardStore } from '../../store/boards/board.store';
+import { useTaskStore } from 'store/boards/tasks/task.store';
+import { IUser } from 'types/User';
+import usersApi from 'services/api/endpoints/users';
+import { Task } from 'types/Task';
+import { Board } from 'types/Board';
+import { useBoardStore } from 'store/boards/board.store';
 
 const drawerWidth = 240;
 
