@@ -1,4 +1,5 @@
 import type { AxiosResponse } from 'axios';
+import { IFile } from '../../../types/File';
 import axios from '../axios';
 
 export interface IUploadData {
@@ -6,10 +7,7 @@ export interface IUploadData {
 }
 
 export interface IUploadResponse {
-  file: {
-    path: string;
-    id: string;
-  };
+  file: IFile;
 }
 
 export default {

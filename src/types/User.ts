@@ -14,7 +14,7 @@ export interface IUser {
   id: number;
   firstName: string;
   lastName: string;
-  photo?: IFile;
+  photo?: IFile | null;
   email: string;
   role?: IUserRole;
   status?: IUserStatus;

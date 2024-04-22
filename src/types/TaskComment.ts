@@ -1,3 +1,5 @@
+import { IUser } from './User';
+
 export interface TaskComment {
   id: number;
   taskId: number;
@@ -5,4 +7,5 @@ export interface TaskComment {
   message: string;
   createdAt: string;
   updatedAt: string;
+  author: IUser;
 }

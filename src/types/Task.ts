@@ -1,6 +1,8 @@
 import { Board } from './Board';
 import { IFile } from './File';
 import { TaskComment } from './TaskComment';
+import { TaskLabel } from './TaskLabel';
+import { TaskList } from './TaskList';
 import { IUser } from './User';
 
 export enum TaskPriorityEnum {
@@ -25,4 +27,6 @@ export interface Task {
   cover?: IFile;
   attachments?: IFile[];
   comments?: TaskComment[];
+  taskList?: TaskList;
+  labels?: TaskLabel[];
 }

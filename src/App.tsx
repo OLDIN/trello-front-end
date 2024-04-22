@@ -8,16 +8,28 @@ import {
   GlobalStyles,
   ThemeProvider,
   createTheme,
+  Box,
 } from '@mui/material';
 
 import './App.scss';
 import Routers from './routes/Routes';
 import Header from './components/Header/Header';
-import { orange } from '@mui/material/colors';
+import { useBoardStore } from './store/boards/board.store';
 
 const theme = createTheme({
   palette: {
     mode: 'light',
+    text: {
+      primary: '#44546f',
+    },
+    primary: {
+      main: 'hsl(206,14.1%,73%)',
+    },
+  },
+  typography: {
+    fontFamily:
+      '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Droid Sans,Helvetica Neue,sans-serif',
+    fontSize: 14,
   },
   // status: {
   //   danger: orange[500],
@@ -25,12 +37,28 @@ const theme = createTheme({
 });
 
 function App() {
+  const { selectedBoardBackgroundImagePath } = useBoardStore();
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <GlobalStyles styles={{ html: { WebkitFontSmoothing: 'auto' } }} />
-      <Header />
-      <Routers />
+      <GlobalStyles
+        styles={{
+          html: { WebkitFontSmoothing: 'auto' },
+          body: {
+            overflow: 'hidden',
+          },
+        }}
+      />
+      <Box
+        sx={{
+          backgroundImage: selectedBoardBackgroundImagePath
+            ? `url(${selectedBoardBackgroundImagePath})`
+            : 'none',
+        }}
+      >
+        <Header />
+        <Routers />
+      </Box>
     </ThemeProvider>
   );
 }

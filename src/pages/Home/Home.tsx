@@ -4,7 +4,6 @@ import {
   Avatar,
   AvatarGroup,
   Box,
-  Container,
   Divider,
   Drawer,
   IconButton,
@@ -13,7 +12,6 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Paper,
   Stack,
   styled,
   Toolbar,
@@ -42,13 +40,13 @@ import TaskView from './elements/TaskView/TaskView';
 import boardsApi from '../../services/api/endpoints/boards';
 import taskListsApi from '../../services/api/endpoints/task-lists';
 import tasksApi from '../../services/api/endpoints/tasks';
-import { TaskList } from '../../types/TaskList';
 import { TaskListItem } from './elements/TaskListItem';
 import { useTaskStore } from '../../store/boards/tasks/task.store';
 import { IUser } from '../../types/User';
-import usersApi, { IUserResponse } from '../../services/api/endpoints/users';
+import usersApi from '../../services/api/endpoints/users';
 import { Task } from '../../types/Task';
 import { Board } from '../../types/Board';
+import { useBoardStore } from '../../store/boards/board.store';
 
 const drawerWidth = 240;
 
@@ -79,7 +77,6 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
   position: 'relative',
-  marginTop: '68px',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -101,7 +98,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
   justifyContent: 'flex-end',
-  marginTop: '68px',
 }));
 
 const Search = styled('div')(({ theme }) => ({
@@ -154,10 +150,18 @@ export default function Home() {
   >(undefined);
 
   const { taskModalSettings, setTaskModalSettings } = useTaskStore();
+  const { setSelectedBoardBackgroundImagePath } = useBoardStore();
 
   const { data: boards = [] } = useQuery({
     queryKey: ['boards'],
-    queryFn: () => boardsApi.getBoards(),
+    queryFn: () =>
+      boardsApi.getBoards({
+        join: [
+          {
+            field: 'backgroundImage',
+          },
+        ],
+      }),
   });
 
   const { data: taskLists = [] } = useQuery({
@@ -279,6 +283,10 @@ export default function Home() {
   useEffect(() => {
     if (boards.length) {
       setSelectedBoard(boards[0]);
+
+      setSelectedBoardBackgroundImagePath(
+        boards[0].backgroundImage?.path ?? null,
+      );
     }
   }, [boards]);
 
@@ -292,6 +300,7 @@ export default function Home() {
 
   const handleBoardClick = (board: Board) => {
     setSelectedBoard(board);
+    setSelectedBoardBackgroundImagePath(board.backgroundImage?.path ?? null);
   };
 
   const toggleSelectedAssigneeId = (id: number) => {
@@ -333,7 +342,7 @@ export default function Home() {
   };
 
   return (
-    <>
+    <Box>
       <AppBar open={open}>
         <Toolbar
           sx={{
@@ -412,6 +421,7 @@ export default function Home() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            marginTop: '68.5px',
           },
         }}
         variant="persistent"
@@ -457,38 +467,39 @@ export default function Home() {
           ))}
         </List>
       </Drawer>
-      <Container maxWidth="lg" style={{ marginTop: 20 }}>
-        <Main open={open}>
-          <Stack
-            direction="row"
-            spacing={2}
-            style={{ overflow: 'scroll', minHeight: '100vh' }}
-          >
-            <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
-              {taskLists.map((taskListItem) => (
-                <TaskListItem
-                  key={taskListItem.id}
-                  taskListItem={taskListItem}
-                  tasks={tasksByTaskListIdMap.get(taskListItem.id) ?? []}
-                />
-              ))}
-            </DragDropContext>
-            {/* <Paper>+ Add another list</Paper> */}
-          </Stack>
-        </Main>
-        {taskModalSettings.taskId && (
-          <TaskView
-            open={taskModalSettings.isOpen}
-            taskId={taskModalSettings.taskId}
-            onClose={() =>
-              setTaskModalSettings({
-                isOpen: false,
-                taskId: null,
-              })
-            }
-          />
-        )}
-      </Container>
-    </>
+      {/* <Container maxWidth={false} style={{ marginTop: 20 }}> */}
+      <Main open={open} sx={{ marginLeft: open ? '240px' : 0 }}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{ paddingBottom: '8px' }}
+          style={{ overflow: 'scroll', minHeight: '100vh' }}
+        >
+          <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
+            {taskLists.map((taskListItem) => (
+              <TaskListItem
+                key={taskListItem.id}
+                taskListItem={taskListItem}
+                tasks={tasksByTaskListIdMap.get(taskListItem.id) ?? []}
+              />
+            ))}
+          </DragDropContext>
+          {/* <Paper>+ Add another list</Paper> */}
+        </Stack>
+      </Main>
+      {taskModalSettings.taskId && (
+        <TaskView
+          open={taskModalSettings.isOpen}
+          taskId={taskModalSettings.taskId}
+          onClose={() =>
+            setTaskModalSettings({
+              isOpen: false,
+              taskId: null,
+            })
+          }
+        />
+      )}
+      {/* </Container> */}
+    </Box>
   );
 }

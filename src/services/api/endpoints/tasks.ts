@@ -16,13 +16,15 @@ export default {
     axios
       .patch<Task, AxiosResponse<Task>>(`/v1/tasks/${id}`, data)
       .then((res) => res.data),
-  getById: (id: number) =>
-    axios
-      .get<
-        Task,
-        AxiosResponse<Task>
-      >(`/v1/tasks/${id}?join=assignee&join=assignee.photo&join=cover&join=attachments`)
-      .then((res) => res.data),
+  getById: (id: number, query: Omit<CreateQueryParams, 'filter'>) => {
+    const qb = RequestQueryBuilder.create(query);
+    const queryString = qb.query();
+
+    return axios
+      .get<Task, AxiosResponse<Task>>(`/v1/tasks/${id}?${queryString}`)
+      .then((res) => res.data);
+  },
+
   list: (query: CreateQueryParams) => {
     const qb = RequestQueryBuilder.create(query);
     const queryString = qb.query();

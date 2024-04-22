@@ -32,6 +32,7 @@ const Task = styled(ListItem)(({ theme }) => ({
   cursor: 'pointer',
   color: '#172b4d',
   overflow: 'hidden',
+  flex: '1 0 100%',
 }));
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
@@ -74,7 +75,7 @@ export function TaskCard({ task, index }: TaskCardProps) {
           >
             {task.cover && (
               <Box>
-                <TaskCover src={task.cover.path} alt="Task cover" />
+                <TaskCover src={task.cover.path} />
               </Box>
             )}
             <Box
