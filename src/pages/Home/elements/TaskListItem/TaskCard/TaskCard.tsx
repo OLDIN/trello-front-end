@@ -1,5 +1,6 @@
 import React from 'react';
 import { Draggable } from 'react-beautiful-dnd';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { useTaskStore } from '../../../../../store/boards/tasks/task.store';
 
@@ -28,6 +29,16 @@ interface TaskCardProps {
 
 export function TaskCard({ task, index }: TaskCardProps) {
   const { setTaskModalSettings } = useTaskStore();
+  const { boardId } = useParams();
+  const navigate = useNavigate();
+
+  const handleTaskClick = (taskId: number) => {
+    setTaskModalSettings({
+      isOpen: true,
+      taskId,
+    });
+    navigate(`/boards/${boardId}/tasks/${taskId}`);
+  };
 
   return (
     <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
@@ -37,12 +48,7 @@ export function TaskCard({ task, index }: TaskCardProps) {
           key={task.id}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          onClick={() =>
-            setTaskModalSettings({
-              isOpen: true,
-              taskId: task.id,
-            })
-          }
+          onClick={() => handleTaskClick(task.id)}
         >
           <Box
             sx={{

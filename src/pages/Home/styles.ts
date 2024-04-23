@@ -1,4 +1,4 @@
-import { drawerWidth } from './constants';
+import { drawerWidth } from './constants/drawer.constants';
 
 import {
   alpha,

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import tasksApi from 'services/api/endpoints/tasks';
@@ -11,7 +12,7 @@ import { useTaskStore } from 'store/boards/tasks/task.store';
 import { useBoards, useTaskLists } from './hooks';
 import { useTasks } from './hooks/useTasks';
 import { useUsers } from './hooks/useUsers';
-import { drawerWidth } from './constants';
+import { drawerWidth } from './constants/drawer.constants';
 import { TaskListItem } from './elements/TaskListItem';
 import { TaskView } from './elements/TaskView';
 import {
@@ -53,6 +54,8 @@ import './Home.scss';
 export default function Home() {
   const theme = useTheme();
   const queryClient = useQueryClient();
+  const { boardId, taskId } = useParams();
+  const navigate = useNavigate();
 
   const [open, setOpen] = useState(true);
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
@@ -103,6 +106,34 @@ export default function Home() {
     }
   }, [boards, setSelectedBoardBackgroundImagePath]);
 
+  useEffect(() => {
+    if (boards.length && boardId) {
+      const board = boards.find((b) => b.id === parseInt(boardId));
+
+      if (board) {
+        setSelectedBoard(board);
+        setSelectedBoardBackgroundImagePath(
+          board.backgroundImage?.path ?? null,
+        );
+      }
+    } else if (boards.length && !boardId) {
+      setSelectedBoard(boards[0]);
+      setSelectedBoardBackgroundImagePath(
+        boards[0].backgroundImage?.path ?? null,
+      );
+      navigate(`/boards/${boards[0].id}`);
+    }
+  }, [boardId, boards, navigate, setSelectedBoardBackgroundImagePath]);
+
+  useEffect(() => {
+    if (taskId) {
+      setTaskModalSettings({
+        isOpen: true,
+        taskId: parseInt(taskId),
+      });
+    }
+  }, [setTaskModalSettings, taskId]);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -114,6 +145,7 @@ export default function Home() {
   const handleBoardClick = (board: Board) => {
     setSelectedBoard(board);
     setSelectedBoardBackgroundImagePath(board.backgroundImage?.path ?? null);
+    navigate(`/boards/${board.id}`);
   };
 
   const toggleSelectedAssigneeId = (id: number) => {
@@ -150,6 +182,14 @@ export default function Home() {
         return newTaskLists;
       },
     );
+  };
+
+  const handleTaskViewClose = () => {
+    setTaskModalSettings({
+      isOpen: false,
+      taskId: null,
+    });
+    navigate(`/boards/${boardId}`);
   };
 
   return (
@@ -304,12 +344,7 @@ export default function Home() {
         <TaskView
           open={taskModalSettings.isOpen}
           taskId={taskModalSettings.taskId}
-          onClose={() =>
-            setTaskModalSettings({
-              isOpen: false,
-              taskId: null,
-            })
-          }
+          onClose={() => handleTaskViewClose()}
         />
       )}
       {/* </Container> */}

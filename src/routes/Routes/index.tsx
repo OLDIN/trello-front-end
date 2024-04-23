@@ -39,6 +39,16 @@ export default function Routers() {
         <Route path="/profile" element={<Profile />} />
       </Route>
 
+      <Route element={<PrivateRoute />}>
+        <Route path="/boards" element={<Home />} />
+      </Route>
+      <Route element={<PrivateRoute />}>
+        <Route path="/boards/:boardId" element={<Home />} />
+      </Route>
+      <Route element={<PrivateRoute />}>
+        <Route path="/boards/:boardId/tasks/:taskId" element={<Home />} />
+      </Route>
+
       <Route path="/not-found" element={<NotFound />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
