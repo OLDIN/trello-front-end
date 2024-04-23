@@ -21,7 +21,6 @@ import {
   Input,
   Paper,
   Typography,
-  useTheme,
 } from '@mui/material';
 
 import { setPersistUser } from '../../providers/AuthProvider/helpers';

@@ -3,7 +3,7 @@ import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import tasksApi from 'services/api/endpoints/tasks';
+import tasksApi, { IPartialUpdateTask } from 'services/api/endpoints/tasks';
 import { Board } from 'types/Board';
 import { ITask } from 'types/Task';
 import { useBoardStore } from 'store/boards/board.store';
@@ -79,7 +79,8 @@ export default function Home() {
   });
   const { mutate: taskUpdateMutate } = useMutation({
     mutationKey: ['taskLists', { boardId: selectedBoard?.id }],
-    mutationFn: tasksApi.partialUpdate,
+    mutationFn: ({ id, ...data }: IPartialUpdateTask & { id: number }) =>
+      tasksApi.partialUpdate(id, data),
   });
 
   const tasksByTaskListIdMap = useMemo(() => {

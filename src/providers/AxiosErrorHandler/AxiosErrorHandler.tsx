@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
 
@@ -17,7 +17,7 @@ interface AxiosErrorHandlerProps {
 const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
   const { setToken, logOut } = useAuth();
   const queryClient = useQueryClient();
-  const [snackbarSettings, setSnackbarSettings] = React.useState<{
+  const [snackbarSettings, setSnackbarSettings] = useState<{
     open: boolean;
     message: string | null;
   }>({

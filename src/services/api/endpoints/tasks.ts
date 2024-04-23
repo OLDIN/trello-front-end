@@ -8,12 +8,14 @@ import {
   RequestQueryBuilder,
 } from '@dataui/crud-request';
 
-export type PartialUpdateTask = Partial<
-  Pick<ITask, 'name' | 'description' | 'taskListId' | 'id'>
->;
+export interface IPartialUpdateTask
+  extends Partial<Pick<ITask, 'name' | 'description' | 'taskListId' | 'id'>> {
+  attachmentsIds?: string[];
+  fileCoverId?: string | null;
+}
 
 export default {
-  partialUpdate: ({ id, ...data }: PartialUpdateTask) =>
+  partialUpdate: (id: number, data: IPartialUpdateTask) =>
     axios
       .patch<ITask, AxiosResponse<ITask>>(`/v1/tasks/${id}`, data)
       .then((res) => res.data),

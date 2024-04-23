@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import type { TaskCheckListItem } from '../../../../../types/TaskChecklist';
 
@@ -25,7 +25,7 @@ const CheckListItemWrapper = styled(Grid)`
 `;
 
 export function CheckListItem({ item }: CheckListItemProps) {
-  const [isHover, setIsHover] = React.useState(false);
+  const [isHover, setIsHover] = useState(false);
 
   return (
     <CheckListItemWrapper

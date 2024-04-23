@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 
-// import schema from './validation';
 import api from '../../services/api';
 
 import useAuth from '../../hooks/useAuth';
 
-import { Link, Sheet, Typography } from '@mui/joy';
+import { Sheet, Typography } from '@mui/joy';
 import {
   Button,
   CssBaseline,
@@ -22,14 +20,13 @@ export default function Registration() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     setError,
   } = useForm({
-    // resolver: yupResolver(schema),
+    // FIXME: add validation schema
   });
   const auth = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
   const onSubmit = async (data: unknown) => {

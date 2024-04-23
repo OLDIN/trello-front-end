@@ -2,7 +2,9 @@ import { CSSProperties } from 'react';
 
 import { Box, css, styled } from '@mui/material';
 
-export const TextEditorWrapper = styled(Box)<{
+export const TextEditorWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isReadOnly',
+})<{
   isReadOnly?: boolean;
   height: CSSProperties['height'];
   minHeight: CSSProperties['minHeight'];
@@ -31,7 +33,7 @@ export const TextEditorWrapper = styled(Box)<{
         border: none;
         padding: 0;
 
-        & > *:first-child {
+        & > *:first-of-type {
           margin-top: 0;
         }
       `}

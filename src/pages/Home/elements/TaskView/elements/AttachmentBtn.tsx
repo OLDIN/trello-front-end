@@ -18,12 +18,13 @@ const AttachmentWrapper = styled('span')`
 
 interface AttachmentBtnProps {
   children: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 }
 
-export function AttachmentBtn({ children }: AttachmentBtnProps) {
+export function AttachmentBtn({ children, onClick }: AttachmentBtnProps) {
   return (
     <AttachmentWrapper>
-      <AttachmentLink>{children}</AttachmentLink>;
+      <AttachmentLink onClick={onClick}>{children}</AttachmentLink>;
     </AttachmentWrapper>
   );
 }

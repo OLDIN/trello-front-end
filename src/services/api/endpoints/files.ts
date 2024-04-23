@@ -20,4 +20,6 @@ export default {
         FormData
       >('/v1/files/upload', data)
       .then((res) => res.data),
+  delete: (id: string) =>
+    axios.delete(`/v1/files/${id}`).then((res) => res.data),
 };

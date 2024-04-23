@@ -25,7 +25,7 @@ interface CreateUserPayloadForm
 
 export default function EditToolbar() {
   const [open, setOpen] = useState(false);
-  const [avatarPreview, setAvatarPreview] = React.useState<string>(
+  const [avatarPreview, setAvatarPreview] = useState<string>(
     'https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png',
   );
   const queryClient = useQueryClient();
@@ -39,8 +39,7 @@ export default function EditToolbar() {
     resolver: yupResolver<CreateUserPayloadForm>(schema),
   });
 
-  const { mutateAsync: uploadPhotoMutate, isPending: isPendingUploadAvatar } =
-    useFileUpload();
+  const { mutateAsync: uploadPhotoMutate } = useFileUpload();
   const { mutate: createUserMutate } = useMutation({
     mutationFn: (data: CreateUserPayload) => usersApi.create(data),
     onSuccess: () => {

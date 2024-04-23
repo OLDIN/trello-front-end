@@ -1,4 +1,4 @@
-import React, { Dispatch } from 'react';
+import React, { Dispatch, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -62,7 +62,7 @@ export default function UserDetails({
     resolver: yupResolver<UpdateUserPayloadForm>(schema),
   });
   const queryClient = useQueryClient();
-  const [avatarPreview, setAvatarPreview] = React.useState<string>(
+  const [avatarPreview, setAvatarPreview] = useState<string>(
     user.photo?.path ??
       'https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png',
   );
