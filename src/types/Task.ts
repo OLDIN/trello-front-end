@@ -11,7 +11,7 @@ export enum TaskPriorityEnum {
   HIGH = 'high',
 }
 
-export interface Task {
+export interface ITask {
   id: number;
   name: string;
   position: number;

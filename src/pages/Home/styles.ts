@@ -1,6 +1,12 @@
 import { drawerWidth } from './constants';
 
-import { alpha, Input, styled } from '@mui/material';
+import {
+  alpha,
+  Divider as DividerBase,
+  Input,
+  ListItemButton,
+  styled,
+} from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 interface AppBarProps extends MuiAppBarProps {
@@ -98,3 +104,25 @@ export const DrawerHeader = styled('div')(({ theme }) => ({
   backgroundColor: 'transparent',
   backdropFilter: 'blur(6px)',
 }));
+
+export const DrawerListItemButton = styled(ListItemButton)`
+  &.Mui-selected,
+  &.Mui-selected:hover {
+    background-color: hsla(0, 0%, 100%, 0.16);
+  }
+
+  &:hover {
+    background-color: hsla(0, 0%, 0%, 0.08);
+  }
+`;
+
+export const Divider = styled(DividerBase)`
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.003em;
+  line-height: 24px;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;

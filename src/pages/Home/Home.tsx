@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import tasksApi from 'services/api/endpoints/tasks';
 import { Board } from 'types/Board';
-import { Task } from 'types/Task';
+import { ITask } from 'types/Task';
 import { useBoardStore } from 'store/boards/board.store';
 import { useTaskStore } from 'store/boards/tasks/task.store';
 
@@ -16,7 +16,9 @@ import { TaskListItem } from './elements/TaskListItem';
 import { TaskView } from './elements/TaskView';
 import {
   AppBar,
+  Divider,
   DrawerHeader,
+  DrawerListItemButton,
   Main,
   Search,
   SearchIconWrapper,
@@ -34,12 +36,10 @@ import {
   Avatar,
   AvatarGroup,
   Box,
-  Divider,
   Drawer,
   IconButton,
   List,
   ListItem,
-  ListItemButton,
   ListItemIcon,
   ListItemText,
   Stack,
@@ -80,7 +80,7 @@ export default function Home() {
   });
 
   const tasksByTaskListIdMap = useMemo(() => {
-    const map = new Map<number, Task[]>();
+    const map = new Map<number, ITask[]>();
 
     tasks?.forEach((task) => {
       if (map.has(task.taskListId)) {
@@ -120,15 +120,13 @@ export default function Home() {
     setSelectedAssigneeId((prev) => (prev === id ? undefined : id));
   };
 
-  const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-
+  const onDragEnd = ({ destination, draggableId }: DropResult) => {
     // dropped outside the list
     if (!destination) {
       return;
     }
 
-    const task = tasks.find((task) => task.id === +result.draggableId);
+    const task = tasks.find((task) => task.id === +draggableId);
 
     if (!task) {
       return;
@@ -141,7 +139,7 @@ export default function Home() {
 
     queryClient.setQueryData(
       ['tasks', { boardId: selectedBoard?.id, assigneeId: selectedAssigneeId }],
-      (oldData: Task[]) => {
+      (oldData: ITask[]) => {
         const newTaskLists = [...oldData];
         const taskIndex = newTaskLists.findIndex((t) => t.id === task.id);
         newTaskLists[taskIndex] = {
@@ -235,6 +233,8 @@ export default function Home() {
             width: drawerWidth,
             boxSizing: 'border-box',
             marginTop: '68.5px',
+            backgroundColor: 'hsla(52,6.8%,34.6%,0.9)',
+            color: '#FFFFFF',
           },
         }}
         variant="persistent"
@@ -254,12 +254,12 @@ export default function Home() {
         <List>
           {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+              <DrawerListItemButton>
                 <ListItemIcon>
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} />
-              </ListItemButton>
+              </DrawerListItemButton>
             </ListItem>
           ))}
         </List>
@@ -267,7 +267,7 @@ export default function Home() {
         <List>
           {boards.map((board) => (
             <ListItem key={board.id} disablePadding>
-              <ListItemButton
+              <DrawerListItemButton
                 selected={selectedBoard?.id === board.id}
                 onClick={() => handleBoardClick(board)}
               >
@@ -275,7 +275,7 @@ export default function Home() {
                   <DashboardCustomize />
                 </ListItemIcon>
                 <ListItemText primary={board.name} />
-              </ListItemButton>
+              </DrawerListItemButton>
             </ListItem>
           ))}
         </List>

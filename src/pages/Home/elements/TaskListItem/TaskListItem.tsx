@@ -1,60 +1,24 @@
 import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import { useQuery } from '@tanstack/react-query';
 
-import tasksApi from '../../../../services/api/endpoints/tasks';
-
-import { Task } from '../../../../types/Task';
+import { ITask } from '../../../../types/Task';
 import { TaskList } from '../../../../types/TaskList';
+import { Item, ItemName, TaskListItemOptionsBtn } from './styles';
 
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import {
-  Box,
-  Button,
-  IconButton,
-  List,
-  Paper,
-  styled,
-  Typography,
-} from '@mui/material';
+import { Box, Button, List, Typography } from '@mui/material';
 
 import { TaskCard } from './TaskCard';
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#ebecf0',
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  minWidth: '272px',
-  height: '100%',
-
-  borderRadius: '12px',
-  color: '#44546f',
-}));
-
-const ItemName = styled(Typography)`
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  margin: 0;
-  padding: 6px 8px 6px 12px;
-  background-color: transparent;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  white-space: normal;
-  cursor: pointer;
-`;
-
 interface TaskListItemProps {
   taskListItem: TaskList;
-  tasks: Task[];
+  tasks: ITask[];
 }
 
 export function TaskListItem({ taskListItem: list, tasks }: TaskListItemProps) {
   return (
     <Droppable key={list.id} droppableId={list.id.toString()}>
-      {(provided, snapshot) => (
+      {(provided) => (
         <Item elevation={4} ref={provided.innerRef}>
           <Box
             sx={{
@@ -65,9 +29,9 @@ export function TaskListItem({ taskListItem: list, tasks }: TaskListItemProps) {
             <ItemName variant="subtitle1" gutterBottom>
               {list.name}
             </ItemName>
-            <IconButton>
+            <TaskListItemOptionsBtn>
               <MoreHorizIcon />
-            </IconButton>
+            </TaskListItemOptionsBtn>
           </Box>
 
           <List

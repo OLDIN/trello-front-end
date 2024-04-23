@@ -1,7 +1,7 @@
 import axios from '../axios';
 import { AxiosResponse } from 'axios';
 
-import { Task } from '../../../types/Task';
+import { ITask } from '../../../types/Task';
 
 import {
   type CreateQueryParams,
@@ -9,20 +9,20 @@ import {
 } from '@dataui/crud-request';
 
 export type PartialUpdateTask = Partial<
-  Pick<Task, 'name' | 'description' | 'taskListId' | 'id'>
+  Pick<ITask, 'name' | 'description' | 'taskListId' | 'id'>
 >;
 
 export default {
   partialUpdate: ({ id, ...data }: PartialUpdateTask) =>
     axios
-      .patch<Task, AxiosResponse<Task>>(`/v1/tasks/${id}`, data)
+      .patch<ITask, AxiosResponse<ITask>>(`/v1/tasks/${id}`, data)
       .then((res) => res.data),
   getById: (id: number, query: Omit<CreateQueryParams, 'filter'>) => {
     const qb = RequestQueryBuilder.create(query);
     const queryString = qb.query();
 
     return axios
-      .get<Task, AxiosResponse<Task>>(`/v1/tasks/${id}?${queryString}`)
+      .get<ITask, AxiosResponse<ITask>>(`/v1/tasks/${id}?${queryString}`)
       .then((res) => res.data);
   },
 
@@ -31,7 +31,7 @@ export default {
     const queryString = qb.query();
 
     return axios
-      .get<Task[], AxiosResponse<Task[]>>(`/v1/tasks?${queryString}`)
+      .get<ITask[], AxiosResponse<ITask[]>>(`/v1/tasks?${queryString}`)
       .then((res) => res.data);
   },
 };

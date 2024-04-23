@@ -97,7 +97,7 @@ export default function Header() {
       position="static"
       sx={{
         backdropFilter: 'blur(6px)',
-        backgroundColor: 'transparent',
+        backgroundColor: 'hsl(52,6.8%,29.6%)',
         position: 'relative',
       }}
     >
@@ -107,7 +107,7 @@ export default function Header() {
             sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
           />
           <Typography
-            variant="h6"
+            variant="h5"
             noWrap
             component="a"
             href="/"
@@ -116,7 +116,7 @@ export default function Header() {
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.3rem',
+              letterSpacing: '.1rem',
               color: 'inherit',
               textDecoration: 'none',
             }}
