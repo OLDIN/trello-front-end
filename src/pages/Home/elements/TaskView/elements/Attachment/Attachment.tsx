@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { filesApi, tasksApi } from 'services/api';
+import { QueryKey } from 'enums/QueryKey.enum';
 import { IFile } from 'types/File';
 import { ITask } from 'types/Task';
 import { formatDate } from 'utils/formatDate';
@@ -30,11 +31,10 @@ export function Attachment({
   const queryClient = useQueryClient();
 
   const { mutate: deleteAttachment, isPending: isPendingDelete } = useMutation({
-    mutationKey: ['deleteAttachment', attachment.id],
     mutationFn: () => filesApi.delete(attachment.id),
     onSuccess: () => {
       setAnchorEl(null);
-      queryClient.setQueryData(['task', taskId], (oldTask: ITask) => ({
+      queryClient.setQueryData([QueryKey.TASKS, taskId], (oldTask: ITask) => ({
         ...oldTask,
         attachments: (oldTask?.attachments ?? []).filter(
           (oldAttachment) => oldAttachment.id !== attachment.id,
@@ -44,18 +44,17 @@ export function Attachment({
   });
 
   const { mutate: toggleCover } = useMutation({
-    mutationKey: ['toggleCover', attachment.id],
     mutationFn: () =>
       tasksApi.partialUpdate(taskId, {
         fileCoverId: attachment.id === taskCoverId ? null : attachment.id,
       }),
     onSuccess: () => {
-      queryClient.setQueryData(['task', taskId], (oldTask: ITask) => ({
+      queryClient.setQueryData([QueryKey.TASKS, taskId], (oldTask: ITask) => ({
         ...oldTask,
         cover: attachment.id === taskCoverId ? null : attachment,
       }));
       queryClient.invalidateQueries({
-        queryKey: ['tasks'],
+        queryKey: [QueryKey.TASKS],
         refetchType: 'active',
       });
     },

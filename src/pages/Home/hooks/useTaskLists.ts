@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { taskListsApi } from 'services/api';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 interface IUseTaskLists {
   boardId: number;
@@ -8,7 +9,7 @@ interface IUseTaskLists {
 
 export function useTaskLists({ boardId }: IUseTaskLists) {
   return useQuery({
-    queryKey: ['taskLists', { boardId }],
+    queryKey: [QueryKey.TASK_LISTS, { boardId }],
     queryFn: () => taskListsApi.getAll(boardId),
     enabled: !!boardId,
   });

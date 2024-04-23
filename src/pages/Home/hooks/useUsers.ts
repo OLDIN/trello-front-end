@@ -1,6 +1,7 @@
 import { type DefaultError, useQuery } from '@tanstack/react-query';
 
 import { usersApi } from 'services/api';
+import { QueryKey } from 'enums/QueryKey.enum';
 import type { IUser } from 'types/User';
 
 interface IUseUsers {
@@ -19,7 +20,7 @@ export function useUsers({ boardId }: IUseUsers) {
       },
     ]
   >({
-    queryKey: ['users', { boardId }],
+    queryKey: [QueryKey.USERS, { boardId }],
     queryFn: () =>
       usersApi.listSimple({
         filter: {

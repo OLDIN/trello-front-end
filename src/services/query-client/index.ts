@@ -10,7 +10,8 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       staleTime: defaultStaleTime,
       gcTime: defaultCacheTime,
-      retry: 0, // retry attempts on failed request
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retry: 5, // retry attempts on failed request
     },
   },
 });

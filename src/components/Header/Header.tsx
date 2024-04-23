@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import authApi from '../../services/api/endpoints/auth';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import useAuth from '../../hooks/useAuth';
 import type { IProfile } from '../../types/Profile';
@@ -54,7 +55,7 @@ export default function Header() {
   const { token, logOut } = useAuth();
   const queryClient = useQueryClient();
   const { data: profile } = useQuery({
-    queryKey: ['me'],
+    queryKey: [QueryKey.ME],
     queryFn: authApi.getProfile,
     enabled: !!token,
   });
@@ -63,7 +64,7 @@ export default function Header() {
   useEffect(() => {
     if (token) {
       queryClient.invalidateQueries({
-        queryKey: ['me'],
+        queryKey: [QueryKey.ME],
       });
     }
   }, [queryClient, token]);

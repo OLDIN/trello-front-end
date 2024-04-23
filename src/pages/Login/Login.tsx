@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import api from '../../services/api';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import useAuth from '../../hooks/useAuth';
 
@@ -39,7 +40,7 @@ export default function Login() {
       token,
       refreshToken,
     });
-    queryClient.setQueryData(['me'], user);
+    queryClient.setQueryData([QueryKey.ME], user);
     setPersistUser(user);
   };
 

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import tasksApi from '../../../../../services/api/endpoints/tasks';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 interface IUseTaskDetails {
   taskId: number;
@@ -8,7 +9,7 @@ interface IUseTaskDetails {
 
 export function useTaskDetails({ taskId }: IUseTaskDetails) {
   return useQuery({
-    queryKey: ['task', taskId],
+    queryKey: [QueryKey.TASKS, taskId],
     queryFn: () =>
       tasksApi.getById(taskId, {
         join: [

@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import usersApi, {
   type CreateUserPayload,
 } from '../../../services/api/endpoints/users';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import useFileUpload from '../../../hooks/useFileUpload/useFileUpload';
 
@@ -44,7 +45,7 @@ export default function EditToolbar() {
     mutationFn: (data: CreateUserPayload) => usersApi.create(data),
     onSuccess: () => {
       queryClient.refetchQueries({
-        queryKey: ['users'],
+        queryKey: [QueryKey.USERS],
       });
       setOpen(false);
       reset();

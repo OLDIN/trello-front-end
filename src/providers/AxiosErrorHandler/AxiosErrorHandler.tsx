@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
 
 import axiosInstance from '../../services/api/axios';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import useAuth from '../../hooks/useAuth';
 
@@ -96,7 +97,7 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
         (response) => response,
         async () => {
           console.log('interceptor');
-          queryClient.setQueryData(['me'], null);
+          queryClient.setQueryData([QueryKey.ME], null);
         },
       );
       axiosInstance.interceptors.response.eject(responseInterceptor);

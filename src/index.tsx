@@ -19,16 +19,16 @@ const root = createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AxiosErrorHandler>
-          <Router>
+      <Router>
+        <AuthProvider>
+          <AxiosErrorHandler>
             <SnackbarProvider maxSnack={3}>
               <App />
             </SnackbarProvider>
             <ReactQueryDevtools initialIsOpen={false} />
-          </Router>
-        </AxiosErrorHandler>
-      </AuthProvider>
+          </AxiosErrorHandler>
+        </AuthProvider>
+      </Router>
     </QueryClientProvider>
   </React.StrictMode>,
 );

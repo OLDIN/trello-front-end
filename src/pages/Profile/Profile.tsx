@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import authApi from '../../services/api/endpoints/auth';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import useFileUpload from '../../hooks/useFileUpload/useFileUpload';
 import useProfileUpdate from './hooks/useProfileUpdate';
@@ -35,7 +36,7 @@ interface IProfilePayload {
 export const Profile: FC = (): ReactElement => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
   const { data: profile } = useQuery({
-    queryKey: ['me'],
+    queryKey: [QueryKey.ME],
     queryFn: authApi.getProfile,
   });
   const queryClient = useQueryClient();
@@ -58,20 +59,26 @@ export const Profile: FC = (): ReactElement => {
   const { mutate, isPending } = useProfileUpdate({
     onSuccess: (data) => {
       setMode('view');
-      queryClient.setQueryData<unknown, ['me'], IProfile>(['me'], data);
+      queryClient.setQueryData<unknown, [QueryKey.ME], IProfile>(
+        [QueryKey.ME],
+        data,
+      );
       setPersistUser(data);
     },
   });
   const { mutateAsync: uploadPhotoMutate } = useFileUpload({
     onSuccess: ({ file }) => {
-      queryClient.setQueryData<unknown, ['me'], IProfile>(['me'], (profile) => {
-        if (profile) {
-          profile.photo = file;
-          setPersistUser(profile);
-        }
+      queryClient.setQueryData<unknown, [QueryKey.ME], IProfile>(
+        [QueryKey.ME],
+        (profile) => {
+          if (profile) {
+            profile.photo = file;
+            setPersistUser(profile);
+          }
 
-        return profile;
-      });
+          return profile;
+        },
+      );
     },
   });
 

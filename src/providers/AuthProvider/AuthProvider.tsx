@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
+
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import useProfile from '../../hooks/useProfile/useProfile';
 
@@ -22,6 +25,7 @@ export function AuthProvider(props: AuthProviderProps) {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const { refetch: refetchProfile } = useProfile({ enabled: false });
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const setToken = useCallback(({ token, refreshToken }: ISetTokenData) => {
     setTokenData(token);
@@ -51,7 +55,7 @@ export function AuthProvider(props: AuthProviderProps) {
     });
 
     if (persistUser) {
-      queryClient.setQueryData(['me'], persistUser);
+      queryClient.setQueryData([QueryKey.ME], persistUser);
     }
 
     await refetchProfile();
@@ -66,8 +70,9 @@ export function AuthProvider(props: AuthProviderProps) {
       refreshToken: null,
     });
     setPersistUser(null);
-    queryClient.setQueryData(['me'], null);
-  }, [queryClient, setToken]);
+    queryClient.clear();
+    navigate('/login', { replace: true });
+  }, [navigate, queryClient, setToken]);
 
   useEffect(() => {
     loadData();

@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import usersApi, {
   UpdateUserPayload,
 } from '../../../services/api/endpoints/users';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import useFileUpload from '../../../hooks/useFileUpload/useFileUpload';
 import { formatDate } from '../../../utils/formatDate';
@@ -72,7 +73,7 @@ export default function UserDetails({
       mutationFn: (data: UpdateUserPayload) => usersApi.update(user.id, data),
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ['users'],
+          queryKey: [QueryKey.USERS],
         });
         handleClose();
         reset();

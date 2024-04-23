@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
 import api from '../../services/api';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import useAuth from '../../hooks/useAuth';
 
@@ -38,7 +39,7 @@ export default function Registration() {
         token,
         refreshToken,
       });
-      queryClient.setQueryData(['me'], user);
+      queryClient.setQueryData([QueryKey.ME], user);
     } catch (e: any) {
       if (e.response.status === 422) {
         Object.keys(e.response.data.errors).forEach((key) => {

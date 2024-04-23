@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import tasksApi, { IPartialUpdateTask } from 'services/api/endpoints/tasks';
+import { QueryKey } from 'enums/QueryKey.enum';
 import { Board } from 'types/Board';
 import { ITask } from 'types/Task';
 import { useBoardStore } from 'store/boards/board.store';
@@ -78,7 +79,6 @@ export default function Home() {
     assigneeId: selectedAssigneeId,
   });
   const { mutate: taskUpdateMutate } = useMutation({
-    mutationKey: ['taskLists', { boardId: selectedBoard?.id }],
     mutationFn: ({ id, ...data }: IPartialUpdateTask & { id: number }) =>
       tasksApi.partialUpdate(id, data),
   });
@@ -171,7 +171,10 @@ export default function Home() {
     });
 
     queryClient.setQueryData(
-      ['tasks', { boardId: selectedBoard?.id, assigneeId: selectedAssigneeId }],
+      [
+        QueryKey.TASKS,
+        { boardId: selectedBoard?.id, assigneeId: selectedAssigneeId },
+      ],
       (oldData: ITask[]) => {
         const newTaskLists = [...oldData];
         const taskIndex = newTaskLists.findIndex((t) => t.id === task.id);

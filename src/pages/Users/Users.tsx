@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-query';
 
 import usersApi from '../../services/api/endpoints/users';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import TableFilterOperatorRolesList from './components/TableFilterOperatorRolesList';
 import EditToolbar from './components/TableToolBar';
@@ -102,12 +103,12 @@ export function Users() {
     refetch: refetchUsers,
     isLoading,
   } = useQuery({
-    queryKey: ['users', queryOptions, paginationModel],
+    queryKey: [QueryKey.USERS, queryOptions, paginationModel],
     queryFn: usersApi.list,
     placeholderData: keepPreviousData,
   });
   const { data: usersCount = 0 } = useQuery({
-    queryKey: ['users', 'count'],
+    queryKey: [QueryKey.USERS, 'count'],
     queryFn: usersApi.count,
   });
 
@@ -136,7 +137,7 @@ export function Users() {
     await deleteMutate(openedId);
     refetchUsers();
     queryClient.setQueryData(
-      ['users', 'count'],
+      [QueryKey.USERS, 'count'],
       (oldCount: number) => oldCount - 1,
     );
     setOpenedId(null);

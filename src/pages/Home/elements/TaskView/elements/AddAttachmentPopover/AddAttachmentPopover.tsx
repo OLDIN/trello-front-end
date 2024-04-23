@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 
 import { filesApi, tasksApi } from 'services/api';
 import { IPartialUpdateTask } from 'services/api/endpoints/tasks';
+import { QueryKey } from 'enums/QueryKey.enum';
 import { ITask } from 'types/Task';
 
 import { VisuallyHiddenInput } from './styles';
@@ -34,11 +35,10 @@ export function AddAttachmentPopover({
   const queryClient = useQueryClient();
 
   const { mutate: updateTask, isPending: isPendingUpdateTask } = useMutation({
-    mutationKey: ['task', { taskId: task.id }],
     mutationFn: (data: IPartialUpdateTask) =>
       tasksApi.partialUpdate(task.id, data),
     onSuccess: (data) => {
-      queryClient.setQueryData(['task', task.id], (oldTask: ITask) => ({
+      queryClient.setQueryData([QueryKey.TASKS, task.id], (oldTask: ITask) => ({
         ...oldTask,
         attachments: data.attachments,
       }));
@@ -49,7 +49,6 @@ export function AddAttachmentPopover({
 
   const { mutate: uploadAttachment, isPending: isPendingUploadFile } =
     useMutation({
-      mutationKey: ['attachment', { taskId: task.id }],
       mutationFn: (data: FormData) => filesApi.upload(data),
       onSuccess: ({ file: { id } }) => {
         const attachmentsIds = (task?.attachments ?? []).map(
