@@ -44,6 +44,9 @@ export function useTasks({ boardId, assigneeId }: IUseTasksProps) {
           {
             field: 'comments',
           },
+          {
+            field: 'labels',
+          },
         ],
       }),
     enabled: !!boardId,

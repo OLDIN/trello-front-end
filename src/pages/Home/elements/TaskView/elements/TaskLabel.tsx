@@ -24,17 +24,17 @@ const Label = styled(Typography)`
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  &.color-red {
+  &.task-label-color-red {
     background-color: #f44336;
     color: #fff;
   }
 
-  &.color-yellow {
+  &.task-label-color-yellow {
     background-color: #ffeb3b;
     color: #172b4d;
   }
 
-  &.color-purple {
+  &.task-label-color-purple {
     background-color: #9c27b0;
     color: #fff;
   }
@@ -47,7 +47,7 @@ interface TaskLabelProps {
 export function TaskLabel({ label }: TaskLabelProps) {
   return (
     <Grid item key={label.id}>
-      <Label noWrap className={`color-${label.color}`}>
+      <Label noWrap className={`task-label-color-${label.color}`}>
         {label.name}
       </Label>
     </Grid>

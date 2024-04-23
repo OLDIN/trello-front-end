@@ -3,61 +3,35 @@ import { Draggable } from 'react-beautiful-dnd';
 
 import { useTaskStore } from '../../../../../store/boards/tasks/task.store';
 
-import type { Task } from '../../../../../types/Task';
+import type { ITask } from '../../../../../types/Task';
 import { TaskCover } from './elements/TaskCover';
+import {
+  IconButton,
+  Label,
+  StyledBadge,
+  Task,
+  TaskBody,
+  TaskEditButton,
+} from './styles';
 
 import AttachFile from '@mui/icons-material/AttachFile';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import EditIcon from '@mui/icons-material/Edit';
 import RemoveRedEye from '@mui/icons-material/RemoveRedEye';
-import {
-  Badge,
-  BadgeProps,
-  Box,
-  IconButton as IconButtonBase,
-  ListItem,
-  styled,
-  Typography,
-} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 
 interface TaskCardProps {
-  task: Task;
+  task: ITask;
   index: number;
 }
-
-const Task = styled(ListItem)(({ theme }) => ({
-  padding: 0,
-  backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#ffffff',
-  borderRadius: '8px',
-  boxShadow: '0px 1px 1px #091e4240, 0px 0px 1px #091e424f',
-  minHeight: '36px',
-  cursor: 'pointer',
-  color: '#172b4d',
-  overflow: 'hidden',
-  flex: '1 0 100%',
-}));
-
-const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    right: -5,
-    top: 8,
-    border: 'none',
-    padding: '0 4px',
-  },
-}));
-
-const IconButton = styled(IconButtonBase)`
-  &:hover {
-    background-color: transparent;
-  }
-`;
 
 export function TaskCard({ task, index }: TaskCardProps) {
   const { setTaskModalSettings } = useTaskStore();
 
   return (
     <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-      {(provided, snapshot) => (
+      {(provided) => (
         <Task
           ref={provided.innerRef}
           key={task.id}
@@ -78,75 +52,98 @@ export function TaskCard({ task, index }: TaskCardProps) {
             {task.cover && (
               <Box>
                 <TaskCover src={task.cover.path} />
+                <TaskEditButton size="small">
+                  <EditIcon />
+                </TaskEditButton>
               </Box>
             )}
-            <Box
-              sx={{
-                padding: '8px 16px',
-              }}
-            >
-              <Typography variant="body2">{task.name}</Typography>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                width: '100%',
-                padding: '8px 16px',
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  columnGap: '4px',
-                }}
-              >
-                {!!task.assignee?.id && (
-                  <IconButton size="small">
-                    <RemoveRedEye sx={{ fontSize: 16 }} />
-                  </IconButton>
-                )}
-                {!!task.comments?.length && (
-                  <IconButton size="small">
-                    <StyledBadge
-                      badgeContent={task.comments.length}
-                      color="default"
-                    >
-                      <ChatBubbleOutlineIcon sx={{ fontSize: 16 }} />
-                    </StyledBadge>
-                  </IconButton>
-                )}
-                {!!task.attachments?.length && (
-                  <IconButton size="small">
-                    <StyledBadge
-                      badgeContent={task.attachments.length}
-                      color="default"
-                    >
-                      <AttachFile sx={{ fontSize: 16 }} />
-                    </StyledBadge>
-                  </IconButton>
-                )}
-              </Box>
-              {!!task.assignee?.id && (
+            <TaskBody>
+              {task.labels && (
                 <Box
                   sx={{
                     display: 'flex',
-                    alignItems: 'center',
+                    gap: '4px',
+                    marginBottom: '4px',
                   }}
                 >
-                  <Avatar
-                    alt={
-                      task.assignee?.firstName + ' ' + task.assignee?.lastName
-                    }
-                    src={task.assignee?.photo?.path}
-                    sx={{ width: 24, height: 24, fontSize: 14 }}
-                    title={`${task.assignee?.firstName} ${task.assignee?.lastName} (${task.assignee?.email})`}
-                  >
-                    {task.assignee?.firstName[0] + task.assignee?.lastName[0]}
-                  </Avatar>
+                  {task.labels.map((label) => (
+                    <Label
+                      key={label.id}
+                      className={`task-label-color-${label.color}`}
+                    >
+                      {label.name}
+                    </Label>
+                  ))}
                 </Box>
               )}
-            </Box>
+              <Box
+                sx={{
+                  marginBottom: '4px',
+                }}
+              >
+                <Typography variant="body1">{task.name}</Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  marginBottom: '4px',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    columnGap: '4px',
+                  }}
+                >
+                  {!!task.assignee?.id && (
+                    <IconButton size="small">
+                      <RemoveRedEye sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  )}
+                  {!!task.comments?.length && (
+                    <IconButton size="small">
+                      <StyledBadge
+                        badgeContent={task.comments.length}
+                        color="default"
+                      >
+                        <ChatBubbleOutlineIcon sx={{ fontSize: 16 }} />
+                      </StyledBadge>
+                    </IconButton>
+                  )}
+                  {!!task.attachments?.length && (
+                    <IconButton size="small">
+                      <StyledBadge
+                        badgeContent={task.attachments.length}
+                        color="default"
+                      >
+                        <AttachFile sx={{ fontSize: 16 }} />
+                      </StyledBadge>
+                    </IconButton>
+                  )}
+                </Box>
+                {!!task.assignee?.id && (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Avatar
+                      alt={
+                        task.assignee?.firstName + ' ' + task.assignee?.lastName
+                      }
+                      src={task.assignee?.photo?.path}
+                      sx={{ width: 24, height: 24, fontSize: 14 }}
+                      title={`${task.assignee?.firstName} ${task.assignee?.lastName} (${task.assignee?.email})`}
+                    >
+                      {task.assignee?.firstName[0] + task.assignee?.lastName[0]}
+                    </Avatar>
+                  </Box>
+                )}
+              </Box>
+            </TaskBody>
           </Box>
         </Task>
       )}
