@@ -16,10 +16,12 @@ export default {
     itemId: number,
     data: PartialUpdateChecklistItemData,
   ) =>
-    axiosInstance.patch(
-      `/v1/tasks/${taskId}/checklists/${checklistId}/items/${itemId}`,
-      data,
-    ),
+    axiosInstance
+      .patch(
+        `/v1/tasks/${taskId}/checklists/${checklistId}/items/${itemId}`,
+        data,
+      )
+      .then((res) => res.data),
   create: (
     taskId: number,
     checklistId: number,

@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { checklistApi } from 'services/api';
 import { QueryKey } from 'enums/QueryKey.enum';
 import { ITask } from 'types/Task';
 
+import { Button } from 'components/Button';
+
 import { TaskCheckList } from '../../../../../types/TaskChecklist';
 
 import styled from '@emotion/styled';
-import { Button, Grid, LinearProgress, Typography } from '@mui/material';
+import { Grid, LinearProgress, Typography } from '@mui/material';
 
 import { AddAnChecklistItemBlock } from './AddAnChecklistItemBlock/AddAnChecklistItemBlock';
-import { CheckListItem } from './CheckListItem';
+import { CheckListItem } from './CheckListItem/CheckListItem';
 
 interface CheckListProps {
   checkList: TaskCheckList;
@@ -32,6 +34,8 @@ const StyledLinearProgress = styled(LinearProgress)`
 
 export function CheckList({ checkList, taskId }: CheckListProps) {
   const queryClient = useQueryClient();
+  const [items, setItems] = useState(checkList.items ?? []);
+  const [itemsMode, setItemsMode] = useState<'all' | 'homeCompleted'>('all');
 
   const { mutate: deleteCheckList, isPending: isPendingDelete } = useMutation({
     mutationFn: () => checklistApi.deleteById(taskId, checkList.id),
@@ -47,9 +51,42 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
     },
   });
 
+  useEffect(() => {
+    setItems(checkList.items ?? []);
+  }, [checkList.items]);
+
+  useEffect(() => {
+    if (itemsMode === 'homeCompleted') {
+      setItems((prev) => prev.filter((i) => !i.isCompleted));
+    } else {
+      setItems(checkList.items ?? []);
+    }
+  }, [itemsMode, checkList.items]);
+
   const handleDeleteOnClick = () => {
     deleteCheckList();
   };
+
+  const handleToggleCheckedItems = () => {
+    setItemsMode((prev) => (prev === 'all' ? 'homeCompleted' : 'all'));
+  };
+
+  const completedLength = useMemo(
+    () => checkList.items?.filter((i) => i.isCompleted).length ?? 0,
+    [checkList.items],
+  );
+
+  const completedInPercent = useMemo(() => {
+    return (
+      ((checkList?.items ?? []).filter((i) => i.isCompleted).length /
+        (checkList?.items?.length ?? 0)) *
+      100
+    );
+  }, [checkList.items]);
+
+  const isShowFilterButton = useMemo(() => {
+    return checkList.items?.some((i) => i.isCompleted);
+  }, [checkList.items]);
 
   return (
     <Grid item key={checkList.id}>
@@ -60,12 +97,14 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
           </Typography>
         </Grid>
         <Grid item>
-          <Button size="small">Hide checked items</Button>
-          <Button
-            size="small"
-            onClick={handleDeleteOnClick}
-            disabled={isPendingDelete}
-          >
+          {isShowFilterButton && (
+            <Button onClick={handleToggleCheckedItems}>
+              {itemsMode === 'all'
+                ? 'Hide checked items'
+                : `Show checked items (${completedLength})`}
+            </Button>
+          )}
+          <Button onClick={handleDeleteOnClick} disabled={isPendingDelete}>
             Delete
           </Button>
         </Grid>
@@ -73,15 +112,11 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
       <Grid item>
         <StyledLinearProgress
           variant="determinate"
-          value={
-            ((checkList?.items ?? []).filter((i) => i.isCompleted).length /
-              (checkList?.items?.length ?? 0)) *
-            100
-          }
+          value={completedInPercent}
         />
       </Grid>
       <Grid item container direction="column">
-        {checkList.items?.map((item) => (
+        {items?.map((item) => (
           <CheckListItem
             key={item.id}
             item={item}

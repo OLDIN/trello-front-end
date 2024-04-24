@@ -8,10 +8,12 @@ import { CreateChecklistItemData } from 'services/api/endpoints/checklist-items'
 import { QueryKey } from 'enums/QueryKey.enum';
 import { ITask } from 'types/Task';
 
+import { Button } from 'components/Button';
+
 import { TextareaAutosize } from './styles';
 
 import AddIcon from '@mui/icons-material/Add';
-import { Button, Grid } from '@mui/material';
+import { Button as ButtonBase, Grid } from '@mui/material';
 
 interface AddAnChecklistItemBlockProps {
   taskId: number;
@@ -62,13 +64,13 @@ export function AddAnChecklistItemBlock({
   return (
     <>
       {mode === 'view' ? (
-        <Button
+        <ButtonBase
           size="small"
           startIcon={<AddIcon />}
           onClick={() => setMode('edit')}
         >
           Add an item
-        </Button>
+        </ButtonBase>
       ) : (
         <Grid container component="form" onSubmit={handleSubmit(onSubmit)}>
           <Grid item sx={{ width: '100%' }}>
@@ -82,7 +84,6 @@ export function AddAnChecklistItemBlock({
           <Grid item container>
             <Grid item gap={2} container>
               <Button
-                size="small"
                 variant="contained"
                 type="submit"
                 disabled={isPendingCreate}
@@ -90,7 +91,6 @@ export function AddAnChecklistItemBlock({
                 Add
               </Button>
               <Button
-                size="small"
                 variant="text"
                 onClick={() => {
                   setMode('view');

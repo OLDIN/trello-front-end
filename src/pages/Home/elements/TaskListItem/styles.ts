@@ -13,17 +13,17 @@ export const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export const ItemName = styled(Typography)`
+  background-color: transparent;
+  cursor: pointer;
   display: block;
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
   margin: 0;
-  padding: 6px 8px 6px 12px;
-  background-color: transparent;
-  overflow: hidden;
   overflow-wrap: anywhere;
+  overflow: hidden;
+  padding: 6px 8px 6px 12px;
   white-space: normal;
-  cursor: pointer;
 `;
 
 export const TaskListItemOptionsBtn = styled(IconButton)`

@@ -2,7 +2,6 @@ import {
   Badge,
   BadgeProps,
   Box,
-  // styled,
   IconButton as IconButtonBase,
   ListItem,
 } from '@mui/material';

@@ -79,6 +79,7 @@
     "@storybook/react": "^8.0.6",
     "@storybook/react-webpack5": "^8.0.6",
     "@storybook/test": "^8.0.6",
+    "@styled/typescript-styled-plugin": "^1.0.1",
     "@tanstack/eslint-plugin-query": "^5.28.11",
     "@tanstack/react-query-devtools": "^5.29.2",
     "@testing-library/react": "^14.2.2",

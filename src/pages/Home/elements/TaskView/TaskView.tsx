@@ -1,14 +1,15 @@
 import React, { MouseEvent, useState } from 'react';
 
 import { TextEditor } from '../../../../components/TextEditor';
+import { Button } from 'components/Button';
 
 import { useTaskDetails } from './hooks/useTaskDetails';
 import { IUser } from '../../../../types/User';
 import { AddAttachmentPopover } from './elements/AddAttachmentPopover/AddAttachmentPopover';
 import { Attachment } from './elements/Attachment/Attachment';
 import { CheckList } from './elements/CheckList';
-import { RightSideBtns } from './elements/RightSideBtns';
-import { TaskComment } from './elements/TaskComment';
+import { RightSideBtns } from './elements/RightSideBtns/RightSideBtns';
+import { TaskComment } from './elements/TaskComment/TaskComment';
 import { TaskLabel } from './elements/TaskLabel';
 import { StyledTaskBlock, TaskCover } from './styles';
 
@@ -19,7 +20,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Avatar,
   AvatarGroup,
-  Button,
   Button as ButtonBase,
   Dialog,
   DialogContent,
@@ -180,13 +180,16 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                             {task?.assignees?.map((member) => (
                               <Avatar
                                 key={member.id}
-                                alt="Remy Sharp"
+                                alt={member.firstName + ' ' + member.lastName}
                                 sx={{
                                   width: 32,
                                   height: 32,
+                                  fontSize: 16,
                                 }}
-                                src="/static/images/avatar/1.jpg"
-                              />
+                                src={member.photo?.path}
+                              >
+                                {member.firstName[0] + member.lastName[0]}
+                              </Avatar>
                             ))}
                           </AvatarGroup>
                         </Grid>
@@ -234,12 +237,7 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                           </Typography>
                         </Grid>
                         <Grid item>
-                          <ButtonBase
-                            size="small"
-                            onClick={handleAddAttachment}
-                          >
-                            Add
-                          </ButtonBase>
+                          <Button onClick={handleAddAttachment}>Add</Button>
                         </Grid>
                       </Grid>
                       <Grid item container direction="column">
@@ -268,10 +266,15 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                           <Typography variant="subtitle2">Activity</Typography>
                         </Grid>
                         <Grid item>
-                          <Button size="small">Show details</Button>
+                          <Button>Show details</Button>
                         </Grid>
                       </Grid>
-                      <Grid item>
+                      <Grid
+                        item
+                        sx={{
+                          margin: '0 0 8px 40px',
+                        }}
+                      >
                         <Input
                           placeholder="Write a comment..."
                           sx={{ width: '100%' }}
