@@ -19,9 +19,8 @@ export interface ITask {
   priority: TaskPriorityEnum;
   createdAt: string;
   updatedAt: string;
-  assigneeId?: number;
   taskListId: number;
-  assignee?: IUser;
+  assignees?: IUser[];
   boardId: number;
   board?: Board;
   cover?: IFile;

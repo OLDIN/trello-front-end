@@ -19,7 +19,7 @@ import AttachFile from '@mui/icons-material/AttachFile';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import RemoveRedEye from '@mui/icons-material/RemoveRedEye';
-import { Box, Typography } from '@mui/material';
+import { AvatarGroup, Box, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 
 interface TaskCardProps {
@@ -103,11 +103,11 @@ export function TaskCard({ task, index }: TaskCardProps) {
                     columnGap: '4px',
                   }}
                 >
-                  {!!task.assignee?.id && (
+                  {/* {!!task.assignee?.id && (
                     <IconButton size="small">
                       <RemoveRedEye sx={{ fontSize: 16 }} />
                     </IconButton>
-                  )}
+                  )} */}
                   {!!task.comments?.length && (
                     <IconButton size="small">
                       <StyledBadge
@@ -129,23 +129,26 @@ export function TaskCard({ task, index }: TaskCardProps) {
                     </IconButton>
                   )}
                 </Box>
-                {!!task.assignee?.id && (
+                {task.assignees?.length && (
                   <Box
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
                     }}
                   >
-                    <Avatar
-                      alt={
-                        task.assignee?.firstName + ' ' + task.assignee?.lastName
-                      }
-                      src={task.assignee?.photo?.path}
-                      sx={{ width: 24, height: 24, fontSize: 14 }}
-                      title={`${task.assignee?.firstName} ${task.assignee?.lastName} (${task.assignee?.email})`}
-                    >
-                      {task.assignee?.firstName[0] + task.assignee?.lastName[0]}
-                    </Avatar>
+                    <AvatarGroup max={4}>
+                      {task.assignees.map((assignee) => (
+                        <Avatar
+                          key={assignee.id}
+                          alt={assignee?.firstName + ' ' + assignee?.lastName}
+                          src={assignee?.photo?.path}
+                          sx={{ width: 24, height: 24, fontSize: 14 }}
+                          title={`${assignee?.firstName} ${assignee?.lastName} (${assignee?.email})`}
+                        >
+                          {assignee?.firstName[0] + assignee?.lastName[0]}
+                        </Avatar>
+                      ))}
+                    </AvatarGroup>
                   </Box>
                 )}
               </Box>

@@ -31,10 +31,10 @@ export function useTasks({ boardId, assigneeId }: IUseTasksProps) {
         ],
         join: [
           {
-            field: 'assignee',
+            field: 'assignees',
           },
           {
-            field: 'assignee.photo',
+            field: 'assignees.photo',
           },
           {
             field: 'cover',

@@ -14,10 +14,10 @@ export function useTaskDetails({ taskId }: IUseTaskDetails) {
       tasksApi.getById(taskId, {
         join: [
           {
-            field: 'assignee',
+            field: 'assignees',
           },
           {
-            field: 'assignee.photo',
+            field: 'assignees.photo',
           },
           {
             field: 'cover',

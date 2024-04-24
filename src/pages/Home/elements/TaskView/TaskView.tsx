@@ -18,6 +18,7 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Avatar,
+  AvatarGroup,
   Button,
   Button as ButtonBase,
   Dialog,
@@ -33,29 +34,6 @@ interface TaskViewProps {
   onClose: () => void;
   taskId: number;
 }
-
-const members: IUser[] = [
-  {
-    id: 11,
-    firstName: 'Duncan',
-    lastName: 'Legros',
-    email: '',
-    provider: 'local',
-    createdAt: '2024-04-12T18:04:58.426Z',
-    updatedAt: '2024-04-18T06:45:26.400Z',
-    photo: null,
-  },
-  {
-    id: 12,
-    firstName: 'Duncan',
-    lastName: 'Legros',
-    email: '',
-    provider: 'local',
-    createdAt: '2024-04-12T18:04:58.426Z',
-    updatedAt: '2024-04-18T06:45:26.400Z',
-    photo: null,
-  },
-];
 
 const checkLists = [
   {
@@ -222,17 +200,19 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                           Members
                         </Typography>
                         <Grid item container>
-                          {members.map((member) => (
-                            <Avatar
-                              key={member.id}
-                              alt="Remy Sharp"
-                              sx={{
-                                width: 32,
-                                height: 32,
-                              }}
-                              src="/static/images/avatar/1.jpg"
-                            />
-                          ))}
+                          <AvatarGroup max={4}>
+                            {task?.assignees?.map((member) => (
+                              <Avatar
+                                key={member.id}
+                                alt="Remy Sharp"
+                                sx={{
+                                  width: 32,
+                                  height: 32,
+                                }}
+                                src="/static/images/avatar/1.jpg"
+                              />
+                            ))}
+                          </AvatarGroup>
                         </Grid>
                       </Grid>
                       <Grid item container direction="column">
