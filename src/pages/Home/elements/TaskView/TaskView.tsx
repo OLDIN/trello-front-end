@@ -35,30 +35,6 @@ interface TaskViewProps {
   taskId: number;
 }
 
-const checkLists = [
-  {
-    id: 1,
-    name: 'checklist 1 test',
-    items: [
-      {
-        id: 1,
-        name: 'todo 1',
-        checked: false,
-      },
-      {
-        id: 2,
-        name: 'todo 2',
-        checked: true,
-      },
-      {
-        id: 3,
-        name: 'todo 3',
-        checked: false,
-      },
-    ],
-  },
-];
-
 export function TaskView({ open, onClose, taskId }: TaskViewProps) {
   const [attachmentPopoverSettings, setAttachmentPopoverSettings] = useState<{
     isOpenAddAttachmentPopover: boolean;
@@ -278,8 +254,12 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                       </Grid>
                     </StyledTaskBlock>
                     <StyledTaskBlock item container direction="column">
-                      {checkLists.map((checkList) => (
-                        <CheckList key={checkList.id} checkList={checkList} />
+                      {task?.checklists?.map((checkList) => (
+                        <CheckList
+                          key={checkList.id}
+                          checkList={checkList}
+                          taskId={taskId}
+                        />
                       ))}
                     </StyledTaskBlock>
                     <StyledTaskBlock item container direction="column">

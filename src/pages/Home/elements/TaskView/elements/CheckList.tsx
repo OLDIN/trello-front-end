@@ -1,15 +1,21 @@
 import React from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { checklistApi } from 'services/api';
+import { QueryKey } from 'enums/QueryKey.enum';
+import { ITask } from 'types/Task';
 
 import { TaskCheckList } from '../../../../../types/TaskChecklist';
 
 import styled from '@emotion/styled';
-import AddIcon from '@mui/icons-material/Add';
 import { Button, Grid, LinearProgress, Typography } from '@mui/material';
 
+import { AddAnChecklistItemBlock } from './AddAnChecklistItemBlock/AddAnChecklistItemBlock';
 import { CheckListItem } from './CheckListItem';
 
 interface CheckListProps {
   checkList: TaskCheckList;
+  taskId: number;
 }
 
 const StyledLinearProgress = styled(LinearProgress)`
@@ -24,7 +30,27 @@ const StyledLinearProgress = styled(LinearProgress)`
   } */
 `;
 
-export function CheckList({ checkList }: CheckListProps) {
+export function CheckList({ checkList, taskId }: CheckListProps) {
+  const queryClient = useQueryClient();
+
+  const { mutate: deleteCheckList, isPending: isPendingDelete } = useMutation({
+    mutationFn: () => checklistApi.deleteById(taskId, checkList.id),
+    onSuccess: () => {
+      queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
+        if (!oldTask) return oldTask;
+
+        return {
+          ...oldTask,
+          checklists: oldTask?.checklists?.filter((c) => c.id !== checkList.id),
+        };
+      });
+    },
+  });
+
+  const handleDeleteOnClick = () => {
+    deleteCheckList();
+  };
+
   return (
     <Grid item key={checkList.id}>
       <Grid item container justifyContent="space-between">
@@ -35,28 +61,37 @@ export function CheckList({ checkList }: CheckListProps) {
         </Grid>
         <Grid item>
           <Button size="small">Hide checked items</Button>
-          <Button size="small">Delete</Button>
+          <Button
+            size="small"
+            onClick={handleDeleteOnClick}
+            disabled={isPendingDelete}
+          >
+            Delete
+          </Button>
         </Grid>
       </Grid>
       <Grid item>
         <StyledLinearProgress
           variant="determinate"
           value={
-            (checkList.items.filter((i) => i.checked).length /
-              checkList.items.length) *
+            ((checkList?.items ?? []).filter((i) => i.isCompleted).length /
+              (checkList?.items?.length ?? 0)) *
             100
           }
         />
       </Grid>
       <Grid item container direction="column">
-        {checkList.items.map((item) => (
-          <CheckListItem key={item.id} item={item} />
+        {checkList.items?.map((item) => (
+          <CheckListItem
+            key={item.id}
+            item={item}
+            taskId={taskId}
+            checklistId={checkList.id}
+          />
         ))}
       </Grid>
       <Grid item>
-        <Button size="small" startIcon={<AddIcon />}>
-          Add an item
-        </Button>
+        <AddAnChecklistItemBlock taskId={taskId} checkListId={checkList.id} />
       </Grid>
     </Grid>
   );

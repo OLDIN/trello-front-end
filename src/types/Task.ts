@@ -1,5 +1,6 @@
 import { Board } from './Board';
 import { IFile } from './File';
+import { TaskCheckList } from './TaskChecklist';
 import { TaskComment } from './TaskComment';
 import { TaskLabel } from './TaskLabel';
 import { TaskList } from './TaskList';
@@ -28,4 +29,5 @@ export interface ITask {
   comments?: TaskComment[];
   taskList?: TaskList;
   labels?: TaskLabel[];
+  checklists?: TaskCheckList[];
 }

@@ -1,11 +1,11 @@
 export interface TaskCheckListItem {
   id: number;
   name: string;
-  checked: boolean;
+  isCompleted: boolean;
 }
 
 export interface TaskCheckList {
   id: number;
   name: string;
-  items: TaskCheckListItem[];
+  items?: TaskCheckListItem[];
 }
