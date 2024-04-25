@@ -62,3 +62,9 @@ export const StyledTaskBlock = styled(Grid)`
   margin-bottom: 24px;
   position: relative;
 `;
+
+export const StyledTaskBlockTitle = styled(Grid)`
+  margin: 0 0 4px 40px;
+  min-height: 32px;
+  padding: 8px 0;
+`;

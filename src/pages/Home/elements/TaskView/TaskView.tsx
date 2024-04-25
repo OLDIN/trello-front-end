@@ -4,14 +4,13 @@ import { TextEditor } from '../../../../components/TextEditor';
 import { Button } from 'components/Button';
 
 import { useTaskDetails } from './hooks/useTaskDetails';
-import { IUser } from '../../../../types/User';
 import { AddAttachmentPopover } from './elements/AddAttachmentPopover/AddAttachmentPopover';
 import { Attachment } from './elements/Attachment/Attachment';
 import { CheckList } from './elements/CheckList';
-import { RightSideBtns } from './elements/RightSideBtns/RightSideBtns';
+import { RightSideButtons } from './elements/RightSideBtns/RightSideBtns';
 import { TaskComment } from './elements/TaskComment/TaskComment';
-import { TaskLabel } from './elements/TaskLabel';
-import { StyledTaskBlock, TaskCover } from './styles';
+import { TaskLabel } from './elements/TaskLabel/TaskLabel';
+import { StyledTaskBlock, StyledTaskBlockTitle, TaskCover } from './styles';
 
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
@@ -19,7 +18,6 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import {
   Avatar,
-  AvatarGroup,
   Button as ButtonBase,
   Dialog,
   DialogContent,
@@ -33,9 +31,10 @@ interface TaskViewProps {
   open: boolean;
   onClose: () => void;
   taskId: number;
+  boardId: number;
 }
 
-export function TaskView({ open, onClose, taskId }: TaskViewProps) {
+export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
   const [attachmentPopoverSettings, setAttachmentPopoverSettings] = useState<{
     isOpenAddAttachmentPopover: boolean;
     anchorEl: HTMLElement | null;
@@ -163,7 +162,8 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                       item
                       container
                       direction="row"
-                      flexWrap="nowrap"
+                      flexWrap="wrap"
+                      gap="8px"
                       sx={
                         {
                           // marginLeft: '40px',
@@ -171,66 +171,107 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                         }
                       }
                     >
-                      <Grid item container direction="column">
+                      <Grid
+                        item
+                        container
+                        direction="column"
+                        flexBasis="content"
+                      >
                         <Typography variant="subtitle2" noWrap>
                           Members
                         </Typography>
-                        <Grid item container>
-                          <AvatarGroup max={4}>
-                            {task?.assignees?.map((member) => (
-                              <Avatar
-                                key={member.id}
-                                alt={member.firstName + ' ' + member.lastName}
-                                sx={{
-                                  width: 32,
-                                  height: 32,
-                                  fontSize: 16,
-                                }}
-                                src={member.photo?.path}
-                              >
-                                {member.firstName[0] + member.lastName[0]}
-                              </Avatar>
-                            ))}
-                          </AvatarGroup>
-                        </Grid>
-                      </Grid>
-                      <Grid item container direction="column">
-                        <Typography variant="subtitle2" noWrap>
-                          Labels
-                        </Typography>
-                        <Grid item container gap="2px">
-                          {task?.labels?.map((label) => (
-                            <TaskLabel key={label.id} label={label} />
+                        <Grid item container gap="5px">
+                          {task?.assignees?.map((member) => (
+                            <Avatar
+                              key={member.id}
+                              alt={member.firstName + ' ' + member.lastName}
+                              sx={{
+                                width: 32,
+                                height: 32,
+                                fontSize: 16,
+                              }}
+                              src={member.photo?.path}
+                            >
+                              {member.firstName[0] + member.lastName[0]}
+                            </Avatar>
                           ))}
-                          <IconButton>
+                          <IconButton
+                            sx={{
+                              width: 32,
+                              height: 32,
+                            }}
+                          >
                             <AddIcon />
                           </IconButton>
                         </Grid>
                       </Grid>
-                      <Grid item container direction="column">
+                      <Grid
+                        item
+                        container
+                        direction="column"
+                        flexBasis="content"
+                      >
+                        <Typography variant="subtitle2" noWrap>
+                          Labels
+                        </Typography>
+                        <Grid item container gap="4px">
+                          {task?.labels?.map((label) => (
+                            <TaskLabel key={label.id} label={label} />
+                          ))}
+                          <IconButton
+                            sx={{
+                              width: 32,
+                              height: 32,
+                            }}
+                          >
+                            <AddIcon />
+                          </IconButton>
+                        </Grid>
+                      </Grid>
+                      <Grid
+                        item
+                        container
+                        direction="column"
+                        flexBasis="content"
+                      >
                         <Typography variant="subtitle2">
                           Notifications
                         </Typography>
-                        <ButtonBase size="small" startIcon={<VisibilityIcon />}>
+                        <ButtonBase
+                          size="small"
+                          startIcon={<VisibilityIcon />}
+                          variant="contained"
+                        >
                           Watch
                         </ButtonBase>
                       </Grid>
                     </Grid>
-                    <Grid
-                      item
-                      container
-                      sx={{ width: '100%' }}
-                      flexDirection="column"
-                      wrap="nowrap"
-                    >
-                      <TextEditor
-                        data={task?.description}
-                        height={300}
-                        isReadOnly={true}
-                      />
-                    </Grid>
-                    <StyledTaskBlock item container direction="column">
+                    <StyledTaskBlock item container flexDirection="column">
                       <Grid item container justifyContent="space-between">
+                        <Grid item>
+                          <Typography variant="subtitle2">
+                            Description
+                          </Typography>
+                        </Grid>
+                        <Grid item>
+                          <Button>Edit</Button>
+                        </Grid>
+                      </Grid>
+                      <Grid item>
+                        <TextEditor
+                          data={task?.description}
+                          height={300}
+                          isReadOnly={true}
+                        />
+                      </Grid>
+                    </StyledTaskBlock>
+                    <StyledTaskBlock item container direction="column">
+                      <StyledTaskBlockTitle
+                        item
+                        container
+                        justifyContent="space-between"
+                        alignItems="center"
+                      >
                         <Grid item>
                           <Typography variant="subtitle2">
                             Attachments
@@ -239,7 +280,7 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                         <Grid item>
                           <Button onClick={handleAddAttachment}>Add</Button>
                         </Grid>
-                      </Grid>
+                      </StyledTaskBlockTitle>
                       <Grid item container direction="column">
                         {task?.attachments?.map((attachment) => (
                           <Attachment
@@ -285,7 +326,7 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                       ))}
                     </StyledTaskBlock>
                   </Grid>
-                  <RightSideBtns />
+                  <RightSideButtons boardId={boardId} taskId={taskId} />
                 </Grid>
               </Grid>
             </Grid>
