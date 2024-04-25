@@ -12,6 +12,7 @@ export interface IPartialUpdateTask
   extends Partial<Pick<ITask, 'name' | 'description' | 'taskListId' | 'id'>> {
   attachmentsIds?: string[];
   fileCoverId?: string | null;
+  membersIds?: number[];
 }
 
 export default {
