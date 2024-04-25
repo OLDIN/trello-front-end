@@ -116,6 +116,7 @@ export default function Home() {
         setSelectedBoardBackgroundImagePath(
           board.backgroundImage?.path ?? null,
         );
+        document.title = `${board.name} | Trello`;
       }
     } else if (boards.length && !boardId) {
       setSelectedBoard(boards[0]);
@@ -123,6 +124,7 @@ export default function Home() {
         boards[0].backgroundImage?.path ?? null,
       );
       navigate(`/boards/${boards[0].id}`);
+      document.title = `${boards[0].name} | Trello`;
     }
   }, [boardId, boards, navigate, setSelectedBoardBackgroundImagePath]);
 
@@ -134,6 +136,18 @@ export default function Home() {
       });
     }
   }, [setTaskModalSettings, taskId]);
+
+  useEffect(() => {
+    if (taskId) {
+      const task = tasks.find((t) => t.id === parseInt(taskId));
+
+      if (task && selectedBoard) {
+        document.title = `${task?.name} on ${selectedBoard?.name} | Trello`;
+      } else if (selectedBoard?.name) {
+        document.title = `${selectedBoard?.name} | Trello`;
+      }
+    }
+  }, [selectedBoard, taskId, tasks]);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -349,6 +363,7 @@ export default function Home() {
           open={taskModalSettings.isOpen}
           taskId={taskModalSettings.taskId}
           onClose={() => handleTaskViewClose()}
+          boardId={selectedBoard?.id ?? 0}
         />
       )}
       {/* </Container> */}
