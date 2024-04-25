@@ -1,1 +1,1 @@
-export { RightSideBtns } from './RightSideBtns';
+export { RightSideButtons } from './RightSideBtns';
