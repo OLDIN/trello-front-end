@@ -16,12 +16,14 @@ interface CheckListItemProps {
   item: TaskCheckListItem;
   checklistId: number;
   taskId: number;
+  isReadOnly?: boolean;
 }
 
 export function CheckListItem({
   item,
   taskId,
   checklistId,
+  isReadOnly = false,
 }: CheckListItemProps) {
   const { register, handleSubmit, getValues } =
     useForm<PartialUpdateChecklistItemData>({
@@ -47,6 +49,7 @@ export function CheckListItem({
         <Checkbox
           checked={getValues('isCompleted')}
           {...register('isCompleted')}
+          disabled={isReadOnly}
         />
       </Grid>
       <CheckListItemTitleWrapper

@@ -11,6 +11,7 @@ import { TaskCheckList } from '../../../../../types/TaskChecklist';
 
 import styled from '@emotion/styled';
 import { Grid, LinearProgress, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { AddAnChecklistItemBlock } from './AddAnChecklistItemBlock/AddAnChecklistItemBlock';
 import { CheckListItem } from './CheckListItem/CheckListItem';
@@ -104,7 +105,11 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
                 : `Show checked items (${completedLength})`}
             </Button>
           )}
-          <Button onClick={handleDeleteOnClick} disabled={isPendingDelete}>
+          <Button
+            onClick={handleDeleteOnClick}
+            disabled={isPendingDelete}
+            startIcon={isPendingDelete && <CircularProgress size={16} />}
+          >
             Delete
           </Button>
         </Grid>
@@ -122,6 +127,7 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
             item={item}
             taskId={taskId}
             checklistId={checkList.id}
+            isReadOnly={isPendingDelete}
           />
         ))}
       </Grid>
