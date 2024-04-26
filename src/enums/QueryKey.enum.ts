@@ -4,4 +4,5 @@ export enum QueryKey {
   TASKS = 'tasks',
   BOARDS = 'boards',
   TASK_LISTS = 'task_lists',
+  CHECKLISTS = 'checklists',
 }

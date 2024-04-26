@@ -45,6 +45,14 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
     content: null,
   });
 
+  const closePopover = () =>
+    setPopoverSettings({
+      anchorEl: null,
+      title: null,
+      isOpenPopover: false,
+      content: null,
+    });
+
   return (
     <>
       <RightSideButtonsWrapper container item xs={3} alignContent="start">
@@ -91,7 +99,12 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Checklist',
                 isOpenPopover: true,
-                content: <ChecklistPopoverContent />,
+                content: (
+                  <ChecklistPopoverContent
+                    taskId={taskId}
+                    onSuccessfulSubmit={() => closePopover()}
+                  />
+                ),
               })
             }
           >
@@ -184,14 +197,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
         openPopover={popoverSettings.isOpenPopover}
         anchorEl={popoverSettings.anchorEl}
         title={popoverSettings.title ?? ''}
-        onClose={() =>
-          setPopoverSettings({
-            anchorEl: null,
-            title: null,
-            isOpenPopover: false,
-            content: null,
-          })
-        }
+        onClose={() => closePopover()}
       >
         {popoverSettings.content}
       </Popover>
