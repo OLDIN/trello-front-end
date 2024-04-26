@@ -8,7 +8,6 @@ import { QueryKey } from 'enums/QueryKey.enum';
 import useAuth from '../../hooks/useAuth';
 import type { IProfile } from '../../types/Profile';
 
-import AdbIcon from '@mui/icons-material/Adb';
 import MenuIcon from '@mui/icons-material/Menu';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import { styled } from '@mui/material';

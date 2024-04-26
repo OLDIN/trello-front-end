@@ -6,3 +6,4 @@ export { default as usersApi } from './users';
 export { default as taskListsApi } from './task-lists';
 export { default as checklistItemsApi } from './checklist-items';
 export { default as checklistApi } from './checklist';
+export { default as commentsApi } from './comments';
