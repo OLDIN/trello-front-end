@@ -13,15 +13,15 @@ import { MembersPopoverContent } from './elements/MembersPopoverContent/MembersP
 import { StyledDivider } from '../../styles';
 import { Button, RightSideButtonsWrapper } from './styles';
 
-import ArchiveIcon from '@mui/icons-material/Archive';
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import AttachmentIcon from '@mui/icons-material/Attachment';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import EastIcon from '@mui/icons-material/East';
-import LabelIcon from '@mui/icons-material/Label';
-import Person2Icon from '@mui/icons-material/Person2';
+import LabelOutlinedIcon from '@mui/icons-material/LabelOutlined';
+import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import PowerInputIcon from '@mui/icons-material/PowerInput';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ShareIcon from '@mui/icons-material/Share';
@@ -65,7 +65,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
         >
           <Typography variant="subtitle2">Add to card</Typography>
           <Button
-            startIcon={<Person2Icon />}
+            startIcon={<Person2OutlinedIcon />}
             onClick={(e) =>
               setPopoverSettings({
                 anchorEl: e.currentTarget,
@@ -80,7 +80,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
             Members
           </Button>
           <Button
-            startIcon={<LabelIcon />}
+            startIcon={<LabelOutlinedIcon />}
             onClick={(e) =>
               setPopoverSettings({
                 anchorEl: e.currentTarget,
@@ -189,7 +189,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
           </Button>
           <Button startIcon={<DashboardCustomizeIcon />}>Make template</Button>
           <StyledDivider flexItem />
-          <Button startIcon={<ArchiveIcon />}>Archive</Button>
+          <Button startIcon={<ArchiveOutlinedIcon />}>Archive</Button>
           <Button startIcon={<ShareIcon />}>Share</Button>
         </Grid>
       </RightSideButtonsWrapper>
