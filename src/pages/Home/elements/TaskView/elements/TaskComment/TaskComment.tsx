@@ -16,8 +16,10 @@ export function TaskComment({ comment }: TaskCommentProps) {
       <Grid item>
         <Avatar
           src={comment.author.photo?.path}
-          sx={{ width: '32px', height: '32px' }}
-        />
+          sx={{ width: '32px', height: '32px', fontSize: '14px' }}
+        >
+          {comment.author.firstName[0] + comment.author.lastName[0]}
+        </Avatar>
       </Grid>
       <Grid item container direction="column">
         <Grid item>

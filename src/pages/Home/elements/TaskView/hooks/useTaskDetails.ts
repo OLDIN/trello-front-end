@@ -38,6 +38,9 @@ export function useTaskDetails({ taskId }: IUseTaskDetails) {
             field: 'comments.author',
           },
           {
+            field: 'comments.author.photo',
+          },
+          {
             field: 'checklists',
           },
           {
