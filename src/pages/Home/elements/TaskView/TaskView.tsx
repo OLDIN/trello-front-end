@@ -1,4 +1,9 @@
 import React, { MouseEvent, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { tasksApi } from 'services/api';
+import { IPartialUpdateTask } from 'services/api/endpoints/tasks';
+import { QueryKey } from 'enums/QueryKey.enum';
 
 import { TextEditor } from '../../../../components/TextEditor';
 import { Button } from 'components/Button';
@@ -26,6 +31,8 @@ import {
   Input,
   Typography,
 } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import DOMPurify from 'dompurify';
 
 interface TaskViewProps {
   open: boolean;
@@ -35,6 +42,8 @@ interface TaskViewProps {
 }
 
 export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
+  const queryClient = useQueryClient();
+  const [isReadOnlyDescription, setIsReadOnlyDescription] = useState(true);
   const [attachmentPopoverSettings, setAttachmentPopoverSettings] = useState<{
     isOpenAddAttachmentPopover: boolean;
     anchorEl: HTMLElement | null;
@@ -42,13 +51,39 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
     isOpenAddAttachmentPopover: false,
     anchorEl: null,
   });
+  const [descriptionString, setDescriptionString] = useState<string>('');
+
   const { data: task, isLoading } = useTaskDetails({ taskId });
+  const { mutate: updateTask, isPending: isPendingTaskUpdate } = useMutation({
+    mutationFn: (data: IPartialUpdateTask) =>
+      tasksApi.partialUpdate(taskId, data),
+    onSuccess: (result) => {
+      queryClient.setQueryData([QueryKey.TASKS, taskId], (oldTask) => {
+        if (!oldTask) return;
+
+        return {
+          ...oldTask,
+          ...result,
+        };
+      });
+      setIsReadOnlyDescription(true);
+    },
+  });
 
   const handleAddAttachment = (e: MouseEvent<HTMLElement>) => {
     setAttachmentPopoverSettings({
       isOpenAddAttachmentPopover: true,
       anchorEl: e.currentTarget,
     });
+  };
+
+  const handleCancelDescriptionEdit = () => {
+    setIsReadOnlyDescription(true);
+    setDescriptionString(task?.description ?? '');
+  };
+
+  const handleSaveDescription = () => {
+    updateTask({ description: descriptionString });
   };
 
   return (
@@ -254,15 +289,58 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                           </Typography>
                         </Grid>
                         <Grid item>
-                          <Button>Edit</Button>
+                          {isReadOnlyDescription && (
+                            <Button
+                              onClick={() => setIsReadOnlyDescription(false)}
+                            >
+                              Edit
+                            </Button>
+                          )}
                         </Grid>
                       </Grid>
-                      <Grid item>
-                        <TextEditor
-                          data={task?.description}
-                          height={300}
-                          isReadOnly={true}
-                        />
+                      <Grid item container gap="10px">
+                        {!isReadOnlyDescription ? (
+                          <>
+                            <TextEditor
+                              data={task?.description}
+                              height={300}
+                              isReadOnly={
+                                isReadOnlyDescription || isPendingTaskUpdate
+                              }
+                              onChange={(data) => setDescriptionString(data)}
+                            />
+                            <ButtonBase
+                              variant="contained"
+                              disabled={isPendingTaskUpdate}
+                              onClick={() => handleSaveDescription()}
+                              startIcon={
+                                isPendingTaskUpdate && (
+                                  <CircularProgress size={16} />
+                                )
+                              }
+                            >
+                              Save
+                            </ButtonBase>
+                            <ButtonBase
+                              variant="text"
+                              onClick={() => handleCancelDescriptionEdit()}
+                              disabled={isPendingTaskUpdate}
+                            >
+                              Cancel
+                            </ButtonBase>
+                          </>
+                        ) : (
+                          <Typography
+                            variant="body1"
+                            sx={{ whiteSpace: 'pre-wrap' }}
+                            onClick={() => setIsReadOnlyDescription(false)}
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                task?.description ?? '',
+                              ),
+                            }}
+                          />
+                        )}
                       </Grid>
                     </StyledTaskBlock>
                     <StyledTaskBlock item container direction="column">

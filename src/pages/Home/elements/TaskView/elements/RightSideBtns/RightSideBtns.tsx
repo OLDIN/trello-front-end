@@ -11,7 +11,7 @@ import { DatesPopoverContent } from './elements/DatesPopoverContent/DatesPopover
 import { LabelsPopoverContent } from './elements/LabelsPopoverContent/LabelsPopoverContent';
 import { MembersPopoverContent } from './elements/MembersPopoverContent/MembersPopoverContent';
 import { StyledDivider } from '../../styles';
-import { Button } from './styles';
+import { Button, RightSideButtonsWrapper } from './styles';
 
 import ArchiveIcon from '@mui/icons-material/Archive';
 import AttachmentIcon from '@mui/icons-material/Attachment';
@@ -47,7 +47,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
 
   return (
     <>
-      <Grid container item xs={3} alignContent="start">
+      <RightSideButtonsWrapper container item xs={3} alignContent="start">
         <Grid
           item
           container
@@ -179,7 +179,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
           <Button startIcon={<ArchiveIcon />}>Archive</Button>
           <Button startIcon={<ShareIcon />}>Share</Button>
         </Grid>
-      </Grid>
+      </RightSideButtonsWrapper>
       <Popover
         openPopover={popoverSettings.isOpenPopover}
         anchorEl={popoverSettings.anchorEl}

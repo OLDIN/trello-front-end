@@ -12,19 +12,31 @@ export const TextEditorWrapper = styled(Box, {
 }>`
   display: flex;
   flex-direction: column;
+  border-radius: 3px;
+  border: 2px solid transparent;
+
+  &:focus-within {
+    border: 2px solid hsl(218, 81.8%, 56.9%);
+  }
+
   &&& .ck-toolbar {
-    border-top-right-radius: 0;
-    border-top-left-radius: 0;
+    border-radius: 3px 3px 0 0;
     border-top: 0;
     min-height: 50px;
+    border: 2px solid transparent;
+    box-shadow: inset 0px -2px 0 0 #f1f2f4;
   }
 
   &&& .ck-content {
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 0 0 3px 3px;
+    background-color: #fff;
+    border: 2px solid transparent;
 
-    &.ck-focused {
+    &.ck-focused,
+    &:focus-within,
+    &:focus-visible {
       box-shadow: none;
+      outline: none;
     }
 
     ${({ isReadOnly }) =>

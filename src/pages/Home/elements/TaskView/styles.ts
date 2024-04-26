@@ -64,7 +64,7 @@ export const StyledTaskBlock = styled(Grid)`
 `;
 
 export const StyledTaskBlockTitle = styled(Grid)`
-  margin: 0 0 4px 40px;
+  margin: 0 0 4px 0px;
   min-height: 32px;
   padding: 8px 0;
 `;

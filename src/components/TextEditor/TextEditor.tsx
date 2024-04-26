@@ -1,4 +1,10 @@
-import React, { CSSProperties, FC, useCallback, useRef } from 'react';
+import React, {
+  CSSProperties,
+  FC,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
@@ -25,27 +31,40 @@ const TextEditorBase: FC<TextEditorProps> = ({
   maxHeight,
   ...props
 }) => {
-  const toolBarRef = useRef<HTMLDivElement>(null);
+  let editorInstance: DecoupledEditor | null = null;
 
-  const handleReady = useCallback(
-    (editor: DecoupledEditor) => {
-      if (toolBarRef.current) {
-        if (isReadOnly) {
-          editor.enableReadOnlyMode('read_only');
-        } else {
-          const isToolbarExists =
-            !!toolBarRef.current.querySelector('.ck-toolbar');
+  const handleReady = (editor: DecoupledEditor) => {
+    editorInstance = editor;
 
-          if (!isToolbarExists) {
-            toolBarRef.current.appendChild(
-              editor.ui.view.toolbar.element as Node,
-            );
-          }
+    editor?.ui
+      ?.getEditableElement()
+      ?.parentElement?.insertBefore(
+        editor?.ui?.view?.toolbar?.element as Node,
+        editor.ui.getEditableElement() as Node,
+      );
+
+    if (isReadOnly) {
+      editor.enableReadOnlyMode('read_only');
+    } else {
+      editor.disableReadOnlyMode('read_only');
+    }
+  };
+
+  useEffect(() => {
+    if (editorInstance) {
+      if (isReadOnly) {
+        if (editorInstance?.ui?.view?.toolbar?.element) {
+          editorInstance.ui.view.toolbar.element.style.display = 'none';
         }
+        editorInstance.enableReadOnlyMode('read_only');
+      } else {
+        if (editorInstance?.ui?.view?.toolbar?.element) {
+          editorInstance.ui.view.toolbar.element.style.display = 'block';
+        }
+        editorInstance.disableReadOnlyMode('read_only');
       }
-    },
-    [isReadOnly],
-  );
+    }
+  }, [editorInstance, isReadOnly]);
 
   const handleChange = useCallback(
     (event: any, editor: DecoupledEditor) => {
@@ -76,7 +95,6 @@ const TextEditorBase: FC<TextEditorProps> = ({
           toolbar: toolbarItems,
         }}
       />
-      <div ref={toolBarRef} />
     </Styled.TextEditorWrapper>
   );
 };
