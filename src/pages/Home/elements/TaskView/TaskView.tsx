@@ -1,5 +1,6 @@
 import React, { MouseEvent, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 
 import { tasksApi } from 'services/api';
 import { IPartialUpdateTask } from 'services/api/endpoints/tasks';
@@ -7,6 +8,7 @@ import { QueryKey } from 'enums/QueryKey.enum';
 
 import { TextEditor } from '../../../../components/TextEditor';
 import { Button } from 'components/Button';
+import { EditableInput } from 'components/EditableInput';
 
 import { useTaskDetails } from './hooks/useTaskDetails';
 import { AddAttachmentPopover } from './elements/AddAttachmentPopover/AddAttachmentPopover';
@@ -69,6 +71,18 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
       setIsReadOnlyDescription(true);
     },
   });
+
+  const { register, trigger, getValues } = useForm({
+    defaultValues: {
+      name: task?.name,
+    },
+  });
+
+  const handleOnPressEnterName = () => {
+    updateTask({
+      name: getValues('name'),
+    });
+  };
 
   const handleAddAttachment = (e: MouseEvent<HTMLElement>) => {
     setAttachmentPopoverSettings({
@@ -153,16 +167,22 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                 <Grid
                   item
                   xs={12}
+                  container
                   sx={{
                     minHeight: '32px',
                     padding: '8px 52px 8px 56px',
                     position: 'relative',
                   }}
                 >
-                  <Typography variant="h6" sx={{ padding: '12px 0 0' }}>
-                    {task?.name}
-                  </Typography>
-                  <Grid item container>
+                  {/* sx={{ padding: '12px 0 0' }} */}
+                  <EditableInput
+                    variant="h6"
+                    value={task?.name}
+                    onPressEnter={handleOnPressEnterName}
+                    {...register('name')}
+                  />
+
+                  <Grid item container alignContent="center">
                     <Typography
                       variant="subtitle2"
                       sx={{ margin: '4px 8px 4px 2px' }}
