@@ -59,8 +59,11 @@ export const StyledDivider = styled(Divider)`
 
 export const StyledTaskBlock = styled(Grid)`
   clear: both;
-  margin-bottom: 24px;
   position: relative;
+
+  &:not(:last-child) {
+    margin-bottom: 24px;
+  }
 `;
 
 export const StyledTaskBlockTitle = styled(Grid)`

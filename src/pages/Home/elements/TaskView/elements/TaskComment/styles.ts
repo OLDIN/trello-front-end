@@ -34,6 +34,7 @@ export const CommentActionButton = styled(Button)`
 
 export const CommentWrapper = styled(Grid)`
   border-left: 4px solid transparent;
+  padding: 8px 0;
 
   &.highlighted {
     background: #e9f2ff;
