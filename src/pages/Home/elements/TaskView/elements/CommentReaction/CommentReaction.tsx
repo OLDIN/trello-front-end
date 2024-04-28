@@ -7,7 +7,7 @@ import { useAddReaction } from '../../hooks/useAddReaction';
 import { useRemoveReaction } from '../../hooks/useRemoveReaction';
 import { ReactionWrapper } from './styles';
 
-import { Icon } from '@mui/material';
+import { Icon, Tooltip } from '@mui/material';
 import { Emoji } from 'emoji-picker-react';
 
 interface CommentReactionProps {
@@ -29,16 +29,18 @@ export function CommentReaction({
     return (reaction?.users ?? []).some((user) => user.id === userId);
   }, [userId, reaction?.users]);
 
-  const { mutate: deleteReaction } = useRemoveReaction(
+  const { mutate: deleteReaction } = useRemoveReaction({
     userId,
     taskId,
     commentId,
-  );
-  const { mutate: AddReaction } = useAddReaction(taskId, commentId, user);
+  });
+  const { mutate: AddReaction } = useAddReaction({
+    taskId,
+    commentId,
+    profile: user,
+  });
 
   const handleCLick = () => {
-    console.log('handleCLick');
-
     if (isMyReaction) {
       deleteReaction(reaction.id);
     } else {
@@ -46,15 +48,35 @@ export function CommentReaction({
     }
   };
 
+  const tooltipTitle = useMemo(() => {
+    const hasMe = reaction.users?.some((u) => u.id === userId);
+    const users = reaction.users
+      ?.filter((u) => u.id !== userId)
+      .map((u) => `${u.firstName} ${u.lastName}`)
+      .join(', ');
+
+    if (hasMe && users?.length) {
+      return `You and ${users} reacted with ${reaction.reaction}`;
+    }
+
+    if (hasMe && !users?.length) {
+      return `You reacted with ${reaction.reaction}`;
+    }
+
+    return `${users} reacted with ${reaction.reaction}`;
+  }, [reaction.reaction, reaction.users, userId]);
+
   return (
     <ReactionWrapper
       badgeContent={reaction.qty}
       className={isMyReaction ? 'my-reaction' : ''}
       onClick={handleCLick}
     >
-      <Icon>
-        <Emoji unified={reaction.reaction} size={16} />
-      </Icon>
+      <Tooltip title={tooltipTitle}>
+        <Icon>
+          <Emoji unified={reaction.reaction} size={16} lazyLoad />
+        </Icon>
+      </Tooltip>
     </ReactionWrapper>
   );
 }

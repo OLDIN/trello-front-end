@@ -71,16 +71,28 @@ export function TaskComment({
     },
   });
 
-  const { mutate: AddReaction } = useAddReaction(
-    comment.taskId,
-    comment.id,
+  const { mutate: AddReaction } = useAddReaction({
+    taskId: comment.taskId,
+    commentId: comment.id,
     profile,
-  );
-  const { mutate: deleteReaction } = useRemoveReaction(
-    profile?.id ?? 0,
-    comment.taskId,
-    comment.id,
-  );
+    onSuccess: () => {
+      setIsEmojiPickerSettings({
+        open: false,
+        anchorEl: null,
+      });
+    },
+  });
+  const { mutate: deleteReaction } = useRemoveReaction({
+    userId: profile?.id ?? 0,
+    taskId: comment.taskId,
+    commentId: comment.id,
+    onSuccess: () => {
+      setIsEmojiPickerSettings({
+        open: false,
+        anchorEl: null,
+      });
+    },
+  });
 
   const handleOnClickDate = () => {
     const commentId = parseInt(hash.replace('#comment-', ''));

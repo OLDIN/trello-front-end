@@ -1,17 +1,33 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  DefaultError,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { commentReactionsApi } from 'services/api';
 import { QueryKey } from 'enums/QueryKey.enum';
 import { ITask } from 'types/Task';
 
-export const useRemoveReaction = (
-  userId: number,
-  taskId: number,
-  commentId: number,
-) => {
+interface IUseRemoveReactionProps {
+  userId: number;
+  taskId: number;
+  commentId: number;
+  onSuccess?: (
+    data: void,
+    variables: number,
+    context: void,
+  ) => Promise<unknown> | unknown;
+}
+
+export const useRemoveReaction = ({
+  userId,
+  taskId,
+  commentId,
+  onSuccess,
+}: IUseRemoveReactionProps) => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<void, DefaultError, number>({
     mutationFn: (reactionId: number) =>
       commentReactionsApi.delete(commentId, reactionId),
     onSuccess: (_, reactionId) => {
@@ -57,6 +73,8 @@ export const useRemoveReaction = (
           }),
         };
       });
+
+      onSuccess?.(_, reactionId);
     },
   });
 };

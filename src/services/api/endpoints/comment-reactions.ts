@@ -1,4 +1,5 @@
 import axiosInstance from '../axios';
+import { AxiosResponse } from 'axios';
 
 export interface IAddCommentReactionPayload {
   reaction: string;
@@ -11,6 +12,9 @@ export default {
       .then((res) => res.data),
   delete: (commentId: number, reactionId: number) =>
     axiosInstance
-      .delete(`/v1/comments/${commentId}/reactions/${reactionId}`)
+      .delete<
+        void,
+        AxiosResponse<void>
+      >(`/v1/comments/${commentId}/reactions/${reactionId}`)
       .then((res) => res.data),
 };

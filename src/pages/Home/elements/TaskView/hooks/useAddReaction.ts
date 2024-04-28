@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  DefaultError,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import { commentReactionsApi } from 'services/api';
 import { IAddCommentReactionPayload } from 'services/api/endpoints/comment-reactions';
@@ -7,17 +11,29 @@ import { IReaction } from 'types/Reaction';
 import { ITask } from 'types/Task';
 import { IUser } from 'types/User';
 
-export const useAddReaction = (
-  taskId: number,
-  commentId: number,
-  profile?: Pick<IUser, 'id' | 'firstName' | 'lastName'>,
-) => {
+interface IUseAddReactionProps {
+  taskId: number;
+  commentId: number;
+  profile?: Pick<IUser, 'id' | 'firstName' | 'lastName'>;
+  onSuccess?: (
+    data: IReaction,
+    variables: IAddCommentReactionPayload,
+    context: void,
+  ) => Promise<unknown> | unknown;
+}
+
+export const useAddReaction = ({
+  taskId,
+  commentId,
+  profile,
+  onSuccess,
+}: IUseAddReactionProps) => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<IReaction, DefaultError, IAddCommentReactionPayload>({
     mutationFn: (data: IAddCommentReactionPayload) =>
       commentReactionsApi.add(commentId, data),
-    onSuccess: (data: IReaction) => {
+    onSuccess: (response, variables) => {
       queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
         if (!oldTask) return oldTask;
 
@@ -26,7 +42,7 @@ export const useAddReaction = (
           comments: oldTask.comments?.map((c) => {
             if (c.id === commentId) {
               const hasReaction = c.reactions?.find(
-                (reaction) => reaction.reaction === data.reaction,
+                (reaction) => reaction.reaction === response.reaction,
               );
 
               if (!hasReaction) {
@@ -39,9 +55,9 @@ export const useAddReaction = (
                   reactions: [
                     ...(c.reactions ?? []),
                     {
-                      ...data,
+                      ...response,
                       users: [
-                        ...(data.users ?? []),
+                        ...(response.users ?? []),
                         {
                           id: profile?.id,
                           firstName: profile?.firstName,
@@ -61,7 +77,7 @@ export const useAddReaction = (
                 ...c,
                 reactions: [
                   ...(c.reactions || []).map((reaction) => {
-                    if (reaction.reaction !== data.reaction) {
+                    if (reaction.reaction !== response.reaction) {
                       return reaction;
                     }
 
@@ -86,6 +102,8 @@ export const useAddReaction = (
           }),
         };
       });
+
+      onSuccess?.(response, variables);
     },
   });
 };
