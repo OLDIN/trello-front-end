@@ -1,4 +1,5 @@
-import React, { MouseEvent, useState } from 'react';
+import React, { MouseEvent, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
@@ -22,7 +23,7 @@ import { StyledTaskBlock, StyledTaskBlockTitle, TaskCover } from './styles';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import {
   Avatar,
   Button as ButtonBase,
@@ -45,6 +46,7 @@ interface TaskViewProps {
 
 export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
   const queryClient = useQueryClient();
+  const { hash } = useLocation();
   const [isReadOnlyDescription, setIsReadOnlyDescription] = useState(true);
   const [attachmentPopoverSettings, setAttachmentPopoverSettings] = useState<{
     isOpenAddAttachmentPopover: boolean;
@@ -72,11 +74,23 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
     },
   });
 
-  const { register, trigger, getValues } = useForm({
+  const { register, getValues, setValue } = useForm({
     defaultValues: {
       name: task?.name,
     },
   });
+
+  useEffect(() => {
+    if (task?.name) {
+      setValue('name', task.name);
+    }
+  }, [setValue, task]);
+
+  const highlightedCommentId = useMemo(() => {
+    if (hash) {
+      return parseInt(hash.replace('#comment-', ''));
+    }
+  }, [hash]);
 
   const handleOnPressEnterName = () => {
     updateTask({
@@ -129,17 +143,19 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
         >
           <CloseIcon />
         </IconButton>
-        <ButtonBase
-          startIcon={<CreditCardIcon />}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 123,
-            textTransform: 'none',
-          }}
-        >
-          Cover
-        </ButtonBase>
+        {task?.cover && (
+          <ButtonBase
+            startIcon={<CreditCardIcon />}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 123,
+              textTransform: 'none',
+            }}
+          >
+            Cover
+          </ButtonBase>
+        )}
         <DialogContent
           sx={{
             width: 768,
@@ -192,7 +208,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                         {task?.taskList?.name}
                       </span>
                     </Typography>
-                    <VisibilityIcon
+                    <VisibilityOutlinedIcon
                       sx={{
                         display: 'inline-block',
                         margin: '4px 8px 4px 2px',
@@ -226,63 +242,67 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                         }
                       }
                     >
-                      <Grid
-                        item
-                        container
-                        direction="column"
-                        flexBasis="content"
-                      >
-                        <Typography variant="subtitle2" noWrap>
-                          Members
-                        </Typography>
-                        <Grid item container gap="5px">
-                          {task?.assignees?.map((member) => (
-                            <Avatar
-                              key={member.id}
-                              alt={member.firstName + ' ' + member.lastName}
+                      {!!task?.assignees?.length && (
+                        <Grid
+                          item
+                          container
+                          direction="column"
+                          flexBasis="content"
+                        >
+                          <Typography variant="subtitle2" noWrap>
+                            Members
+                          </Typography>
+                          <Grid item container gap="5px">
+                            {task?.assignees?.map((member) => (
+                              <Avatar
+                                key={member.id}
+                                alt={member.firstName + ' ' + member.lastName}
+                                sx={{
+                                  width: 32,
+                                  height: 32,
+                                  fontSize: 16,
+                                }}
+                                src={member.photo?.path}
+                              >
+                                {member.firstName[0] + member.lastName[0]}
+                              </Avatar>
+                            ))}
+                            <IconButton
                               sx={{
                                 width: 32,
                                 height: 32,
-                                fontSize: 16,
                               }}
-                              src={member.photo?.path}
                             >
-                              {member.firstName[0] + member.lastName[0]}
-                            </Avatar>
-                          ))}
-                          <IconButton
-                            sx={{
-                              width: 32,
-                              height: 32,
-                            }}
-                          >
-                            <AddIcon />
-                          </IconButton>
+                              <AddIcon />
+                            </IconButton>
+                          </Grid>
                         </Grid>
-                      </Grid>
-                      <Grid
-                        item
-                        container
-                        direction="column"
-                        flexBasis="content"
-                      >
-                        <Typography variant="subtitle2" noWrap>
-                          Labels
-                        </Typography>
-                        <Grid item container gap="4px">
-                          {task?.labels?.map((label) => (
-                            <TaskLabel key={label.id} label={label} />
-                          ))}
-                          <IconButton
-                            sx={{
-                              width: 32,
-                              height: 32,
-                            }}
-                          >
-                            <AddIcon />
-                          </IconButton>
+                      )}
+                      {!!task?.labels?.length && (
+                        <Grid
+                          item
+                          container
+                          direction="column"
+                          flexBasis="content"
+                        >
+                          <Typography variant="subtitle2" noWrap>
+                            Labels
+                          </Typography>
+                          <Grid item container gap="4px">
+                            {task?.labels?.map((label) => (
+                              <TaskLabel key={label.id} label={label} />
+                            ))}
+                            <IconButton
+                              sx={{
+                                width: 32,
+                                height: 32,
+                              }}
+                            >
+                              <AddIcon />
+                            </IconButton>
+                          </Grid>
                         </Grid>
-                      </Grid>
+                      )}
                       <Grid
                         item
                         container
@@ -294,7 +314,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                         </Typography>
                         <ButtonBase
                           size="small"
-                          startIcon={<VisibilityIcon />}
+                          startIcon={<VisibilityOutlinedIcon />}
                           variant="contained"
                         >
                           Watch
@@ -363,33 +383,35 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                         )}
                       </Grid>
                     </StyledTaskBlock>
-                    <StyledTaskBlock item container direction="column">
-                      <StyledTaskBlockTitle
-                        item
-                        container
-                        justifyContent="space-between"
-                        alignItems="center"
-                      >
-                        <Grid item>
-                          <Typography variant="subtitle2">
-                            Attachments
-                          </Typography>
+                    {!!task?.attachments?.length && (
+                      <StyledTaskBlock item container direction="column">
+                        <StyledTaskBlockTitle
+                          item
+                          container
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Grid item>
+                            <Typography variant="subtitle2">
+                              Attachments
+                            </Typography>
+                          </Grid>
+                          <Grid item>
+                            <Button onClick={handleAddAttachment}>Add</Button>
+                          </Grid>
+                        </StyledTaskBlockTitle>
+                        <Grid item container direction="column">
+                          {task?.attachments?.map((attachment) => (
+                            <Attachment
+                              key={attachment.id}
+                              attachment={attachment}
+                              taskId={task.id}
+                              taskCoverId={task.cover?.id}
+                            />
+                          ))}
                         </Grid>
-                        <Grid item>
-                          <Button onClick={handleAddAttachment}>Add</Button>
-                        </Grid>
-                      </StyledTaskBlockTitle>
-                      <Grid item container direction="column">
-                        {task?.attachments?.map((attachment) => (
-                          <Attachment
-                            key={attachment.id}
-                            attachment={attachment}
-                            taskId={task.id}
-                            taskCoverId={task.cover?.id}
-                          />
-                        ))}
-                      </Grid>
-                    </StyledTaskBlock>
+                      </StyledTaskBlock>
+                    )}
                     <StyledTaskBlock item container direction="column">
                       {task?.checklists?.map((checkList) => (
                         <CheckList
@@ -411,16 +433,28 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                       <Grid
                         item
                         sx={{
-                          margin: '0 0 8px 40px',
+                          // margin: '0 0 8px 40px',
+                          margin: '0 0 8px 0px',
                         }}
                       >
-                        <Input
+                        {/* <StyledCommentInput
                           placeholder="Write a comment..."
                           sx={{ width: '100%' }}
+                        /> */}
+                        <TextEditor
+                          // height={300}
+                          isReadOnly={
+                            isReadOnlyDescription || isPendingTaskUpdate
+                          }
+                          onChange={(data) => setDescriptionString(data)}
                         />
                       </Grid>
                       {task?.comments?.map((comment) => (
-                        <TaskComment key={comment.id} comment={comment} />
+                        <TaskComment
+                          key={comment.id}
+                          comment={comment}
+                          isHighlighted={highlightedCommentId === comment.id}
+                        />
                       ))}
                     </StyledTaskBlock>
                   </Grid>

@@ -35,6 +35,13 @@ export function useTaskDetails({ taskId }: IUseTaskDetails) {
             field: 'comments',
           },
           {
+            field: 'comments.reactions',
+          },
+          {
+            field: 'comments.reactions.users',
+            select: ['id', 'firstName', 'lastName'],
+          },
+          {
             field: 'comments.author',
           },
           {

@@ -1,3 +1,4 @@
+import { IReaction } from './Reaction';
 import { IUser } from './User';
 
 export interface TaskComment {
@@ -8,4 +9,5 @@ export interface TaskComment {
   createdAt: string;
   updatedAt: string;
   author: IUser;
+  reactions?: IReaction[];
 }

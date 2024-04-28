@@ -27,6 +27,7 @@
     "axios": "^1.6.8",
     "dayjs": "^1.11.10",
     "dompurify": "^3.1.0",
+    "emoji-picker-react": "^4.9.2",
     "js-cookie": "^3.0.5",
     "lodash.groupby": "^4.6.0",
     "notistack": "^3.0.1",

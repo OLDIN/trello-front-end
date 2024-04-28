@@ -1,4 +1,4 @@
-import { Button, Divider, Grid, styled } from '@mui/material';
+import { Button, Divider, Grid, InputBase, styled } from '@mui/material';
 
 export const TaskCover = styled('div', {
   shouldForwardProp: (prop) => prop !== 'src',
@@ -67,4 +67,29 @@ export const StyledTaskBlockTitle = styled(Grid)`
   margin: 0 0 4px 0px;
   min-height: 32px;
   padding: 8px 0;
+`;
+
+export const StyledCommentInput = styled(InputBase)`
+  outline: none;
+  border: none;
+  box-sizing: border-box;
+  color: var(--ds-text, #172b4d);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Noto Sans', 'Ubuntu', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  font-display: swap;
+  transition-property: background-color, border-color, box-shadow;
+  transition-duration: 85ms;
+  transition-timing-function: ease;
+  border-radius: 3px;
+  padding: 8px 12px;
+  background-color: #ffffff;
+  width: 100%;
+  margin-bottom: 0;
+  box-shadow:
+    0px 1px 1px #091e4240,
+    0px 0px 1px #091e424f;
+  border-radius: 8px;
 `;

@@ -2,11 +2,10 @@ import {
   Avatar,
   Button,
   Grid,
+  IconButton,
   styled,
   Typography,
-  TypographyTypeMap,
 } from '@mui/material';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
 
 export const CommentBody = styled(Grid)`
   background-color: #ffffff;
@@ -51,11 +50,27 @@ export const CommentDateTypography = styled(Typography)`
   &:hover {
     text-decoration: underline;
   }
-` as OverridableComponent<TypographyTypeMap<object, 'span'>>;
+` as typeof Typography;
 
 export const CommentAvatar = styled(Avatar)`
   width: 32px;
   height: 32px;
   font-size: 14px;
   margin: 5px;
+`;
+
+export const AddReactionButton = styled(IconButton)`
+  padding: 0;
+  border-radius: 12px;
+  box-sizing: content-box;
+
+  & > .MuiSvgIcon-root {
+    border: 1px solid #091e4224;
+    border-radius: 12px;
+    color: #626f86;
+    line-height: 16px;
+    margin-bottom: 4px;
+    padding: 3px 7px;
+    width: auto;
+  }
 `;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent as ReactMouseEvent, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -6,9 +6,12 @@ import { authApi, commentsApi } from 'services/api';
 import { QueryKey } from 'enums/QueryKey.enum';
 import { ITask } from 'types/Task';
 
+import { useAddReaction } from '../../hooks/useAddReaction';
+import { useRemoveReaction } from '../../hooks/useRemoveReaction';
 import { formatDate } from '../../../../../../utils/formatDate';
 import type { TaskComment } from '../../../../../../types/TaskComment';
 import {
+  AddReactionButton,
   CommentActionButton,
   CommentAvatar,
   CommentBody,
@@ -17,7 +20,10 @@ import {
 } from './styles';
 
 import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined';
-import { CircularProgress, Grid, IconButton, Typography } from '@mui/material';
+import { CircularProgress, Grid, Popover, Typography } from '@mui/material';
+import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+
+import { CommentReaction } from '../CommentReaction/CommentReaction';
 
 interface TaskCommentProps {
   comment: TaskComment;
@@ -28,6 +34,13 @@ export function TaskComment({
   comment,
   isHighlighted = false,
 }: TaskCommentProps) {
+  const [isEmojiPickerSettings, setIsEmojiPickerSettings] = useState<{
+    open: boolean;
+    anchorEl: HTMLElement | null;
+  }>({
+    open: false,
+    anchorEl: null,
+  });
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { hash, pathname } = useLocation();
@@ -58,6 +71,17 @@ export function TaskComment({
     },
   });
 
+  const { mutate: AddReaction } = useAddReaction(
+    comment.taskId,
+    comment.id,
+    profile,
+  );
+  const { mutate: deleteReaction } = useRemoveReaction(
+    profile?.id ?? 0,
+    comment.taskId,
+    comment.id,
+  );
+
   const handleOnClickDate = () => {
     const commentId = parseInt(hash.replace('#comment-', ''));
 
@@ -73,62 +97,124 @@ export function TaskComment({
     deleteComment();
   };
 
-  return (
-    <CommentWrapper
-      container
-      wrap="nowrap"
-      className={isHighlighted ? 'highlighted' : ''}
-      gap={1}
-    >
-      <Grid item>
-        <CommentAvatar src={comment.author.photo?.path}>
-          {comment.author.firstName[0] + comment.author.lastName[0]}
-        </CommentAvatar>
-      </Grid>
-      <Grid item container direction="column">
-        <Grid item>
-          <Typography variant="subtitle1" component="span">
-            {comment.author.firstName + ' ' + comment.author.lastName}
-          </Typography>
-          <CommentDateTypography
-            variant="body2"
-            component="span"
-            sx={{ marginLeft: '4px' }}
-            onClick={handleOnClickDate}
-          >
-            {formatDate(new Date(comment.createdAt), 'StandardWithHours')}
-          </CommentDateTypography>
-        </Grid>
-        <CommentBody item>
-          <Typography variant="body2">{comment.message}</Typography>
-        </CommentBody>
-        <Grid item>
-          <IconButton size="small">
-            <AddReactionOutlinedIcon />
-          </IconButton>
+  const handleToggleEmojiPicker = (e: ReactMouseEvent<HTMLButtonElement>) => {
+    setIsEmojiPickerSettings((prev) => {
+      return {
+        ...prev,
+        open: !prev.open,
+        anchorEl: !prev.open === true ? e.currentTarget : null,
+      };
+    });
+  };
 
-          {profile?.id === comment.authorId && (
-            <>
-              <CommentActionButton
-                size="small"
-                variant="text"
-                disabled={isPendingDelete}
-              >
-                Edit
-              </CommentActionButton>
-              <CommentActionButton
-                size="small"
-                variant="text"
-                onClick={handleDeleteComment}
-                disabled={isPendingDelete}
-                startIcon={isPendingDelete && <CircularProgress size={8} />}
-              >
-                Delete
-              </CommentActionButton>
-            </>
-          )}
+  const handleOnEmojiClick = (emojiData: EmojiClickData) => {
+    const reaction = comment.reactions?.find(
+      (reaction) =>
+        (reaction.reaction === emojiData.unified &&
+          reaction.users?.some((user) => user.id === profile?.id)) ??
+        false,
+    );
+
+    if (reaction) {
+      deleteReaction(reaction.id);
+    } else {
+      AddReaction({ reaction: emojiData.unified });
+    }
+  };
+
+  return (
+    <>
+      <CommentWrapper
+        container
+        wrap="nowrap"
+        className={isHighlighted ? 'highlighted' : ''}
+        gap={1}
+      >
+        <Grid item>
+          <CommentAvatar src={comment.author.photo?.path}>
+            {comment.author.firstName[0] + comment.author.lastName[0]}
+          </CommentAvatar>
         </Grid>
-      </Grid>
-    </CommentWrapper>
+        <Grid item container direction="column">
+          <Grid item>
+            <Typography variant="subtitle1" component="span">
+              {comment.author.firstName + ' ' + comment.author.lastName}
+            </Typography>
+            <CommentDateTypography
+              variant="body2"
+              component="span"
+              sx={{ marginLeft: '4px' }}
+              onClick={handleOnClickDate}
+            >
+              {formatDate(new Date(comment.createdAt), 'StandardWithHours')}
+            </CommentDateTypography>
+          </Grid>
+          <CommentBody item>
+            <Typography variant="body2">{comment.message}</Typography>
+          </CommentBody>
+          <Grid item container gap={1} alignItems="center">
+            {comment.reactions?.map(
+              (reaction) =>
+                !!profile && (
+                  <CommentReaction
+                    key={reaction.id}
+                    reaction={reaction}
+                    userId={profile.id}
+                    taskId={comment.taskId}
+                    commentId={comment.id}
+                    user={profile}
+                  />
+                ),
+            )}
+            <AddReactionButton onClick={handleToggleEmojiPicker}>
+              <AddReactionOutlinedIcon
+                fontSize="small"
+                sx={{
+                  marginBottom: 0,
+                  fontSize: '16px',
+                }}
+              />
+            </AddReactionButton>
+
+            {profile?.id === comment.authorId && (
+              <>
+                <CommentActionButton
+                  size="small"
+                  variant="text"
+                  disabled={isPendingDelete}
+                >
+                  Edit
+                </CommentActionButton>
+                <CommentActionButton
+                  size="small"
+                  variant="text"
+                  onClick={handleDeleteComment}
+                  disabled={isPendingDelete}
+                  startIcon={isPendingDelete && <CircularProgress size={8} />}
+                >
+                  Delete
+                </CommentActionButton>
+              </>
+            )}
+          </Grid>
+        </Grid>
+      </CommentWrapper>
+      <Popover
+        open={isEmojiPickerSettings.open}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        onClose={() =>
+          setIsEmojiPickerSettings({ open: false, anchorEl: null })
+        }
+      >
+        <EmojiPicker open={true} onEmojiClick={handleOnEmojiClick} />
+      </Popover>
+    </>
   );
 }

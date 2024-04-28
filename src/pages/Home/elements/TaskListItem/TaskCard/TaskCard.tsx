@@ -129,7 +129,7 @@ export function TaskCard({ task, index }: TaskCardProps) {
                     </IconButton>
                   )}
                 </Box>
-                {task.assignees?.length && (
+                {!!task.assignees?.length && (
                   <Box
                     sx={{
                       display: 'flex',
