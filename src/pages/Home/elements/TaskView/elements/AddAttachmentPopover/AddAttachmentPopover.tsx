@@ -64,7 +64,6 @@ export function AddAttachmentPopover({
     });
 
   const onSubmit = (data: { file: FileList }) => {
-    console.log('on submit = ', data);
     if (!data.file.length) {
       return;
     }

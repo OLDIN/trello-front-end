@@ -35,13 +35,6 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
         const originalRequest = error.config;
         const refreshToken = Cookies.get('refreshToken');
 
-        console.log({
-          isRefreshTokenInProgress,
-          status: error.response.status === 401,
-          Authorization: error.config.headers.Authorization,
-          refreshToken,
-        });
-
         if (
           error.response.status === 401 &&
           error.config.headers.Authorization &&
@@ -96,7 +89,6 @@ const AxiosErrorHandler: FC<AxiosErrorHandlerProps> = ({ children }) => {
       const responseInterceptor = axiosInstance.interceptors.response.use(
         (response) => response,
         async () => {
-          console.log('interceptor');
           queryClient.setQueryData([QueryKey.ME], null);
         },
       );

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+
+import { TaskLabel } from 'types/TaskLabel';
 
 import { Popover } from 'components/Popover';
 
@@ -8,7 +10,6 @@ import { AttachmentPopoverContent } from './elements/AttachmentPopoverContent/At
 import { ChecklistPopoverContent } from './elements/ChecklistPopoverContent/ChecklistPopoverContent';
 import { CoverPopoverContent } from './elements/CoverPopoverContent/CoverPopoverContent';
 import { DatesPopoverContent } from './elements/DatesPopoverContent/DatesPopoverContent';
-import { LabelsPopoverContent } from './elements/LabelsPopoverContent/LabelsPopoverContent';
 import { MembersPopoverContent } from './elements/MembersPopoverContent/MembersPopoverContent';
 import { StyledDivider } from '../../styles';
 import { Button, RightSideButtonsWrapper } from './styles';
@@ -27,22 +28,29 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import ShareIcon from '@mui/icons-material/Share';
 import { Grid, Typography } from '@mui/material';
 
+import { LabelsPopoverContent } from '../LabelsPopoverContent/LabelsPopoverContent';
+
 interface RightSideBtnsProps {
   boardId: number;
   taskId: number;
+  taskLabels: TaskLabel[];
 }
 
-export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
+export function RightSideButtons({
+  boardId,
+  taskId,
+  taskLabels,
+}: RightSideBtnsProps) {
   const [popoverSettings, setPopoverSettings] = useState<{
     isOpenPopover: boolean;
     anchorEl: HTMLElement | null;
     title: string | null;
-    content: React.ReactNode | null;
+    component: ((...props: any) => JSX.Element) | null;
   }>({
     isOpenPopover: false,
     anchorEl: null,
     title: null,
-    content: null,
+    component: null,
   });
 
   const closePopover = () =>
@@ -50,8 +58,37 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
       anchorEl: null,
       title: null,
       isOpenPopover: false,
-      content: null,
+      component: null,
     });
+
+  const content = useMemo(() => {
+    switch (popoverSettings.component?.name) {
+      case 'MembersPopoverContent':
+        return <MembersPopoverContent boardId={boardId} taskId={taskId} />;
+      case 'LabelsPopoverContent':
+        return <LabelsPopoverContent taskLabels={taskLabels} />;
+      case 'ChecklistPopoverContent':
+        return (
+          <ChecklistPopoverContent
+            taskId={taskId}
+            onSuccessfulSubmit={() => closePopover()}
+          />
+        );
+      case 'DatesPopoverContent':
+        return <DatesPopoverContent />;
+      case 'AttachmentPopoverContent':
+        return <AttachmentPopoverContent />;
+      case 'CoverPopoverContent':
+        return <CoverPopoverContent />;
+      case 'ActionsMovePopoverContent':
+        return <ActionsMovePopoverContent />;
+      case 'ActionsCopyPopoverContent':
+        return <ActionsCopyPopoverContent />;
+
+      default:
+        return <></>;
+    }
+  }, [boardId, popoverSettings.component?.name, taskId, taskLabels]);
 
   return (
     <>
@@ -71,9 +108,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Members',
                 isOpenPopover: true,
-                content: (
-                  <MembersPopoverContent boardId={boardId} taskId={taskId} />
-                ),
+                component: MembersPopoverContent,
               })
             }
           >
@@ -86,7 +121,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Labels',
                 isOpenPopover: true,
-                content: <LabelsPopoverContent />,
+                component: LabelsPopoverContent,
               })
             }
           >
@@ -99,12 +134,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Checklist',
                 isOpenPopover: true,
-                content: (
-                  <ChecklistPopoverContent
-                    taskId={taskId}
-                    onSuccessfulSubmit={() => closePopover()}
-                  />
-                ),
+                component: ChecklistPopoverContent,
               })
             }
           >
@@ -117,7 +147,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Dates',
                 isOpenPopover: true,
-                content: <DatesPopoverContent />,
+                component: DatesPopoverContent,
               })
             }
           >
@@ -130,7 +160,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Attachment',
                 isOpenPopover: true,
-                content: <AttachmentPopoverContent />,
+                component: AttachmentPopoverContent,
               })
             }
           >
@@ -143,7 +173,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Cover',
                 isOpenPopover: true,
-                content: <CoverPopoverContent />,
+                component: CoverPopoverContent,
               })
             }
           >
@@ -168,7 +198,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Move',
                 isOpenPopover: true,
-                content: <ActionsMovePopoverContent />,
+                component: ActionsMovePopoverContent,
               })
             }
           >
@@ -181,7 +211,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
                 anchorEl: e.currentTarget,
                 title: 'Copy',
                 isOpenPopover: true,
-                content: <ActionsCopyPopoverContent />,
+                component: ActionsCopyPopoverContent,
               })
             }
           >
@@ -199,7 +229,7 @@ export function RightSideButtons({ boardId, taskId }: RightSideBtnsProps) {
         title={popoverSettings.title ?? ''}
         onClose={() => closePopover()}
       >
-        {popoverSettings.content}
+        {content}
       </Popover>
     </>
   );

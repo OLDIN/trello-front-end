@@ -37,6 +37,8 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import DOMPurify from 'dompurify';
 
+import './TaskView.scss';
+
 interface TaskViewProps {
   open: boolean;
   onClose: () => void;
@@ -91,6 +93,10 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
       return parseInt(hash.replace('#comment-', ''));
     }
   }, [hash]);
+
+  const enabledLabels = useMemo(() => {
+    return task?.labels?.filter((label) => label.isEnable) ?? [];
+  }, [task?.labels]);
 
   const handleOnPressEnterName = () => {
     updateTask({
@@ -278,7 +284,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                           </Grid>
                         </Grid>
                       )}
-                      {!!task?.labels?.length && (
+                      {!!enabledLabels.length && (
                         <Grid
                           item
                           container
@@ -289,7 +295,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                             Labels
                           </Typography>
                           <Grid item container gap="4px">
-                            {task?.labels?.map((label) => (
+                            {enabledLabels.map((label) => (
                               <TaskLabel key={label.id} label={label} />
                             ))}
                             <IconButton
@@ -458,7 +464,11 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                       ))}
                     </StyledTaskBlock>
                   </Grid>
-                  <RightSideButtons boardId={boardId} taskId={taskId} />
+                  <RightSideButtons
+                    boardId={boardId}
+                    taskId={taskId}
+                    taskLabels={task?.labels ?? []}
+                  />
                 </Grid>
               </Grid>
             </Grid>

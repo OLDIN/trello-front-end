@@ -24,3 +24,10 @@ export const isMobileDevice = {
     );
   },
 };
+
+export const getTooltipTitle = (
+  color?: string | null,
+  title?: string | null,
+) => {
+  return `Color: ${color ?? 'No color'}, title: ${title ? `"${title}"` : 'None'}`;
+};

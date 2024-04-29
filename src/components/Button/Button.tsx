@@ -1,8 +1,19 @@
-import React, { MouseEventHandler } from 'react';
+import React, {
+  AnchorHTMLAttributes,
+  DetailedHTMLProps,
+  MouseEventHandler,
+} from 'react';
 
 import { StyledButton } from './styles';
 
-interface ButtonProps {
+import { MUIStyledCommonProps } from '@mui/system';
+
+interface ButtonProps
+  extends Pick<MUIStyledCommonProps, 'sx'>,
+    DetailedHTMLProps<
+      AnchorHTMLAttributes<HTMLAnchorElement>,
+      HTMLAnchorElement
+    > {
   children: React.ReactNode;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
   disabled?: boolean;

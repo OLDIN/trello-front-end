@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { PopoverBody, PopoverTitle } from './styles';
 
@@ -60,8 +60,14 @@ export function Popover({
         marginTop: '10px',
       }}
     >
-      <PopoverBody container direction="column">
-        <Grid item container justifyContent="space-between" alignItems="center">
+      <PopoverBody container direction="column" component="section">
+        <Grid
+          item
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          component="header"
+        >
           <Grid item>{titleIcon}</Grid>
           <Grid item>
             <PopoverTitle variant="subtitle1">{title}</PopoverTitle>

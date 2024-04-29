@@ -72,7 +72,7 @@ export function CommentReaction({
       className={isMyReaction ? 'my-reaction' : ''}
       onClick={handleCLick}
     >
-      <Tooltip title={tooltipTitle}>
+      <Tooltip title={tooltipTitle} disableInteractive>
         <Icon>
           <Emoji unified={reaction.reaction} size={16} lazyLoad />
         </Icon>

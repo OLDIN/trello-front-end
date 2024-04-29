@@ -3,7 +3,7 @@ import { Grid, styled, Typography } from '@mui/material';
 export const PopoverBody = styled(Grid)`
   width: 304px;
   padding: 8px 16px;
-`;
+` as typeof Grid;
 
 export const PopoverTitle = styled(Typography)`
   box-sizing: border-box;
