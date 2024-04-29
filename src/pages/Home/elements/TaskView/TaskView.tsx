@@ -14,7 +14,7 @@ import { EditableInput } from 'components/EditableInput';
 import { useTaskDetails } from './hooks/useTaskDetails';
 import { AddAttachmentPopover } from './elements/AddAttachmentPopover/AddAttachmentPopover';
 import { Attachment } from './elements/Attachment/Attachment';
-import { CheckList } from './elements/CheckList';
+import { CheckList } from './elements/CheckList/CheckList';
 import { RightSideButtons } from './elements/RightSideBtns/RightSideBtns';
 import { TaskComment } from './elements/TaskComment/TaskComment';
 import { TaskLabel } from './elements/TaskLabel/TaskLabel';

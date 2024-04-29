@@ -34,8 +34,9 @@ export function ChecklistPopoverContent({
 }: ChecklistPopoverContentProps) {
   const queryClient = useQueryClient();
   const { register, handleSubmit } = useForm<FormValues>({
-    defaultValues: {
-      checklistId: -1,
+    values: {
+      name: '',
+      checklistId: 0,
     },
   });
 
@@ -123,12 +124,12 @@ export function ChecklistPopoverContent({
           <FormLabel>Copy items from…</FormLabel>
           <Select
             size="small"
-            defaultValue={-1}
+            defaultValue={''}
             {...register('checklistId')}
             disabled={isPending}
           >
             {groupedChecklists.map((group) => [
-              <MenuItem key={-1} value={-1}>
+              <MenuItem key={''} value={''}>
                 (None)
               </MenuItem>,
               <ListSubheader key={'task-' + group.task?.id}>

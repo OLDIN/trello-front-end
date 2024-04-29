@@ -7,31 +7,26 @@ import { ITask } from 'types/Task';
 
 import { Button } from 'components/Button';
 
-import { TaskCheckList } from '../../../../../types/TaskChecklist';
+import { TaskCheckList } from '../../../../../../types/TaskChecklist';
+import { StyledLinearProgress } from './styles';
 
-import styled from '@emotion/styled';
-import { Grid, LinearProgress, Typography } from '@mui/material';
+import {
+  css,
+  Grid,
+  LinearProgress,
+  linearProgressClasses,
+  styled,
+  Typography,
+} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { AddAnChecklistItemBlock } from './AddAnChecklistItemBlock/AddAnChecklistItemBlock';
-import { CheckListItem } from './CheckListItem/CheckListItem';
+import { AddAnChecklistItemBlock } from '../AddAnChecklistItemBlock/AddAnChecklistItemBlock';
+import { CheckListItem } from '../CheckListItem/CheckListItem';
 
 interface CheckListProps {
   checkList: TaskCheckList;
   taskId: number;
 }
-
-const StyledLinearProgress = styled(LinearProgress)`
-  /* &&::before {
-    content: ${({ value }) => `${value}%`};
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #fff;
-    font-size: 12px;
-  } */
-`;
 
 export function CheckList({ checkList, taskId }: CheckListProps) {
   const queryClient = useQueryClient();
@@ -78,10 +73,10 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
   );
 
   const completedInPercent = useMemo(() => {
-    return (
+    return Math.round(
       ((checkList?.items ?? []).filter((i) => i.isCompleted).length /
         (checkList?.items?.length ?? 0)) *
-      100
+        100,
     );
   }, [checkList.items]);
 
@@ -92,12 +87,12 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
   return (
     <Grid item key={checkList.id}>
       <Grid item container justifyContent="space-between">
-        <Grid item>
-          <Typography variant="subtitle2" gutterBottom>
+        <Grid item container alignItems="center" wrap="nowrap" width="auto">
+          <Typography variant="subtitle2" whiteSpace="nowrap">
             {checkList.name}
           </Typography>
         </Grid>
-        <Grid item>
+        <Grid item container gap={2} width="auto">
           {isShowFilterButton && (
             <Button onClick={handleToggleCheckedItems}>
               {itemsMode === 'all'
@@ -114,22 +109,36 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
           </Button>
         </Grid>
       </Grid>
-      <Grid item>
-        <StyledLinearProgress
-          variant="determinate"
-          value={completedInPercent}
-        />
+      <Grid item container alignItems="center" wrap="nowrap">
+        <Grid sx={{ minWidth: 40 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+          >{`${completedInPercent}%`}</Typography>
+        </Grid>
+        <Grid item sx={{ width: '100%' }}>
+          <StyledLinearProgress
+            variant="determinate"
+            value={completedInPercent}
+          />
+        </Grid>
       </Grid>
       <Grid item container direction="column">
-        {items?.map((item) => (
-          <CheckListItem
-            key={item.id}
-            item={item}
-            taskId={taskId}
-            checklistId={checkList.id}
-            isReadOnly={isPendingDelete}
-          />
-        ))}
+        {completedInPercent < 100 ? (
+          items?.map((item) => (
+            <CheckListItem
+              key={item.id}
+              item={item}
+              taskId={taskId}
+              checklistId={checkList.id}
+              isReadOnly={isPendingDelete}
+            />
+          ))
+        ) : (
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Everything in this checklist is complete!
+          </Typography>
+        )}
       </Grid>
       <Grid item>
         <AddAnChecklistItemBlock taskId={taskId} checkListId={checkList.id} />

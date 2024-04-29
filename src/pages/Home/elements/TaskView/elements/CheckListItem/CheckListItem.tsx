@@ -28,7 +28,7 @@ export function CheckListItem({
   const { register, handleSubmit, getValues } =
     useForm<PartialUpdateChecklistItemData>({
       mode: 'onChange',
-      defaultValues: {
+      values: {
         isCompleted: item.isCompleted,
       },
     });
