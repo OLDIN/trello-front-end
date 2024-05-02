@@ -167,7 +167,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
         >
           <CloseIcon />
         </IconButton>
-        {task?.cover && (
+        {task?.cover && !isLoading && (
           <ButtonBase
             startIcon={<CreditCardIcon />}
             sx={{
@@ -188,9 +188,16 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
           }}
         >
           {isLoading ? (
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Loading...
-            </Typography>
+            <Grid
+              container
+              sx={{
+                minHeight: '600px',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <CircularProgress />
+            </Grid>
           ) : (
             <Grid
               container
