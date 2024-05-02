@@ -9,14 +9,15 @@ import { QueryKey } from 'enums/QueryKey.enum';
 
 import useAuth from '../../hooks/useAuth';
 
-import { Sheet, Typography } from '@mui/joy';
 import {
+  Box,
   Button,
   CssBaseline,
   FormControl,
   FormHelperText,
   FormLabel,
   Input,
+  Typography,
 } from '@mui/material';
 
 import { setPersistUser } from '../../providers/AuthProvider/helpers';
@@ -47,7 +48,7 @@ export default function Login() {
   return (
     <main>
       <CssBaseline />
-      <Sheet
+      <Box
         sx={{
           width: 300,
           mx: 'auto', // margin left & right
@@ -60,13 +61,13 @@ export default function Login() {
           borderRadius: 'sm',
           boxShadow: 'md',
         }}
-        variant="outlined"
+        // variant="outlined"
       >
         <div>
-          <Typography level="h4" component="h1">
+          <Typography variant="h4" component="h1">
             <b>Welcome!</b>
           </Typography>
-          <Typography level="body-sm">Sign in to continue.</Typography>
+          <Typography variant="body1">Sign in to continue.</Typography>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl>
@@ -101,14 +102,11 @@ export default function Login() {
             Log in
           </Button>
         </form>
-        <Typography
-          endDecorator={<Link to="/sign-up">Sign up</Link>}
-          fontSize="sm"
-          sx={{ alignSelf: 'center' }}
-        >
+        <Typography sx={{ alignSelf: 'center' }}>
           Don&apos;t have an account?
         </Typography>
-      </Sheet>
+        <Link to="/sign-up">Sign up</Link>
+      </Box>
     </main>
   );
 }
