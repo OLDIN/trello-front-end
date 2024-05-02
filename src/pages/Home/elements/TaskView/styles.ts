@@ -95,6 +95,19 @@ export const StyledCommentInput = styled(InputBase)`
     0px 1px 1px #091e4240,
     0px 0px 1px #091e424f;
   border-radius: 8px;
+  cursor: pointer;
+
+  & .MuiInputBase-input {
+    padding: 0;
+    cursor: pointer;
+  }
+
+  &:hover {
+    box-shadow:
+      0px 1px 1px #091e4240,
+      0px 0px 1px #091e424f;
+    background-color: #f7f8f9;
+  }
 `;
 
 export const WatchButton = styled(Button)`

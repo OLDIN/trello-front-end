@@ -24,12 +24,18 @@ export const CommentBody = styled(Grid)`
 `;
 
 export const CommentActionButton = styled(Button)`
+  font-size: 12px;
   text-decoration: underline;
   cursor: pointer;
+  min-width: 0;
 
   &:hover {
     background-color: none;
   }
+
+  /* &::before {
+    content: ' • ';
+  } */
 `;
 
 export const CommentWrapper = styled(Grid)`

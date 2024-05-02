@@ -3,10 +3,12 @@ import { useLocation } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
-import { tasksApi } from 'services/api';
+import { commentsApi, tasksApi } from 'services/api';
+import { ICreateCommentPayload } from 'services/api/endpoints/comments';
 import { IPartialUpdateTask } from 'services/api/endpoints/tasks';
 import { QueryKey } from 'enums/QueryKey.enum';
 import useProfile from 'hooks/useProfile/useProfile';
+import { ITask } from 'types/Task';
 
 import { TextEditor } from '../../../../components/TextEditor';
 import { Button } from 'components/Button';
@@ -44,7 +46,6 @@ import {
   Grid,
   Icon,
   IconButton,
-  Input,
   Typography,
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -63,6 +64,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
   const queryClient = useQueryClient();
   const { hash } = useLocation();
   const [isReadOnlyDescription, setIsReadOnlyDescription] = useState(true);
+  const [isReadOnlyCommentInput, setIsReadOnlyCommentInput] = useState(true);
   const [attachmentPopoverSettings, setAttachmentPopoverSettings] = useState<{
     isOpenAddAttachmentPopover: boolean;
     anchorEl: HTMLElement | null;
@@ -71,6 +73,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
     anchorEl: null,
   });
   const [descriptionString, setDescriptionString] = useState<string>('');
+  const [commentString, setCommentString] = useState<string>('');
 
   const { data: task, isLoading } = useTaskDetails({ taskId });
   const { data: profile } = useProfile();
@@ -89,6 +92,32 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
       setIsReadOnlyDescription(true);
     },
   });
+  const { mutate: createComment, isPending: isPendingCreateComment } =
+    useMutation({
+      mutationFn: (data: ICreateCommentPayload) =>
+        commentsApi.create(taskId, data, {
+          join: [
+            {
+              field: 'author',
+            },
+            {
+              field: 'author.photo',
+            },
+          ],
+        }),
+      onSuccess: (result) => {
+        queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
+          if (!oldTask || !oldTask.comments) return oldTask;
+
+          return {
+            ...oldTask,
+            comments: [result, ...oldTask.comments],
+          };
+        });
+        setCommentString('');
+        setIsReadOnlyCommentInput(true);
+      },
+    });
 
   const { register, getValues, setValue } = useForm({
     values: {
@@ -136,6 +165,12 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
 
   const handleToggleWatch = () => {
     updateTask({ isWatched: !task?.isWatched });
+  };
+
+  const handleSaveComment = () => {
+    createComment({
+      message: commentString,
+    });
   };
 
   return (
@@ -589,17 +624,31 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                             '' + profile?.lastName?.[0] ??
                             ''}
                         </Avatar>
-                        <StyledCommentInput
-                          placeholder="Write a comment..."
-                          sx={{ width: '100%' }}
-                        />
-                        {/* <TextEditor
-                          // height={300}
-                          isReadOnly={
-                            isReadOnlyDescription || isPendingTaskUpdate
-                          }
-                          onChange={(data) => setDescriptionString(data)}
-                        /> */}
+                        {isReadOnlyCommentInput ? (
+                          <StyledCommentInput
+                            placeholder="Write a comment..."
+                            sx={{ width: '100%' }}
+                            onClick={() => setIsReadOnlyCommentInput(false)}
+                          />
+                        ) : (
+                          <Grid container>
+                            <TextEditor
+                              placeholder="Write a comment..."
+                              isReadOnly={
+                                isReadOnlyCommentInput || isPendingCreateComment
+                              }
+                              onChange={(data) => setCommentString(data)}
+                            />
+                            <ButtonBase
+                              onClick={handleSaveComment}
+                              disabled={
+                                isPendingCreateComment || !commentString.length
+                              }
+                            >
+                              Save
+                            </ButtonBase>
+                          </Grid>
+                        )}
                       </Grid>
                       {task?.comments?.map((comment) => (
                         <TaskComment

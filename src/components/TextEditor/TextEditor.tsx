@@ -21,6 +21,7 @@ export interface TextEditorProps {
   height?: CSSProperties['height'];
   minHeight?: CSSProperties['minHeight'];
   maxHeight?: CSSProperties['maxHeight'];
+  placeholder?: string;
 }
 
 const TextEditorBase: FC<TextEditorProps> = ({
@@ -29,12 +30,14 @@ const TextEditorBase: FC<TextEditorProps> = ({
   height,
   minHeight,
   maxHeight,
+  placeholder,
   ...props
 }) => {
   let editorInstance: DecoupledEditor | null = null;
 
   const handleReady = (editor: DecoupledEditor) => {
     editorInstance = editor;
+    editor.focus();
 
     editor?.ui
       ?.getEditableElement()
@@ -86,6 +89,7 @@ const TextEditorBase: FC<TextEditorProps> = ({
         onReady={handleReady}
         onChange={handleChange}
         config={{
+          placeholder,
           heading: {
             options: headingOptions,
           },

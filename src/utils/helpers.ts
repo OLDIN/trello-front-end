@@ -31,3 +31,7 @@ export const getTooltipTitle = (
 ) => {
   return `Color: ${color ?? 'No color'}, title: ${title ? `"${title}"` : 'None'}`;
 };
+
+export const trimParagraphContainer = (text: string) => {
+  return text.replace(/^<p>|<\/p>$/g, '');
+};

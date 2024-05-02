@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi, commentsApi } from 'services/api';
 import { QueryKey } from 'enums/QueryKey.enum';
 import { ITask } from 'types/Task';
+import { trimParagraphContainer } from 'utils/helpers';
 
 import { useAddReaction } from '../../hooks/useAddReaction';
 import { useRemoveReaction } from '../../hooks/useRemoveReaction';
@@ -21,6 +22,7 @@ import {
 
 import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined';
 import { CircularProgress, Grid, Popover, Typography } from '@mui/material';
+import DOMPurify from 'dompurify';
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 
 import { CommentReaction } from '../CommentReaction/CommentReaction';
@@ -166,7 +168,14 @@ export function TaskComment({
             </CommentDateTypography>
           </Grid>
           <CommentBody item>
-            <Typography variant="body1">{comment.message}</Typography>
+            <Typography
+              variant="body1"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  trimParagraphContainer(comment.message),
+                ),
+              }}
+            />
           </CommentBody>
           <Grid item container gap={1} alignItems="center">
             {comment.reactions?.map(
@@ -197,6 +206,7 @@ export function TaskComment({
                 <CommentActionButton
                   size="small"
                   variant="text"
+                  color="secondary"
                   disabled={isPendingDelete}
                 >
                   Edit
@@ -204,6 +214,7 @@ export function TaskComment({
                 <CommentActionButton
                   size="small"
                   variant="text"
+                  color="secondary"
                   onClick={handleDeleteComment}
                   disabled={isPendingDelete}
                   startIcon={isPendingDelete && <CircularProgress size={8} />}
