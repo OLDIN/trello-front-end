@@ -9,12 +9,20 @@ import { formatDate } from 'utils/formatDate';
 
 import { AttachmentDescription, AttachmentPreview } from './styles';
 
+import CallMadeOutlinedIcon from '@mui/icons-material/CallMadeOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
-import { Button, Grid, IconButton, Popover, Typography } from '@mui/material';
+import {
+  Button,
+  Grid,
+  Icon,
+  IconButton,
+  Popover,
+  Typography,
+} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { AttachmentBtn } from '../AttachmentBtn';
+import { AttachmentBtn } from '../AttachmentBtn/AttachmentBtn';
 
 interface AttachmentProps {
   attachment: IFile;
@@ -87,7 +95,16 @@ export function Attachment({
         </Grid>
         <AttachmentDescription item container direction="column">
           <Grid item>
-            <Typography variant="body2">{attachment.name}</Typography>
+            <Typography
+              variant="body1"
+              component="span"
+              fontWeight="fontWeightBold"
+            >
+              {attachment.name}
+            </Typography>
+            <Icon fontSize="small">
+              <CallMadeOutlinedIcon />
+            </Icon>
           </Grid>
           <Grid item>
             <Typography variant="caption">
@@ -119,6 +136,8 @@ export function Attachment({
           <Grid item>
             <Button
               size="small"
+              variant="text"
+              color="secondary"
               startIcon={<CreditCardIcon />}
               sx={{
                 textDecoration: 'underline',
