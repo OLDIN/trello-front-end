@@ -18,11 +18,18 @@ import { CheckList } from './elements/CheckList/CheckList';
 import { RightSideButtons } from './elements/RightSideBtns/RightSideBtns';
 import { TaskComment } from './elements/TaskComment/TaskComment';
 import { TaskLabel } from './elements/TaskLabel/TaskLabel';
-import { StyledTaskBlock, StyledTaskBlockTitle, TaskCover } from './styles';
+import {
+  StyledTaskBlock,
+  StyledTaskBlockTitle,
+  TaskCover,
+  WatchButton,
+} from './styles';
 
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
+import ViewAgendaOutlinedIcon from '@mui/icons-material/ViewAgendaOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import {
   Avatar,
@@ -30,6 +37,7 @@ import {
   Dialog,
   DialogContent,
   Grid,
+  Icon,
   IconButton,
   Input,
   Typography,
@@ -77,7 +85,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
   });
 
   const { register, getValues, setValue } = useForm({
-    defaultValues: {
+    values: {
       name: task?.name,
     },
   });
@@ -118,6 +126,10 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
 
   const handleSaveDescription = () => {
     updateTask({ description: descriptionString });
+  };
+
+  const handleToggleWatch = () => {
+    updateTask({ isWatched: !task?.isWatched });
   };
 
   return (
@@ -185,41 +197,54 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                   <TaskCover src={task.cover.path} />
                 </Grid>
               )}
-              <Grid item xs={12} padding={4}>
+              <Grid item xs={12} padding={3}>
                 <Grid
                   item
                   xs={12}
                   container
                   sx={{
                     minHeight: '32px',
-                    padding: '8px 52px 8px 56px',
+                    padding: '8px 0px 8px 0px',
+                    // padding: '8px 52px 8px 56px',
                     position: 'relative',
+                    flexDirection: 'row',
+                    flexWrap: 'nowrap',
+                    gap: '10px',
                   }}
                 >
                   {/* sx={{ padding: '12px 0 0' }} */}
-                  <EditableInput
-                    variant="h6"
-                    value={task?.name}
-                    onPressEnter={handleOnPressEnterName}
-                    {...register('name')}
-                  />
-
-                  <Grid item container alignContent="center">
-                    <Typography
-                      variant="subtitle2"
-                      sx={{ margin: '4px 8px 4px 2px' }}
-                    >
-                      In list{' '}
-                      <span style={{ textDecoration: 'underline' }}>
-                        {task?.taskList?.name}
-                      </span>
-                    </Typography>
-                    <VisibilityOutlinedIcon
-                      sx={{
-                        display: 'inline-block',
-                        margin: '4px 8px 4px 2px',
-                      }}
+                  <Grid item>
+                    <Icon>
+                      <ViewAgendaOutlinedIcon />
+                    </Icon>
+                  </Grid>
+                  <Grid item container>
+                    <EditableInput
+                      variant="h6"
+                      value={task?.name}
+                      onPressEnter={handleOnPressEnterName}
+                      {...register('name')}
                     />
+
+                    <Grid item container alignContent="center">
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ margin: '4px 8px 4px 2px' }}
+                      >
+                        In list{' '}
+                        <span style={{ textDecoration: 'underline' }}>
+                          {task?.taskList?.name}
+                        </span>
+                      </Typography>
+                      {task?.isWatched && (
+                        <VisibilityOutlinedIcon
+                          sx={{
+                            display: 'inline-block',
+                            margin: '4px 8px 4px 2px',
+                          }}
+                        />
+                      )}
+                    </Grid>
                   </Grid>
                 </Grid>
                 <Grid container item xs={12}>
@@ -318,13 +343,15 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                         <Typography variant="subtitle2">
                           Notifications
                         </Typography>
-                        <ButtonBase
+                        <WatchButton
                           size="small"
                           startIcon={<VisibilityOutlinedIcon />}
+                          endIcon={task?.isWatched && <DoneOutlinedIcon />}
                           variant="contained"
+                          onClick={handleToggleWatch}
                         >
                           Watch
-                        </ButtonBase>
+                        </WatchButton>
                       </Grid>
                     </Grid>
                     <StyledTaskBlock item container flexDirection="column">

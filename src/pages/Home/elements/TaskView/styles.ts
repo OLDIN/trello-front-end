@@ -96,3 +96,13 @@ export const StyledCommentInput = styled(InputBase)`
     0px 0px 1px #091e424f;
   border-radius: 8px;
 `;
+
+export const WatchButton = styled(Button)`
+  & .MuiButton-endIcon {
+    border-radius: 3px;
+    padding: 2px 4px;
+    text-align: center;
+    background-color: #626f86;
+    color: #fff;
+  }
+`;

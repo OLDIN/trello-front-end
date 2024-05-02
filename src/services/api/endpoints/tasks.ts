@@ -13,6 +13,11 @@ export interface IPartialUpdateTask
   attachmentsIds?: string[];
   fileCoverId?: string | null;
   membersIds?: number[];
+  isWatched?: boolean;
+}
+
+export interface ITaskDetainedResponse extends ITask {
+  isWatched: boolean;
 }
 
 export default {
@@ -25,7 +30,10 @@ export default {
     const queryString = qb.query();
 
     return axios
-      .get<ITask, AxiosResponse<ITask>>(`/v1/tasks/${id}?${queryString}`)
+      .get<
+        ITaskDetainedResponse,
+        AxiosResponse<ITaskDetainedResponse>
+      >(`/v1/tasks/${id}?${queryString}`)
       .then((res) => res.data);
   },
 
