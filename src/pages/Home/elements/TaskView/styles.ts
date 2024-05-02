@@ -69,7 +69,7 @@ export const StyledTaskBlock = styled(Grid)`
 export const StyledTaskBlockTitle = styled(Grid)`
   margin: 0 0 4px 0px;
   min-height: 32px;
-  padding: 8px 0;
+  /* padding: 8px 0; */
 `;
 
 export const StyledCommentInput = styled(InputBase)`
@@ -105,4 +105,10 @@ export const WatchButton = styled(Button)`
     background-color: #626f86;
     color: #fff;
   }
+`;
+
+export const Container = styled(StyledTaskBlock, {
+  shouldForwardProp: (prop) => prop !== 'iconStart',
+})<{ iconStart?: boolean }>`
+  padding: 0 8px 0 ${({ iconStart = false }) => (iconStart ? '24' : '60')}px;
 `;

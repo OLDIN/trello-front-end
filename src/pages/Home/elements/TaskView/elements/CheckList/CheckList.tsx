@@ -10,14 +10,8 @@ import { Button } from 'components/Button';
 import { TaskCheckList } from '../../../../../../types/TaskChecklist';
 import { StyledLinearProgress } from './styles';
 
-import {
-  css,
-  Grid,
-  LinearProgress,
-  linearProgressClasses,
-  styled,
-  Typography,
-} from '@mui/material';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import { Grid, Icon, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { AddAnChecklistItemBlock } from '../AddAnChecklistItemBlock/AddAnChecklistItemBlock';
@@ -86,28 +80,33 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
 
   return (
     <Grid item key={checkList.id}>
-      <Grid item container justifyContent="space-between">
-        <Grid item container alignItems="center" wrap="nowrap" width="auto">
-          <Typography variant="subtitle2" whiteSpace="nowrap">
+      <Grid item container justifyContent="space-between" gap={2}>
+        <Icon>
+          <CheckBoxOutlinedIcon />
+        </Icon>
+        <Grid flex={1}>
+          <Typography
+            variant="subtitle1"
+            whiteSpace="nowrap"
+            fontWeight={(theme) => theme.typography.fontWeightBold}
+          >
             {checkList.name}
           </Typography>
         </Grid>
-        <Grid item container gap={2} width="auto">
-          {isShowFilterButton && (
-            <Button onClick={handleToggleCheckedItems}>
-              {itemsMode === 'all'
-                ? 'Hide checked items'
-                : `Show checked items (${completedLength})`}
-            </Button>
-          )}
-          <Button
-            onClick={handleDeleteOnClick}
-            disabled={isPendingDelete}
-            startIcon={isPendingDelete && <CircularProgress size={16} />}
-          >
-            Delete
+        {isShowFilterButton && (
+          <Button onClick={handleToggleCheckedItems}>
+            {itemsMode === 'all'
+              ? 'Hide checked items'
+              : `Show checked items (${completedLength})`}
           </Button>
-        </Grid>
+        )}
+        <Button
+          onClick={handleDeleteOnClick}
+          disabled={isPendingDelete}
+          startIcon={isPendingDelete && <CircularProgress size={16} />}
+        >
+          Delete
+        </Button>
       </Grid>
       <Grid item container alignItems="center" wrap="nowrap">
         <Grid sx={{ minWidth: 40 }}>

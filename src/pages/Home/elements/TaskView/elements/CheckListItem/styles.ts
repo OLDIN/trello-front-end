@@ -1,4 +1,4 @@
-import { Grid, styled } from '@mui/material';
+import { css, Grid, styled, Typography } from '@mui/material';
 
 export const CheckListItemWrapper = styled(Grid)`
   border-radius: 12px;
@@ -28,4 +28,16 @@ export const CheckListItemTitleWrapper = styled(Grid)`
       display: block;
     }
   }
+`;
+
+export const CheckListItemTitle = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'checked',
+})<{
+  checked: boolean;
+}>`
+  ${({ checked }) =>
+    checked &&
+    css`
+      text-decoration: line-through;
+    `}
 `;

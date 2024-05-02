@@ -35,11 +35,12 @@ export const CommentActionButton = styled(Button)`
 export const CommentWrapper = styled(Grid)`
   border-left: 4px solid transparent;
   padding: 8px 0;
+  margin: 0px 0 0 -20px;
+  width: auto;
 
   &.highlighted {
     background: #e9f2ff;
     border-left-color: #1d7afc;
-    border-left: 4px solid #091e4224;
     /* margin: 0 0 0 -12px; */
     /* padding: 8px 0 8px 48px; */
   }
@@ -57,7 +58,8 @@ export const CommentAvatar = styled(Avatar)`
   width: 32px;
   height: 32px;
   font-size: 14px;
-  margin: 5px;
+  margin-left: 15px;
+  margin: 5px 0px 0px 15px;
 `;
 
 export const AddReactionButton = styled(IconButton)`

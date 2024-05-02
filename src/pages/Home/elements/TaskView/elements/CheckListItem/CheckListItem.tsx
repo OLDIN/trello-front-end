@@ -5,7 +5,11 @@ import { PartialUpdateChecklistItemData } from 'services/api/endpoints/checklist
 
 import { useUpdateCheckListItem } from './hooks/useUpdateChecklistItem';
 import type { TaskCheckListItem } from '../../../../../../types/TaskChecklist';
-import { CheckListItemTitleWrapper, CheckListItemWrapper } from './styles';
+import {
+  CheckListItemTitle,
+  CheckListItemTitleWrapper,
+  CheckListItemWrapper,
+} from './styles';
 
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -50,6 +54,9 @@ export function CheckListItem({
           checked={getValues('isCompleted')}
           {...register('isCompleted')}
           disabled={isReadOnly}
+          sx={{
+            padding: '9px 9px 9px 0',
+          }}
         />
       </Grid>
       <CheckListItemTitleWrapper
@@ -59,7 +66,9 @@ export function CheckListItem({
         alignItems="center"
       >
         <Grid item>
-          <Typography variant="body2">{item.name}</Typography>
+          <CheckListItemTitle variant="body2" checked={item.isCompleted}>
+            {item.name}
+          </CheckListItemTitle>
         </Grid>
         <Grid
           item

@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { tasksApi } from 'services/api';
 import { IPartialUpdateTask } from 'services/api/endpoints/tasks';
 import { QueryKey } from 'enums/QueryKey.enum';
+import useProfile from 'hooks/useProfile/useProfile';
 
 import { TextEditor } from '../../../../components/TextEditor';
 import { Button } from 'components/Button';
@@ -19,16 +20,20 @@ import { RightSideButtons } from './elements/RightSideBtns/RightSideBtns';
 import { TaskComment } from './elements/TaskComment/TaskComment';
 import { TaskLabel } from './elements/TaskLabel/TaskLabel';
 import {
-  StyledTaskBlock,
+  Container,
+  StyledCommentInput,
   StyledTaskBlockTitle,
   TaskCover,
   WatchButton,
 } from './styles';
 
 import AddIcon from '@mui/icons-material/Add';
+import AttachmentOutlinedIcon from '@mui/icons-material/AttachmentOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import DoneOutlinedIcon from '@mui/icons-material/DoneOutlined';
+import FormatAlignCenterOutlinedIcon from '@mui/icons-material/FormatAlignCenterOutlined';
+import FormatAlignLeftOutlinedIcon from '@mui/icons-material/FormatAlignLeftOutlined';
 import ViewAgendaOutlinedIcon from '@mui/icons-material/ViewAgendaOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import {
@@ -68,6 +73,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
   const [descriptionString, setDescriptionString] = useState<string>('');
 
   const { data: task, isLoading } = useTaskDetails({ taskId });
+  const { data: profile } = useProfile();
   const { mutate: updateTask, isPending: isPendingTaskUpdate } = useMutation({
     mutationFn: (data: IPartialUpdateTask) =>
       tasksApi.partialUpdate(taskId, data),
@@ -197,19 +203,18 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                   <TaskCover src={task.cover.path} />
                 </Grid>
               )}
-              <Grid item xs={12} padding={3}>
+              <Grid item xs={12}>
                 <Grid
                   item
                   xs={12}
                   container
+                  wrap="nowrap"
+                  gap="10px"
                   sx={{
                     minHeight: '32px',
-                    padding: '8px 0px 8px 0px',
+                    padding: '8px 24px',
                     // padding: '8px 52px 8px 56px',
                     position: 'relative',
-                    flexDirection: 'row',
-                    flexWrap: 'nowrap',
-                    gap: '10px',
                   }}
                 >
                   {/* sx={{ padding: '12px 0 0' }} */}
@@ -221,12 +226,18 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                   <Grid item container>
                     <EditableInput
                       variant="h6"
+                      fontWeight={(theme) => theme.typography.fontWeightBold}
                       value={task?.name}
                       onPressEnter={handleOnPressEnterName}
                       {...register('name')}
                     />
 
-                    <Grid item container alignContent="center">
+                    <Grid
+                      item
+                      container
+                      alignContent="center"
+                      alignItems="center"
+                    >
                       <Typography
                         variant="subtitle2"
                         sx={{ margin: '4px 8px 4px 2px' }}
@@ -241,6 +252,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                           sx={{
                             display: 'inline-block',
                             margin: '4px 8px 4px 2px',
+                            fontSize: '16px',
                           }}
                         />
                       )}
@@ -255,12 +267,12 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                     direction="column"
                     sx={{
                       minHeight: '24px',
-                      padding: '0 8px 8px 16px',
                       position: 'relative',
                       width: '552px',
+                      paddingRight: '8px',
                     }}
                   >
-                    <Grid
+                    <Container
                       item
                       container
                       direction="row"
@@ -280,7 +292,13 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                           direction="column"
                           flexBasis="content"
                         >
-                          <Typography variant="subtitle2" noWrap>
+                          <Typography
+                            variant="body2"
+                            component="h3"
+                            noWrap
+                            fontWeight="fontWeightBold"
+                            color="text.secondary"
+                          >
                             Members
                           </Typography>
                           <Grid item container gap="5px">
@@ -316,7 +334,13 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                           direction="column"
                           flexBasis="content"
                         >
-                          <Typography variant="subtitle2" noWrap>
+                          <Typography
+                            variant="body2"
+                            component="h3"
+                            noWrap
+                            fontWeight="fontWeightBold"
+                            color="text.secondary"
+                          >
                             Labels
                           </Typography>
                           <Grid item container gap="4px">
@@ -353,111 +377,183 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                           Watch
                         </WatchButton>
                       </Grid>
-                    </Grid>
-                    <StyledTaskBlock item container flexDirection="column">
-                      <Grid item container justifyContent="space-between">
-                        <Grid item>
-                          <Typography variant="subtitle2">
-                            Description
-                          </Typography>
-                        </Grid>
-                        <Grid item>
-                          {isReadOnlyDescription && (
-                            <Button
-                              onClick={() => setIsReadOnlyDescription(false)}
-                            >
-                              Edit
-                            </Button>
-                          )}
-                        </Grid>
+                    </Container>
+                    {/* --- DESCRIPTION --- */}
+                    <Container
+                      item
+                      container
+                      wrap="nowrap"
+                      gap="10px"
+                      iconStart
+                    >
+                      <Grid item>
+                        <Icon>
+                          <FormatAlignLeftOutlinedIcon />
+                        </Icon>
                       </Grid>
-                      <Grid item container gap="10px">
-                        {!isReadOnlyDescription ? (
-                          <>
-                            <TextEditor
-                              data={task?.description}
-                              height={300}
-                              isReadOnly={
-                                isReadOnlyDescription || isPendingTaskUpdate
-                              }
-                              onChange={(data) => setDescriptionString(data)}
-                            />
-                            <ButtonBase
-                              variant="contained"
-                              disabled={isPendingTaskUpdate}
-                              onClick={() => handleSaveDescription()}
-                              startIcon={
-                                isPendingTaskUpdate && (
-                                  <CircularProgress size={16} />
-                                )
-                              }
-                            >
-                              Save
-                            </ButtonBase>
-                            <ButtonBase
-                              variant="text"
-                              onClick={() => handleCancelDescriptionEdit()}
-                              disabled={isPendingTaskUpdate}
-                            >
-                              Cancel
-                            </ButtonBase>
-                          </>
-                        ) : (
-                          <Typography
-                            variant="body1"
-                            sx={{ whiteSpace: 'pre-wrap' }}
-                            onClick={() => setIsReadOnlyDescription(false)}
-                            dangerouslySetInnerHTML={{
-                              __html: DOMPurify.sanitize(
-                                task?.description ?? '',
-                              ),
-                            }}
-                          />
-                        )}
-                      </Grid>
-                    </StyledTaskBlock>
-                    {!!task?.attachments?.length && (
-                      <StyledTaskBlock item container direction="column">
-                        <StyledTaskBlockTitle
+                      <Grid item container>
+                        <Grid
                           item
                           container
                           justifyContent="space-between"
                           alignItems="center"
                         >
                           <Grid item>
-                            <Typography variant="subtitle2">
-                              Attachments
+                            <Typography
+                              variant="subtitle1"
+                              fontWeight={(theme) =>
+                                theme.typography.fontWeightBold
+                              }
+                            >
+                              Description
                             </Typography>
                           </Grid>
                           <Grid item>
-                            <Button onClick={handleAddAttachment}>Add</Button>
+                            {isReadOnlyDescription && (
+                              <Button
+                                onClick={() => setIsReadOnlyDescription(false)}
+                              >
+                                Edit
+                              </Button>
+                            )}
                           </Grid>
-                        </StyledTaskBlockTitle>
-                        <Grid item container direction="column">
-                          {task?.attachments?.map((attachment) => (
-                            <Attachment
-                              key={attachment.id}
-                              attachment={attachment}
-                              taskId={task.id}
-                              taskCoverId={task.cover?.id}
-                            />
-                          ))}
                         </Grid>
-                      </StyledTaskBlock>
-                    )}
-                    <StyledTaskBlock item container direction="column">
-                      {task?.checklists?.map((checkList) => (
-                        <CheckList
-                          key={checkList.id}
-                          checkList={checkList}
-                          taskId={taskId}
-                        />
-                      ))}
-                    </StyledTaskBlock>
-                    <StyledTaskBlock item container direction="column">
-                      <Grid item container justifyContent="space-between">
+                        <Grid item container gap="10px">
+                          {!isReadOnlyDescription ? (
+                            <>
+                              <TextEditor
+                                data={task?.description}
+                                height={300}
+                                isReadOnly={
+                                  isReadOnlyDescription || isPendingTaskUpdate
+                                }
+                                onChange={(data) => setDescriptionString(data)}
+                              />
+                              <ButtonBase
+                                variant="contained"
+                                disabled={isPendingTaskUpdate}
+                                onClick={() => handleSaveDescription()}
+                                startIcon={
+                                  isPendingTaskUpdate && (
+                                    <CircularProgress size={16} />
+                                  )
+                                }
+                              >
+                                Save
+                              </ButtonBase>
+                              <ButtonBase
+                                variant="text"
+                                onClick={() => handleCancelDescriptionEdit()}
+                                disabled={isPendingTaskUpdate}
+                              >
+                                Cancel
+                              </ButtonBase>
+                            </>
+                          ) : (
+                            <Typography
+                              variant="body1"
+                              sx={{ whiteSpace: 'pre-wrap' }}
+                              onClick={() => setIsReadOnlyDescription(false)}
+                              dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                  task?.description ?? '',
+                                ),
+                              }}
+                            />
+                          )}
+                        </Grid>
+                      </Grid>
+                    </Container>
+                    {/* --- END DESCRIPTION --- */}
+                    {/* --- ATTACHMENTS --- */}
+                    {!!task?.attachments?.length && (
+                      <Container
+                        item
+                        container
+                        wrap="nowrap"
+                        gap="10px"
+                        iconStart
+                      >
                         <Grid item>
-                          <Typography variant="subtitle2">Activity</Typography>
+                          <Icon>
+                            <AttachmentOutlinedIcon
+                              sx={{ transform: 'rotate(-45deg)' }}
+                            />
+                          </Icon>
+                        </Grid>
+                        <Grid item container>
+                          <StyledTaskBlockTitle
+                            item
+                            container
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
+                            <Grid item>
+                              <Typography
+                                variant="subtitle1"
+                                fontWeight={(theme) =>
+                                  theme.typography.fontWeightBold
+                                }
+                              >
+                                Attachments
+                              </Typography>
+                            </Grid>
+                            <Grid item>
+                              <Button onClick={handleAddAttachment}>Add</Button>
+                            </Grid>
+                          </StyledTaskBlockTitle>
+                          <Grid item container direction="column">
+                            {task?.attachments?.map((attachment) => (
+                              <Attachment
+                                key={attachment.id}
+                                attachment={attachment}
+                                taskId={task.id}
+                                taskCoverId={task.cover?.id}
+                              />
+                            ))}
+                          </Grid>
+                        </Grid>
+                      </Container>
+                    )}
+                    {/* --- END ATTACHMENTS --- */}
+                    <Container
+                      item
+                      container
+                      wrap="nowrap"
+                      gap="10px"
+                      iconStart
+                    >
+                      <Grid item container direction="column">
+                        {task?.checklists?.map((checkList) => (
+                          <CheckList
+                            key={checkList.id}
+                            checkList={checkList}
+                            taskId={taskId}
+                          />
+                        ))}
+                      </Grid>
+                    </Container>
+                    <Container item container direction="column" iconStart>
+                      <Grid
+                        item
+                        container
+                        justifyContent="space-between"
+                        gap="10px"
+                      >
+                        <Grid item>
+                          <Icon>
+                            <FormatAlignCenterOutlinedIcon />
+                          </Icon>
+                        </Grid>
+                        <Grid item flex={1}>
+                          <Typography
+                            variant="subtitle1"
+                            fontWeight={(theme) =>
+                              theme.typography.fontWeightBold
+                            }
+                          >
+                            Activity
+                          </Typography>
                         </Grid>
                         <Grid item>
                           <Button>Show details</Button>
@@ -465,22 +561,38 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                       </Grid>
                       <Grid
                         item
+                        container
+                        wrap="nowrap"
+                        gap="10px"
                         sx={{
                           // margin: '0 0 8px 40px',
                           margin: '0 0 8px 0px',
                         }}
                       >
-                        {/* <StyledCommentInput
+                        <Avatar
+                          alt={profile?.firstName + ' ' + profile?.lastName}
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            fontSize: 16,
+                          }}
+                          src={profile?.photo?.path}
+                        >
+                          {profile?.firstName?.[0] ??
+                            '' + profile?.lastName?.[0] ??
+                            ''}
+                        </Avatar>
+                        <StyledCommentInput
                           placeholder="Write a comment..."
                           sx={{ width: '100%' }}
-                        /> */}
-                        <TextEditor
+                        />
+                        {/* <TextEditor
                           // height={300}
                           isReadOnly={
                             isReadOnlyDescription || isPendingTaskUpdate
                           }
                           onChange={(data) => setDescriptionString(data)}
-                        />
+                        /> */}
                       </Grid>
                       {task?.comments?.map((comment) => (
                         <TaskComment
@@ -489,7 +601,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                           isHighlighted={highlightedCommentId === comment.id}
                         />
                       ))}
-                    </StyledTaskBlock>
+                    </Container>
                   </Grid>
                   <RightSideButtons
                     boardId={boardId}

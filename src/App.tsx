@@ -28,21 +28,58 @@ const theme = createTheme({
           textTransform: 'none',
         },
       },
+      defaultProps: {
+        variant: 'contained',
+        size: 'small',
+        disableElevation: true,
+        color: 'primary',
+        disableRipple: true,
+        disableTouchRipple: true,
+      },
+    },
+    MuiAvatar: {
+      defaultProps: {
+        variant: 'circular',
+        alt: 'Avatar',
+      },
+      styleOverrides: {},
+    },
+    MuiCheckbox: {
+      defaultProps: {
+        color: 'primary',
+        disableRipple: true,
+      },
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          '&.Mui-checked': {
+            color: '#0075ff',
+          },
+        },
+      },
     },
   },
   palette: {
     mode: 'light',
     text: {
-      primary: '#44546f',
+      primary: '#172b4d',
+      secondary: '#44546f',
     },
     primary: {
       main: 'hsl(206,14.1%,73%)',
     },
+    divider: '#091e4224',
   },
   typography: {
     fontFamily:
       '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Droid Sans,Helvetica Neue,sans-serif',
     fontSize: 14,
+    body1: {
+      fontSize: '0.875rem',
+    },
+    body2: {
+      fontSize: '0.75rem',
+    },
   },
   // status: {
   //   danger: orange[500],

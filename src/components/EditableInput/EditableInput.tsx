@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 
 interface EditableInputProps
-  extends Pick<TypographyOwnProps, 'variant'>,
+  extends Pick<TypographyOwnProps, 'variant' | 'fontWeight'>,
     Pick<TextareaAutosizeProps, 'onBlur'> {
   value?: string;
   onPressEnter?: (e: KeyboardEvent) => void;
@@ -28,7 +28,7 @@ interface EditableInputProps
 const EditableInputBase: FC<EditableInputProps> = forwardRef<
   HTMLTextAreaElement,
   EditableInputProps
->(({ value, variant, onBlur, onPressEnter, ...props }, ref) => {
+>(({ value, variant, onBlur, onPressEnter, fontWeight, ...props }, ref) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleClickFromViewMode = () => {
@@ -66,7 +66,11 @@ const EditableInputBase: FC<EditableInputProps> = forwardRef<
           onKeyDown={handleOnKeyDown}
         />
       ) : (
-        <StyledTypography variant={variant} onClick={handleClickFromViewMode}>
+        <StyledTypography
+          variant={variant}
+          fontWeight={fontWeight}
+          onClick={handleClickFromViewMode}
+        >
           {value}
         </StyledTypography>
       )}

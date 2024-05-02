@@ -140,7 +140,7 @@ export function TaskComment({
         container
         wrap="nowrap"
         className={isHighlighted ? 'highlighted' : ''}
-        gap={1}
+        gap={'10px'}
       >
         <Grid item>
           <CommentAvatar src={comment.author.photo?.path}>
@@ -149,7 +149,11 @@ export function TaskComment({
         </Grid>
         <Grid item container direction="column">
           <Grid item>
-            <Typography variant="subtitle1" component="span">
+            <Typography
+              variant="subtitle2"
+              component="span"
+              fontWeight={(theme) => theme.typography.fontWeightBold}
+            >
               {comment.author.firstName + ' ' + comment.author.lastName}
             </Typography>
             <CommentDateTypography
@@ -162,7 +166,7 @@ export function TaskComment({
             </CommentDateTypography>
           </Grid>
           <CommentBody item>
-            <Typography variant="body2">{comment.message}</Typography>
+            <Typography variant="body1">{comment.message}</Typography>
           </CommentBody>
           <Grid item container gap={1} alignItems="center">
             {comment.reactions?.map(
