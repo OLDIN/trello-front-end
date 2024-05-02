@@ -58,6 +58,7 @@ const theme = createTheme({
         },
       },
     },
+    MuiIcon: {},
   },
   palette: {
     mode: 'light',
@@ -67,6 +68,11 @@ const theme = createTheme({
     },
     primary: {
       main: 'hsl(206,14.1%,73%)',
+      light: '#44546f',
+      dark: '#172b4d',
+    },
+    secondary: {
+      main: '#44546f',
     },
     divider: '#091e4224',
   },
@@ -74,6 +80,9 @@ const theme = createTheme({
     fontFamily:
       '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Droid Sans,Helvetica Neue,sans-serif',
     fontSize: 14,
+    caption: {
+      fontSize: '0.875rem',
+    },
     body1: {
       fontSize: '0.875rem',
     },
