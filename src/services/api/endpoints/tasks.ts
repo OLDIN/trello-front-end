@@ -20,6 +20,8 @@ export interface ITaskDetainedResponse extends ITask {
   isWatched: boolean;
 }
 
+export type CreateTaskPayload = Pick<ITask, 'name' | 'taskListId' | 'boardId'>;
+
 export default {
   partialUpdate: (
     id: number,
@@ -54,6 +56,14 @@ export default {
 
     return axios
       .get<ITask[], AxiosResponse<ITask[]>>(`/v1/tasks?${queryString}`)
+      .then((res) => res.data);
+  },
+  create: (data: CreateTaskPayload, query?: CreateQueryParams) => {
+    const qb = RequestQueryBuilder.create(query);
+    const queryString = qb.query();
+
+    return axios
+      .post<ITask, AxiosResponse<ITask>>(`/v1/tasks?${queryString}`, data)
       .then((res) => res.data);
   },
 };
