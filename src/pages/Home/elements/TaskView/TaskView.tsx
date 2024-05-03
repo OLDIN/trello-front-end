@@ -242,7 +242,10 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
             >
               {task?.cover?.path && (
                 <Grid item xs={12}>
-                  <TaskCover src={task.cover.path} />
+                  <TaskCover
+                    src={task.cover.path}
+                    coverBgColor={task.coverBgColor}
+                  />
                 </Grid>
               )}
               <Grid item xs={12}>

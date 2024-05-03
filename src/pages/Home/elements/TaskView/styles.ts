@@ -1,9 +1,11 @@
 import { Button, Divider, Grid, InputBase, styled } from '@mui/material';
 
 export const TaskCover = styled('div', {
-  shouldForwardProp: (prop) => prop !== 'src',
-})<{ src: string }>`
-  background-color: rgb(106, 103, 90);
+  shouldForwardProp: (prop) =>
+    !['src', 'coverBgColor'].includes(prop.toString()),
+})<{ src: string; coverBgColor?: string }>`
+  background-color: ${({ coverBgColor = 'rgb(250, 250, 249)' }) =>
+    coverBgColor};
   background-image: ${({ src }) => `url(${src})`};
   height: 160px;
   min-height: 160px;
@@ -13,8 +15,12 @@ export const TaskCover = styled('div', {
   box-sizing: border-box;
   background-position: center center;
   background-repeat: no-repeat;
-
   width: 100%;
+  cursor: pointer;
+
+  &:hover {
+    /* opacity: 0.9; */
+  }
 `;
 
 export const StyledButton = styled(Button)`

@@ -25,6 +25,7 @@ export interface ITask {
   boardId: number;
   board?: Board;
   cover?: IFile;
+  coverBgColor?: string;
   attachments?: IFile[];
   comments?: TaskComment[];
   taskList?: TaskList;
