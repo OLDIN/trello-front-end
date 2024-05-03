@@ -14,6 +14,7 @@ import { useBoards, useTaskLists } from './hooks';
 import { useTasks } from './hooks/useTasks';
 import { useUsers } from './hooks/useUsers';
 import { drawerWidth } from './constants/drawer.constants';
+import { AddAnotherListBlock } from './elements/AddAnotherListBlock/AddAnotherListBlock';
 import { TaskListItem } from './elements/TaskListItem';
 import { TaskView } from './elements/TaskView';
 import {
@@ -59,13 +60,16 @@ export default function Home() {
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(true);
-  const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<
     number | undefined
   >(undefined);
 
   const { taskModalSettings, setTaskModalSettings } = useTaskStore();
-  const { setSelectedBoardBackgroundImagePath } = useBoardStore();
+  const {
+    setSelectedBoardBackgroundImagePath,
+    setSelectedBoard,
+    selectedBoard,
+  } = useBoardStore();
 
   const { data: boards = [] } = useBoards();
   const { data: taskLists = [] } = useTaskLists({
@@ -105,7 +109,7 @@ export default function Home() {
         boards[0].backgroundImage?.path ?? null,
       );
     }
-  }, [boards, setSelectedBoardBackgroundImagePath]);
+  }, [boards, setSelectedBoard, setSelectedBoardBackgroundImagePath]);
 
   useEffect(() => {
     if (boards.length && boardId) {
@@ -126,7 +130,13 @@ export default function Home() {
       navigate(`/boards/${boards[0].id}`);
       document.title = `${boards[0].name} | Trello`;
     }
-  }, [boardId, boards, navigate, setSelectedBoardBackgroundImagePath]);
+  }, [
+    boardId,
+    boards,
+    navigate,
+    setSelectedBoard,
+    setSelectedBoardBackgroundImagePath,
+  ]);
 
   useEffect(() => {
     if (taskId) {
@@ -355,7 +365,7 @@ export default function Home() {
               />
             ))}
           </DragDropContext>
-          {/* <Paper>+ Add another list</Paper> */}
+          <AddAnotherListBlock />
         </Stack>
       </Main>
       {taskModalSettings.taskId && (
