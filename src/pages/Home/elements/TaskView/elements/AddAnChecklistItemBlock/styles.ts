@@ -34,3 +34,8 @@ export const TextareaAutosize = styled(BaseTextareaAutosize)(
   }
 `,
 );
+
+export const Wrapper = styled('div')`
+  margin-top: 8px;
+  margin-left: 40px;
+`;

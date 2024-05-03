@@ -10,7 +10,7 @@ import { ITask } from 'types/Task';
 
 import { Button } from 'components/Button';
 
-import { TextareaAutosize } from './styles';
+import { TextareaAutosize, Wrapper } from './styles';
 
 import AddIcon from '@mui/icons-material/Add';
 import { Button as ButtonBase, Grid } from '@mui/material';
@@ -62,7 +62,7 @@ export function AddAnChecklistItemBlock({
   };
 
   return (
-    <>
+    <Wrapper>
       {mode === 'view' ? (
         <ButtonBase
           size="small"
@@ -104,6 +104,6 @@ export function AddAnChecklistItemBlock({
           </Grid>
         </Grid>
       )}
-    </>
+    </Wrapper>
   );
 }

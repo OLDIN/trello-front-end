@@ -416,7 +416,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                           variant="contained"
                           onClick={handleToggleWatch}
                         >
-                          Watch
+                          {task?.isWatched ? 'Watching' : 'Watch'}
                         </WatchButton>
                       </Grid>
                     </Container>

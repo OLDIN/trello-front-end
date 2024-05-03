@@ -25,7 +25,9 @@ interface CheckListProps {
 export function CheckList({ checkList, taskId }: CheckListProps) {
   const queryClient = useQueryClient();
   const [items, setItems] = useState(checkList.items ?? []);
-  const [itemsMode, setItemsMode] = useState<'all' | 'homeCompleted'>('all');
+  const [itemsMode, setItemsMode] = useState<'all' | 'homeCompleted'>(
+    'homeCompleted',
+  );
 
   const { mutate: deleteCheckList, isPending: isPendingDelete } = useMutation({
     mutationFn: () => checklistApi.deleteById(taskId, checkList.id),
@@ -68,19 +70,24 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
 
   const completedInPercent = useMemo(() => {
     return Math.round(
-      ((checkList?.items ?? []).filter((i) => i.isCompleted).length /
-        (checkList?.items?.length ?? 0)) *
-        100,
+      (completedLength / (checkList?.items?.length ?? 0)) * 100,
     );
-  }, [checkList.items]);
+  }, [checkList?.items?.length, completedLength]);
 
   const isShowFilterButton = useMemo(() => {
-    return checkList.items?.some((i) => i.isCompleted);
-  }, [checkList.items]);
+    return completedLength > 0;
+  }, [completedLength]);
 
   return (
     <Grid item key={checkList.id}>
-      <Grid item container justifyContent="space-between" gap={2}>
+      <Grid
+        item
+        container
+        justifyContent="space-between"
+        alignItems="center"
+        gap={2}
+        sx={{ marginBottom: '4px', padding: '8px 0' }}
+      >
         <Icon>
           <CheckBoxOutlinedIcon />
         </Icon>
@@ -122,8 +129,13 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
           />
         </Grid>
       </Grid>
-      <Grid item container direction="column">
-        {completedInPercent < 100 ? (
+      <Grid
+        item
+        container
+        direction="column"
+        sx={{ minHeight: items.length === 0 ? '8px' : 'auto' }}
+      >
+        {completedInPercent < 100 || itemsMode === 'all' ? (
           items?.map((item) => (
             <CheckListItem
               key={item.id}
@@ -134,7 +146,10 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
             />
           ))
         ) : (
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          <Typography
+            variant="body2"
+            sx={{ color: 'text.secondary', margin: '8px 0 0 40px' }}
+          >
             Everything in this checklist is complete!
           </Typography>
         )}
