@@ -36,7 +36,13 @@ export function AddAttachmentPopover({
 
   const { mutate: updateTask, isPending: isPendingUpdateTask } = useMutation({
     mutationFn: (data: IPartialUpdateTask) =>
-      tasksApi.partialUpdate(task.id, data),
+      tasksApi.partialUpdate(task.id, data, {
+        join: [
+          {
+            field: 'attachments',
+          },
+        ],
+      }),
     onSuccess: (data) => {
       queryClient.setQueryData([QueryKey.TASKS, task.id], (oldTask: ITask) => ({
         ...oldTask,

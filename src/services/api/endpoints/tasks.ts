@@ -21,10 +21,21 @@ export interface ITaskDetainedResponse extends ITask {
 }
 
 export default {
-  partialUpdate: (id: number, data: IPartialUpdateTask) =>
-    axios
-      .patch<ITask, AxiosResponse<ITask>>(`/v1/tasks/${id}`, data)
-      .then((res) => res.data),
+  partialUpdate: (
+    id: number,
+    data: IPartialUpdateTask,
+    query?: Omit<CreateQueryParams, 'filter'>,
+  ) => {
+    const qb = RequestQueryBuilder.create(query);
+    const queryString = qb.query();
+
+    return axios
+      .patch<
+        ITask,
+        AxiosResponse<ITask>
+      >(`/v1/tasks/${id}?${queryString}`, data)
+      .then((res) => res.data);
+  },
   getById: (id: number, query: Omit<CreateQueryParams, 'filter'>) => {
     const qb = RequestQueryBuilder.create(query);
     const queryString = qb.query();
