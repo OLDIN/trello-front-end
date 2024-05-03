@@ -24,6 +24,8 @@ import { TaskLabel } from './elements/TaskLabel/TaskLabel';
 import {
   Container,
   StyledCommentInput,
+  StyledDescriptionPlaceholder,
+  StyledEmptyDescriptionBlock,
   StyledTaskBlockTitle,
   TaskCover,
   WatchButton,
@@ -453,15 +455,18 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                               Description
                             </Typography>
                           </Grid>
-                          <Grid item>
-                            {isReadOnlyDescription && (
-                              <Button
-                                onClick={() => setIsReadOnlyDescription(false)}
-                              >
-                                Edit
-                              </Button>
+                          {task?.description?.length &&
+                            isReadOnlyDescription && (
+                              <Grid item>
+                                <Button
+                                  onClick={() =>
+                                    setIsReadOnlyDescription(false)
+                                  }
+                                >
+                                  Edit
+                                </Button>
+                              </Grid>
                             )}
-                          </Grid>
                         </Grid>
                         <Grid item container gap="10px">
                           {!isReadOnlyDescription ? (
@@ -494,17 +499,21 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                                 Cancel
                               </ButtonBase>
                             </>
-                          ) : (
-                            <Typography
+                          ) : task?.description ? (
+                            <StyledDescriptionPlaceholder
                               variant="body1"
-                              sx={{ whiteSpace: 'pre-wrap' }}
                               onClick={() => setIsReadOnlyDescription(false)}
                               dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(
-                                  task?.description ?? '',
-                                ),
+                                __html: DOMPurify.sanitize(task.description),
                               }}
                             />
+                          ) : (
+                            <StyledEmptyDescriptionBlock
+                              component="a"
+                              onClick={() => setIsReadOnlyDescription(false)}
+                            >
+                              Add a more detailed description...
+                            </StyledEmptyDescriptionBlock>
                           )}
                         </Grid>
                       </Grid>

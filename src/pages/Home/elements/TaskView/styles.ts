@@ -1,4 +1,11 @@
-import { Button, Divider, Grid, InputBase, styled } from '@mui/material';
+import {
+  Button,
+  Divider,
+  Grid,
+  InputBase,
+  styled,
+  Typography,
+} from '@mui/material';
 
 export const TaskCover = styled('div', {
   shouldForwardProp: (prop) =>
@@ -130,4 +137,33 @@ export const Container = styled(StyledTaskBlock, {
   shouldForwardProp: (prop) => prop !== 'iconStart',
 })<{ iconStart?: boolean }>`
   padding: 0 8px 0 ${({ iconStart = false }) => (iconStart ? '24' : '60')}px;
+`;
+
+export const StyledEmptyDescriptionBlock = styled(Typography)`
+  flex: 1;
+  background-color: #091e420f;
+  box-shadow: none;
+  border: none;
+  font-weight: 500;
+  border-radius: 3px;
+  color: #172b4d;
+  display: block;
+  min-height: 40px;
+  padding: 8px 12px;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #091e4224;
+    box-shadow: none;
+    border: none;
+    color: #172b4d;
+    text-decoration: none;
+  }
+` as typeof Typography;
+
+export const StyledDescriptionPlaceholder = styled(Typography)`
+  white-space: pre-wrap;
+  width: 100%;
+  cursor: pointer;
 `;
