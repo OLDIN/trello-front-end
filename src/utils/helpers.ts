@@ -35,3 +35,15 @@ export const getTooltipTitle = (
 export const trimParagraphContainer = (text: string) => {
   return text.replace(/^<p>|<\/p>$/g, '');
 };
+
+export const findParentElementByClassName = (
+  el: HTMLElement,
+  cls: string,
+): HTMLElement | undefined => {
+  while (el.parentElement) {
+    el = el.parentElement as HTMLElement;
+    if (el.classList.contains(cls)) {
+      return el;
+    }
+  }
+};

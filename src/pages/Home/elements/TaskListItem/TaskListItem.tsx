@@ -9,7 +9,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Box, List, Typography } from '@mui/material';
 
 import { AddTaskBlock } from '../AddTaskBlock/AddTaskBlock';
-import { TaskCard } from './TaskCard';
+import { TaskCardDraggable } from './TaskCard/TaskCardDraggable';
 
 interface TaskListItemProps {
   taskListItem: TaskList;
@@ -44,7 +44,7 @@ export function TaskListItem({ taskListItem: list, tasks }: TaskListItemProps) {
           >
             {tasks.length ? (
               tasks.map((task, index) => (
-                <TaskCard key={task.id} task={task} index={index} />
+                <TaskCardDraggable key={task.id} task={task} index={index} />
               ))
             ) : (
               <Typography variant="body2" color="textSecondary">

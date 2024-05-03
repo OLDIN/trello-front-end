@@ -41,14 +41,12 @@ export const Task = styled(ListItem)`
   }
 `;
 
-export const StyledBadge = styled(Badge)<BadgeProps>(() => ({
-  '& .MuiBadge-badge': {
-    right: -5,
-    top: 8,
-    border: 'none',
-    padding: '0 4px',
-  },
-}));
+export const StyledBadge = styled(Badge)`
+  & .MuiBadge-badge {
+    border: none;
+    transform: scale(1) translate(90%, -10%);
+  }
+`;
 
 export const IconButton = styled(IconButtonBase)`
   &:hover {

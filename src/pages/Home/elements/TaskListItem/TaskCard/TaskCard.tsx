@@ -1,7 +1,8 @@
-import React from 'react';
-import { Draggable } from 'react-beautiful-dnd';
+import React, { type MouseEvent, useMemo, useState } from 'react';
+import { DraggableProvided } from 'react-beautiful-dnd';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { findParentElementByClassName } from 'utils/helpers';
 import { useTaskStore } from '../../../../../store/boards/tasks/task.store';
 
 import type { ITask } from '../../../../../types/Task';
@@ -17,22 +18,65 @@ import {
 
 import AttachFile from '@mui/icons-material/AttachFile';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import EditIcon from '@mui/icons-material/Edit';
-import RemoveRedEye from '@mui/icons-material/RemoveRedEye';
-import { AvatarGroup, Box, Typography } from '@mui/material';
+import FormatAlignLeftOutlinedIcon from '@mui/icons-material/FormatAlignLeftOutlined';
+import { AvatarGroup, Box, Tooltip, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
+
+interface TaskCardPosition {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
 
 interface TaskCardProps {
   task: ITask;
-  index: number;
+  draggableProvided?: DraggableProvided;
+  onEditClick?: (
+    e: MouseEvent<HTMLElement>,
+    position: TaskCardPosition,
+  ) => void;
+  disableEditBtn?: boolean;
+  disableDetailedView?: boolean;
 }
 
-export function TaskCard({ task, index }: TaskCardProps) {
+export function TaskCard({
+  task,
+  draggableProvided: provided,
+  onEditClick,
+  disableEditBtn = false,
+  disableDetailedView = false,
+}: TaskCardProps) {
   const { setTaskModalSettings } = useTaskStore();
   const { boardId } = useParams();
   const navigate = useNavigate();
 
+  const { all: allChecklistItems, completed: completedChecklistItems } =
+    useMemo(
+      () =>
+        (task.checklists ?? []).reduce(
+          (acc, checkList) => {
+            if (!checkList.items) return acc;
+
+            acc.all += checkList.items.length;
+            acc.completed += checkList.items.filter(
+              (i) => i.isCompleted,
+            ).length;
+            return acc;
+          },
+          {
+            all: 0,
+            completed: 0,
+          },
+        ),
+      [task.checklists],
+    );
+
   const handleTaskClick = (taskId: number) => {
+    if (disableDetailedView) return;
+
     setTaskModalSettings({
       isOpen: true,
       taskId,
@@ -40,122 +84,159 @@ export function TaskCard({ task, index }: TaskCardProps) {
     navigate(`/boards/${boardId}/tasks/${taskId}`);
   };
 
+  const handleEditTaskClick = (e: MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const taskEl = findParentElementByClassName(
+      e.target as HTMLElement,
+      'MuiListItem-root',
+    );
+    const domRect = taskEl?.getBoundingClientRect();
+
+    onEditClick?.(e, {
+      left: domRect?.left ?? 0,
+      top: domRect?.top ?? 0,
+      width: domRect?.width ?? 0,
+      height: domRect?.height ?? 0,
+    });
+  };
+
   return (
-    <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-      {(provided) => (
-        <Task
-          ref={provided.innerRef}
-          key={task.id}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          onClick={() => handleTaskClick(task.id)}
-        >
+    <Task
+      ref={provided?.innerRef}
+      {...provided?.draggableProps}
+      {...provided?.dragHandleProps}
+      onClick={() => handleTaskClick(task.id)}
+      onContextMenu={handleEditTaskClick}
+    >
+      <Box
+        sx={{
+          width: '100%',
+        }}
+      >
+        {task.cover && <TaskCover src={task.cover.path} />}
+        {!disableEditBtn && (
+          <TaskEditButton size="small" onClick={handleEditTaskClick}>
+            <EditIcon />
+          </TaskEditButton>
+        )}
+        <TaskBody>
+          {task.labels && (
+            <Box
+              sx={{
+                display: 'flex',
+                gap: '4px',
+                marginBottom: '4px',
+              }}
+            >
+              {task.labels.map((label) => (
+                <Label
+                  key={label.id}
+                  className={`label-color-pattern-${label.color ?? 'without'}`}
+                >
+                  {label.name}
+                </Label>
+              ))}
+            </Box>
+          )}
           <Box
             sx={{
-              width: '100%',
+              marginBottom: '4px',
             }}
           >
-            {task.cover && (
-              <Box>
-                <TaskCover src={task.cover.path} />
-                <TaskEditButton size="small">
-                  <EditIcon />
-                </TaskEditButton>
-              </Box>
-            )}
-            <TaskBody>
-              {task.labels && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    gap: '4px',
-                    marginBottom: '4px',
-                  }}
-                >
-                  {task.labels.map((label) => (
-                    <Label
-                      key={label.id}
-                      className={`task-label-color-${label.color}`}
-                    >
-                      {label.name}
-                    </Label>
-                  ))}
-                </Box>
-              )}
-              <Box
-                sx={{
-                  marginBottom: '4px',
-                }}
-              >
-                <Typography variant="body1">{task.name}</Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  marginBottom: '4px',
-                }}
-              >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    columnGap: '4px',
-                  }}
-                >
-                  {/* {!!task.assignee?.id && (
+            <Typography variant="body1">{task.name}</Typography>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              marginBottom: '4px',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                columnGap: '4px',
+              }}
+            >
+              {/* {!!task.assignee?.id && (
                     <IconButton size="small">
                       <RemoveRedEye sx={{ fontSize: 16 }} />
                     </IconButton>
                   )} */}
-                  {!!task.comments?.length && (
-                    <IconButton size="small">
-                      <StyledBadge
-                        badgeContent={task.comments.length}
-                        color="default"
-                      >
-                        <ChatBubbleOutlineIcon sx={{ fontSize: 16 }} />
-                      </StyledBadge>
-                    </IconButton>
-                  )}
-                  {!!task.attachments?.length && (
-                    <IconButton size="small">
-                      <StyledBadge
-                        badgeContent={task.attachments.length}
-                        color="default"
-                      >
-                        <AttachFile sx={{ fontSize: 16 }} />
-                      </StyledBadge>
-                    </IconButton>
-                  )}
-                </Box>
-                {!!task.assignees?.length && (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <AvatarGroup max={4}>
-                      {task.assignees.map((assignee) => (
-                        <Avatar
-                          key={assignee.id}
-                          alt={assignee?.firstName + ' ' + assignee?.lastName}
-                          src={assignee?.photo?.path}
-                          sx={{ width: 24, height: 24, fontSize: 14 }}
-                          title={`${assignee?.firstName} ${assignee?.lastName} (${assignee?.email})`}
-                        >
-                          {assignee?.firstName[0] + assignee?.lastName[0]}
-                        </Avatar>
-                      ))}
-                    </AvatarGroup>
-                  </Box>
-                )}
+              {!!task.description && (
+                <Tooltip title="This task has a description" disableInteractive>
+                  <IconButton size="small">
+                    <FormatAlignLeftOutlinedIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {!!task.comments?.length && (
+                <Tooltip title="Comments" disableInteractive>
+                  <IconButton size="small">
+                    <StyledBadge
+                      badgeContent={task.comments.length}
+                      color="default"
+                    >
+                      <ChatBubbleOutlineIcon sx={{ fontSize: 16 }} />
+                    </StyledBadge>
+                  </IconButton>
+                </Tooltip>
+              )}
+              {!!task.attachments?.length && (
+                <Tooltip title="Attachments" disableInteractive>
+                  <IconButton size="small">
+                    <StyledBadge
+                      badgeContent={task.attachments.length}
+                      color="default"
+                    >
+                      <AttachFile
+                        sx={{ fontSize: 16, transform: 'rotate(45deg)' }}
+                      />
+                    </StyledBadge>
+                  </IconButton>
+                </Tooltip>
+              )}
+              {!!allChecklistItems && (
+                <Tooltip title="Checklist items" disableInteractive>
+                  <IconButton size="small">
+                    <StyledBadge
+                      badgeContent={`${completedChecklistItems}/${allChecklistItems}`}
+                      color="default"
+                    >
+                      <CheckBoxOutlinedIcon sx={{ fontSize: 16 }} />
+                    </StyledBadge>
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Box>
+            {!!task.assignees?.length && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <AvatarGroup max={4}>
+                  {task.assignees.map((assignee) => (
+                    <Avatar
+                      key={assignee.id}
+                      alt={assignee?.firstName + ' ' + assignee?.lastName}
+                      src={assignee?.photo?.path}
+                      sx={{ width: 24, height: 24, fontSize: 14 }}
+                      title={`${assignee?.firstName} ${assignee?.lastName} (${assignee?.email})`}
+                    >
+                      {assignee?.firstName[0] + assignee?.lastName[0]}
+                    </Avatar>
+                  ))}
+                </AvatarGroup>
               </Box>
-            </TaskBody>
+            )}
           </Box>
-        </Task>
-      )}
-    </Draggable>
+        </TaskBody>
+      </Box>
+    </Task>
   );
 }
