@@ -45,7 +45,7 @@ export function AddAnotherListBlock() {
 
   const handleClose = () => {
     setMode('view');
-    reset({ name: '' });
+    reset({ name: '', boardId: selectedBoard?.id });
   };
 
   return (
