@@ -167,3 +167,23 @@ export const StyledDescriptionPlaceholder = styled(Typography)`
   width: 100%;
   cursor: pointer;
 `;
+export const StyledTemplateBannerWrapper = styled(Grid)`
+  background-color: #e4f0f6;
+  border-bottom: 1px solid #091e4224;
+  padding: 0 8px;
+  height: 64px;
+
+  & .MuiButton-Custom {
+    background-color: #0c66e4;
+    color: #fff;
+  }
+`;
+
+export const TemplateBannerIconBlock = styled('span', {
+  shouldForwardProp: (prop) => prop !== 'src',
+})<{ src: string }>`
+  background-image: ${({ src }) => `url(${src})`};
+  background-size: cover;
+  height: 48px;
+  width: 72px;
+`;

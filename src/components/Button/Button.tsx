@@ -49,7 +49,7 @@ export function Button({
   };
 
   return (
-    <StyledButton onClick={handleClick} {...props}>
+    <StyledButton className="MuiButton-Custom" onClick={handleClick} {...props}>
       {startIcon && <span className="startIcon">{startIcon}</span>}
       {children}
       {startIcon && <span className="endIcon">{endIcon}</span>}

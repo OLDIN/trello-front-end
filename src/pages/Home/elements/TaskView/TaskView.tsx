@@ -23,11 +23,14 @@ import {
   StyledDescriptionPlaceholder,
   StyledEmptyDescriptionBlock,
   StyledTaskBlockTitle,
+  StyledTemplateBannerWrapper,
   TaskCover,
+  TemplateBannerIconBlock,
   WatchButton,
 } from './styles';
 
 import AddIcon from '@mui/icons-material/Add';
+import AddCardOutlinedIcon from '@mui/icons-material/AddCardOutlined';
 import AttachmentOutlinedIcon from '@mui/icons-material/AttachmentOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
@@ -47,6 +50,7 @@ import {
   Typography,
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+import TemplateBannerIcon from 'assets/icons/template-banner-icon.png';
 import DOMPurify from 'dompurify';
 
 import './TaskView.scss';
@@ -213,6 +217,21 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                     coverBgColor={task.coverBgColor}
                   />
                 </Grid>
+              )}
+              {task?.isTemplate && (
+                <StyledTemplateBannerWrapper container alignItems="center">
+                  <TemplateBannerIconBlock src={TemplateBannerIcon} />
+                  <Typography
+                    component="h3"
+                    flex={1}
+                    fontWeight="fontWeightBold"
+                  >
+                    This is a Template card.
+                  </Typography>
+                  <Button startIcon={<AddCardOutlinedIcon />}>
+                    Create task from template
+                  </Button>
+                </StyledTemplateBannerWrapper>
               )}
               <Grid item xs={12}>
                 <Grid
