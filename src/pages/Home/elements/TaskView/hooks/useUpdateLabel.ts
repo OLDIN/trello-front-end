@@ -22,18 +22,21 @@ export function useUpdateLabel({
     mutationFn: (data: PartialUpdateLabel) =>
       labelsApi.partialUpdate(labelId, data),
     onSuccess: (data) => {
-      queryClient.setQueryData([QueryKey.TASKS, taskId], (oldTask: ITask) => {
-        if (!oldTask || !oldTask.labels) return oldTask;
+      queryClient.setQueryData(
+        [QueryKey.GET_TASK_BY_ID, taskId],
+        (oldTask: ITask) => {
+          if (!oldTask || !oldTask.labels) return oldTask;
 
-        return {
-          ...oldTask,
-          labels: [
-            ...oldTask.labels.map((label) =>
-              label.id === labelId ? data : label,
-            ),
-          ],
-        };
-      });
+          return {
+            ...oldTask,
+            labels: [
+              ...oldTask.labels.map((label) =>
+                label.id === labelId ? data : label,
+              ),
+            ],
+          };
+        },
+      );
 
       queryClient.setQueryData([QueryKey.LABELS, labelId], (oldLabel) => {
         if (!oldLabel) return oldLabel;

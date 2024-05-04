@@ -34,18 +34,43 @@ export const useAddReaction = ({
     mutationFn: (data: IAddCommentReactionPayload) =>
       commentReactionsApi.add(commentId, data),
     onSuccess: (response, variables) => {
-      queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
-        if (!oldTask) return oldTask;
+      queryClient.setQueryData<ITask>(
+        [QueryKey.GET_TASK_BY_ID, taskId],
+        (oldTask) => {
+          if (!oldTask) return oldTask;
 
-        return {
-          ...oldTask,
-          comments: oldTask.comments?.map((c) => {
-            if (c.id === commentId) {
-              const hasReaction = c.reactions?.find(
-                (reaction) => reaction.reaction === response.reaction,
-              );
+          return {
+            ...oldTask,
+            comments: oldTask.comments?.map((c) => {
+              if (c.id === commentId) {
+                const hasReaction = c.reactions?.find(
+                  (reaction) => reaction.reaction === response.reaction,
+                );
 
-              if (!hasReaction) {
+                if (!hasReaction) {
+                  if (!profile) {
+                    return c;
+                  }
+
+                  return {
+                    ...c,
+                    reactions: [
+                      ...(c.reactions ?? []),
+                      {
+                        ...response,
+                        users: [
+                          ...(response.users ?? []),
+                          {
+                            id: profile?.id,
+                            firstName: profile?.firstName,
+                            lastName: profile?.lastName,
+                          },
+                        ],
+                      },
+                    ],
+                  };
+                }
+
                 if (!profile) {
                   return c;
                 }
@@ -53,55 +78,33 @@ export const useAddReaction = ({
                 return {
                   ...c,
                   reactions: [
-                    ...(c.reactions ?? []),
-                    {
-                      ...response,
-                      users: [
-                        ...(response.users ?? []),
-                        {
-                          id: profile?.id,
-                          firstName: profile?.firstName,
-                          lastName: profile?.lastName,
-                        },
-                      ],
-                    },
+                    ...(c.reactions || []).map((reaction) => {
+                      if (reaction.reaction !== response.reaction) {
+                        return reaction;
+                      }
+
+                      return {
+                        ...reaction,
+                        qty: reaction.qty + 1,
+                        users: [
+                          ...(reaction.users ?? []),
+                          {
+                            id: profile?.id,
+                            firstName: profile?.firstName,
+                            lastName: profile?.lastName,
+                          },
+                        ],
+                      };
+                    }),
                   ],
                 };
               }
 
-              if (!profile) {
-                return c;
-              }
-
-              return {
-                ...c,
-                reactions: [
-                  ...(c.reactions || []).map((reaction) => {
-                    if (reaction.reaction !== response.reaction) {
-                      return reaction;
-                    }
-
-                    return {
-                      ...reaction,
-                      qty: reaction.qty + 1,
-                      users: [
-                        ...(reaction.users ?? []),
-                        {
-                          id: profile?.id,
-                          firstName: profile?.firstName,
-                          lastName: profile?.lastName,
-                        },
-                      ],
-                    };
-                  }),
-                ],
-              };
-            }
-
-            return c;
-          }),
-        };
-      });
+              return c;
+            }),
+          };
+        },
+      );
 
       onSuccess?.(response, variables);
     },

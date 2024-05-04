@@ -1,11 +1,10 @@
-import React, { useMemo } from 'react';
-import groupBy from 'lodash.groupby';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 
-import { checklistApi } from 'services/api';
 import { ICreateChecklistPayload } from 'services/api/endpoints/checklist';
-import { QueryKey } from 'enums/QueryKey.enum';
+
+import { useCreateChecklist } from 'pages/Home/elements/TaskView/hooks/useCreateChecklist';
+import { useGetChecklists } from 'pages/Home/elements/TaskView/hooks/useGetChecklists';
 
 import {
   Button,
@@ -32,7 +31,6 @@ export function ChecklistPopoverContent({
   taskId,
   onSuccessfulSubmit,
 }: ChecklistPopoverContentProps) {
-  const queryClient = useQueryClient();
   const { register, handleSubmit } = useForm<FormValues>({
     values: {
       name: '',
@@ -40,53 +38,10 @@ export function ChecklistPopoverContent({
     },
   });
 
-  const { data: checklists = [] } = useQuery({
-    queryKey: [QueryKey.CHECKLISTS, { taskId }],
-    queryFn: () =>
-      checklistApi.fetchAll({
-        join: [
-          {
-            field: 'task',
-            select: ['id', 'name'],
-          },
-
-          {
-            field: 'items',
-            select: ['id', 'name'],
-          },
-        ],
-      }),
-  });
-
-  const groupedChecklists = useMemo(() => {
-    const groupedRaw = groupBy(checklists, (checklist) => checklist.task?.id);
-
-    return Object.entries(groupedRaw).map(([taskId, checklists]) => {
-      const task = checklists[0].task;
-
-      return {
-        task,
-        checklists: checklists.map((checklist) => ({
-          id: checklist.id,
-          name: checklist.name,
-          items: checklist.items,
-        })),
-      };
-    });
-  }, [checklists]);
-
-  const { mutate: createChecklist, isPending } = useMutation({
-    mutationFn: (data: ICreateChecklistPayload) =>
-      checklistApi.create(taskId, data, {
-        join: [{ field: 'items' }],
-      }),
+  const { checklists = [], groupedChecklists } = useGetChecklists(taskId);
+  const { mutate: createChecklist, isPending } = useCreateChecklist({
+    taskId,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QueryKey.CHECKLISTS, { taskId }],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QueryKey.TASKS, taskId],
-      });
       onSuccessfulSubmit?.();
     },
   });

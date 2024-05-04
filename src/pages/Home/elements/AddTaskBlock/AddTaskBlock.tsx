@@ -70,7 +70,7 @@ export function AddTaskBlock({ taskListId }: AddTaskBlockProps) {
       }),
     onSuccess: (task) => {
       queryClient.setQueryData<ITask[]>(
-        [QueryKey.TASKS, { boardId: selectedBoard?.id }],
+        [QueryKey.GET_TASKS_LIST, { boardId: selectedBoard?.id }],
         (oldTasks) => {
           if (!oldTasks) return oldTasks;
 

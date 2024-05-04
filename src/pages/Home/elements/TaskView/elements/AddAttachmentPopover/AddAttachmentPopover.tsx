@@ -44,10 +44,13 @@ export function AddAttachmentPopover({
         ],
       }),
     onSuccess: (data) => {
-      queryClient.setQueryData([QueryKey.TASKS, task.id], (oldTask: ITask) => ({
-        ...oldTask,
-        attachments: data.attachments,
-      }));
+      queryClient.setQueryData(
+        [QueryKey.GET_TASK_BY_ID, task.id],
+        (oldTask: ITask) => ({
+          ...oldTask,
+          attachments: data.attachments,
+        }),
+      );
       reset();
       onClose();
     },

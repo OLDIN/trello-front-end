@@ -42,12 +42,15 @@ export function Attachment({
     mutationFn: () => filesApi.delete(attachment.id),
     onSuccess: () => {
       setAnchorEl(null);
-      queryClient.setQueryData([QueryKey.TASKS, taskId], (oldTask: ITask) => ({
-        ...oldTask,
-        attachments: (oldTask?.attachments ?? []).filter(
-          (oldAttachment) => oldAttachment.id !== attachment.id,
-        ),
-      }));
+      queryClient.setQueryData(
+        [QueryKey.GET_TASK_BY_ID, taskId],
+        (oldTask: ITask) => ({
+          ...oldTask,
+          attachments: (oldTask?.attachments ?? []).filter(
+            (oldAttachment) => oldAttachment.id !== attachment.id,
+          ),
+        }),
+      );
     },
   });
 
@@ -57,12 +60,15 @@ export function Attachment({
         fileCoverId: attachment.id === taskCoverId ? null : attachment.id,
       }),
     onSuccess: () => {
-      queryClient.setQueryData([QueryKey.TASKS, taskId], (oldTask: ITask) => ({
-        ...oldTask,
-        cover: attachment.id === taskCoverId ? null : attachment,
-      }));
+      queryClient.setQueryData(
+        [QueryKey.GET_TASK_BY_ID, taskId],
+        (oldTask: ITask) => ({
+          ...oldTask,
+          cover: attachment.id === taskCoverId ? null : attachment,
+        }),
+      );
       queryClient.invalidateQueries({
-        queryKey: [QueryKey.TASKS],
+        queryKey: [QueryKey.GET_TASKS_LIST],
         refetchType: 'active',
       });
     },

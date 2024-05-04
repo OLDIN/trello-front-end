@@ -31,48 +31,51 @@ export const useRemoveReaction = ({
     mutationFn: (reactionId: number) =>
       commentReactionsApi.delete(commentId, reactionId),
     onSuccess: (_, reactionId) => {
-      queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
-        if (!oldTask) return oldTask;
+      queryClient.setQueryData<ITask>(
+        [QueryKey.GET_TASK_BY_ID, taskId],
+        (oldTask) => {
+          if (!oldTask) return oldTask;
 
-        return {
-          ...oldTask,
-          comments: (oldTask?.comments ?? []).map((c) => {
-            if (c.id === commentId) {
-              const reaction = c.reactions?.find(
-                (reaction) => reaction.id === reactionId,
-              );
+          return {
+            ...oldTask,
+            comments: (oldTask?.comments ?? []).map((c) => {
+              if (c.id === commentId) {
+                const reaction = c.reactions?.find(
+                  (reaction) => reaction.id === reactionId,
+                );
 
-              if (!reaction) return c;
+                if (!reaction) return c;
 
-              const isLastUser = reaction.users?.length === 1;
+                const isLastUser = reaction.users?.length === 1;
 
-              if (isLastUser) {
+                if (isLastUser) {
+                  return {
+                    ...c,
+                    reactions: c.reactions?.filter((r) => r.id !== reactionId),
+                  };
+                }
+
                 return {
                   ...c,
-                  reactions: c.reactions?.filter((r) => r.id !== reactionId),
+                  reactions: c.reactions?.map((r) => {
+                    if (r.id === reactionId) {
+                      return {
+                        ...r,
+                        qty: r.qty - 1,
+                        users: r.users?.filter((u) => u.id !== userId),
+                      };
+                    }
+
+                    return r;
+                  }),
                 };
               }
 
-              return {
-                ...c,
-                reactions: c.reactions?.map((r) => {
-                  if (r.id === reactionId) {
-                    return {
-                      ...r,
-                      qty: r.qty - 1,
-                      users: r.users?.filter((u) => u.id !== userId),
-                    };
-                  }
-
-                  return r;
-                }),
-              };
-            }
-
-            return c;
-          }),
-        };
-      });
+              return c;
+            }),
+          };
+        },
+      );
 
       onSuccess?.(_, reactionId);
     },

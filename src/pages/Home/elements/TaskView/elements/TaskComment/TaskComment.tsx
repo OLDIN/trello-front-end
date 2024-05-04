@@ -60,7 +60,7 @@ export function TaskComment({
       }
 
       queryClient.setQueryData<ITask>(
-        [QueryKey.TASKS, comment.taskId],
+        [QueryKey.GET_TASK_BY_ID, comment.taskId],
         (oldTask) => {
           if (!oldTask) return oldTask;
 

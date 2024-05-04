@@ -1,18 +1,14 @@
 import React, { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
-import { commentsApi } from 'services/api';
-import { ICreateCommentPayload } from 'services/api/endpoints/comments';
-import { QueryKey } from 'enums/QueryKey.enum';
 import useProfile from 'hooks/useProfile/useProfile';
-import { ITask } from 'types/Task';
 
 import { TextEditor } from '../../../../components/TextEditor';
 import { Button } from 'components/Button';
 import { EditableInput } from 'components/EditableInput';
 
+import { useCreateComment } from './hooks/useCreateComment';
 import { useTaskDetails } from './hooks/useTaskDetails';
 import { useUpdateTask } from 'pages/Home/hooks/useUpdateTask';
 import { AddAttachmentPopover } from './elements/AddAttachmentPopover/AddAttachmentPopover';
@@ -63,7 +59,6 @@ interface TaskViewProps {
 }
 
 export function TaskView({ open, onClose, taskId }: TaskViewProps) {
-  const queryClient = useQueryClient();
   const { hash } = useLocation();
   const [isReadOnlyDescription, setIsReadOnlyDescription] = useState(true);
   const [isReadOnlyCommentInput, setIsReadOnlyCommentInput] = useState(true);
@@ -77,7 +72,7 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
   const [descriptionString, setDescriptionString] = useState<string>('');
   const [commentString, setCommentString] = useState<string>('');
 
-  const { data: task, isLoading } = useTaskDetails({ taskId });
+  const { task, isLoading, enabledLabels } = useTaskDetails({ taskId });
   const { data: profile } = useProfile();
   const { mutate: updateTask, isPending: isPendingTaskUpdate } = useUpdateTask({
     taskId,
@@ -86,27 +81,9 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
     },
   });
   const { mutate: createComment, isPending: isPendingCreateComment } =
-    useMutation({
-      mutationFn: (data: ICreateCommentPayload) =>
-        commentsApi.create(taskId, data, {
-          join: [
-            {
-              field: 'author',
-            },
-            {
-              field: 'author.photo',
-            },
-          ],
-        }),
-      onSuccess: (result) => {
-        queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
-          if (!oldTask || !oldTask.comments) return oldTask;
-
-          return {
-            ...oldTask,
-            comments: [result, ...oldTask.comments],
-          };
-        });
+    useCreateComment({
+      taskId,
+      onSuccess: () => {
         setCommentString('');
         setIsReadOnlyCommentInput(true);
       },
@@ -129,10 +106,6 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
       return parseInt(hash.replace('#comment-', ''));
     }
   }, [hash]);
-
-  const enabledLabels = useMemo(() => {
-    return task?.labels?.filter((label) => label.isEnable) ?? [];
-  }, [task?.labels]);
 
   const handleOnPressEnterName = () => {
     updateTask({

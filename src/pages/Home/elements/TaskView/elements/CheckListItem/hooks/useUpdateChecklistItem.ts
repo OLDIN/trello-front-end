@@ -23,28 +23,31 @@ export function useUpdateCheckListItem({
     mutationFn: (data: PartialUpdateChecklistItemData) =>
       checklistItemsApi.partialUpdate(taskId, checklistId, item.id, data),
     onSuccess: (data) => {
-      queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
-        if (!oldTask || !oldTask.checklists) return oldTask;
-        return {
-          ...oldTask,
-          checklists: oldTask.checklists.map((checklist) => {
-            if (!checklist.items) return checklist;
+      queryClient.setQueryData<ITask>(
+        [QueryKey.GET_TASK_BY_ID, taskId],
+        (oldTask) => {
+          if (!oldTask || !oldTask.checklists) return oldTask;
+          return {
+            ...oldTask,
+            checklists: oldTask.checklists.map((checklist) => {
+              if (!checklist.items) return checklist;
 
-            if (checklist.id === checklistId) {
-              return {
-                ...checklist,
-                items: checklist.items.map((i) => {
-                  if (i.id === item.id) {
-                    return data;
-                  }
-                  return i;
-                }),
-              };
-            }
-            return checklist;
-          }),
-        };
-      });
+              if (checklist.id === checklistId) {
+                return {
+                  ...checklist,
+                  items: checklist.items.map((i) => {
+                    if (i.id === item.id) {
+                      return data;
+                    }
+                    return i;
+                  }),
+                };
+              }
+              return checklist;
+            }),
+          };
+        },
+      );
     },
   });
 }

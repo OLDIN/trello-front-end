@@ -14,7 +14,7 @@ export function useTasks({ boardId, assigneeId }: IUseTasksProps) {
 
   return useQuery({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: [QueryKey.TASKS, { boardId, assigneeId }],
+    queryKey: [QueryKey.GET_TASKS_LIST, { boardId, assigneeId }],
     queryFn: () =>
       tasksApi.list({
         filter: [

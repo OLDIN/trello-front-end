@@ -196,7 +196,7 @@ export default function Home() {
 
     queryClient.setQueryData(
       [
-        QueryKey.TASKS,
+        QueryKey.GET_TASKS_LIST,
         { boardId: selectedBoard?.id, assigneeId: selectedAssigneeId },
       ],
       (oldData: ITask[]) => {

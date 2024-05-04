@@ -1,12 +1,8 @@
 import React, { useMemo } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { tasksApi } from 'services/api';
-import { IPartialUpdateTask } from 'services/api/endpoints/tasks';
-import { QueryKey } from 'enums/QueryKey.enum';
-import { ITask } from 'types/Task';
 import { IUser } from 'types/User';
 
+import { useUpdateTask } from 'pages/Home/hooks/useUpdateTask';
 import { useUsers } from 'pages/Home/hooks/useUsers';
 import { useTaskDetails } from 'pages/Home/elements/TaskView/hooks/useTaskDetails';
 import { Item } from './styles';
@@ -29,26 +25,12 @@ export function MembersPopoverContent({
   boardId,
   taskId,
 }: MembersPopoverContentProps) {
-  const queryClient = useQueryClient();
   const { data: users = [] } = useUsers({
     boardId,
   });
-  const { data: task } = useTaskDetails({ taskId });
+  const { taskMembersIds } = useTaskDetails({ taskId });
 
-  const { mutate: updateTask, isPending } = useMutation({
-    mutationFn: (data: Pick<IPartialUpdateTask, 'membersIds'>) =>
-      tasksApi.partialUpdate(taskId, data),
-    onSuccess: (data) => {
-      queryClient.setQueryData([QueryKey.TASKS, taskId], (oldTask: ITask) => ({
-        ...oldTask,
-        assignees: data.assignees,
-      }));
-    },
-  });
-
-  const taskMembersIds = useMemo(() => {
-    return task?.assignees?.map((member) => member.id) ?? [];
-  }, [task?.assignees]);
+  const { mutate: updateTask, isPending } = useUpdateTask({ taskId });
 
   const handleAddMemberToTask = (memberId: number) => {
     updateTask({

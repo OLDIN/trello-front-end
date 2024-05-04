@@ -33,25 +33,30 @@ export function AddAnChecklistItemBlock({
     mutationFn: (data: CreateChecklistItemData) =>
       checklistItemsApi.create(taskId, checkListId, data),
     onSuccess: (data) => {
-      queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
-        if (!oldTask) return oldTask;
+      queryClient.setQueryData<ITask>(
+        [QueryKey.GET_TASK_BY_ID, taskId],
+        (oldTask) => {
+          if (!oldTask) return oldTask;
 
-        const checkList = oldTask.checklists?.find((c) => c.id === checkListId);
+          const checkList = oldTask.checklists?.find(
+            (c) => c.id === checkListId,
+          );
 
-        if (!checkList) return oldTask;
+          if (!checkList) return oldTask;
 
-        return {
-          ...oldTask,
-          checklists: oldTask.checklists?.map((c) =>
-            c.id === checkListId
-              ? {
-                  ...c,
-                  items: [...(c.items ?? []), data],
-                }
-              : c,
-          ),
-        };
-      });
+          return {
+            ...oldTask,
+            checklists: oldTask.checklists?.map((c) =>
+              c.id === checkListId
+                ? {
+                    ...c,
+                    items: [...(c.items ?? []), data],
+                  }
+                : c,
+            ),
+          };
+        },
+      );
       setMode('view');
       reset();
     },

@@ -32,14 +32,19 @@ export function CheckList({ checkList, taskId }: CheckListProps) {
   const { mutate: deleteCheckList, isPending: isPendingDelete } = useMutation({
     mutationFn: () => checklistApi.deleteById(taskId, checkList.id),
     onSuccess: () => {
-      queryClient.setQueryData<ITask>([QueryKey.TASKS, taskId], (oldTask) => {
-        if (!oldTask) return oldTask;
+      queryClient.setQueryData<ITask>(
+        [QueryKey.GET_TASK_BY_ID, taskId],
+        (oldTask) => {
+          if (!oldTask) return oldTask;
 
-        return {
-          ...oldTask,
-          checklists: oldTask?.checklists?.filter((c) => c.id !== checkList.id),
-        };
-      });
+          return {
+            ...oldTask,
+            checklists: oldTask?.checklists?.filter(
+              (c) => c.id !== checkList.id,
+            ),
+          };
+        },
+      );
     },
   });
 

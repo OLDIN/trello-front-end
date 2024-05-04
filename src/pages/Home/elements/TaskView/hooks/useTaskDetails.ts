@@ -1,15 +1,28 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import tasksApi from '../../../../../services/api/endpoints/tasks';
+import tasksApi, {
+  ITaskDetainedResponse,
+} from '../../../../../services/api/endpoints/tasks';
 import { QueryKey } from 'enums/QueryKey.enum';
+import { TaskLabel } from 'types/TaskLabel';
 
 interface IUseTaskDetails {
   taskId: number;
 }
 
-export function useTaskDetails({ taskId }: IUseTaskDetails) {
-  return useQuery({
-    queryKey: [QueryKey.TASKS, taskId],
+interface IUseTaskDetailsResult {
+  task: ITaskDetainedResponse | undefined;
+  enabledLabels: TaskLabel[];
+  isLoading: boolean;
+  taskMembersIds: number[];
+}
+
+export function useTaskDetails({
+  taskId,
+}: IUseTaskDetails): IUseTaskDetailsResult {
+  const { data: task, isLoading } = useQuery({
+    queryKey: [QueryKey.GET_TASK_BY_ID, taskId],
     queryFn: () =>
       tasksApi.getById(taskId, {
         join: [
@@ -56,4 +69,19 @@ export function useTaskDetails({ taskId }: IUseTaskDetails) {
         ],
       }),
   });
+
+  const enabledLabels = useMemo(() => {
+    return task?.labels?.filter((label) => label.isEnable) ?? [];
+  }, [task?.labels]);
+
+  const taskMembersIds = useMemo(() => {
+    return task?.assignees?.map((member) => member.id) ?? [];
+  }, [task?.assignees]);
+
+  return {
+    task,
+    enabledLabels,
+    isLoading,
+    taskMembersIds,
+  };
 }
