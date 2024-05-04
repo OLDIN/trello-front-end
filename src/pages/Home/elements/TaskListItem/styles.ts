@@ -1,3 +1,5 @@
+import { EditableInput } from 'components/EditableInput';
+
 import { IconButton, Paper, styled, Typography } from '@mui/material';
 
 export const Item = styled(Paper)(({ theme }) => ({
@@ -12,7 +14,8 @@ export const Item = styled(Paper)(({ theme }) => ({
   color: '#44546f',
 }));
 
-export const ItemName = styled(Typography)`
+export const StyledEditableInput = styled(EditableInput)`
+  padding: 6px 8px 6px 12px;
   background-color: transparent;
   cursor: pointer;
   display: block;
@@ -22,7 +25,6 @@ export const ItemName = styled(Typography)`
   margin: 0;
   overflow-wrap: anywhere;
   overflow: hidden;
-  padding: 6px 8px 6px 12px;
   white-space: normal;
 `;
 

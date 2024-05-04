@@ -3,7 +3,6 @@ import React, {
   FocusEvent,
   forwardRef,
   KeyboardEvent,
-  KeyboardEventHandler,
   useCallback,
   useState,
 } from 'react';
@@ -12,11 +11,7 @@ import { typedMemo } from 'types/typedMemo';
 
 import { StyledTextareaAutosize, StyledTypography } from './styles';
 
-import {
-  TextareaAutosizeProps,
-  Typography,
-  type TypographyOwnProps,
-} from '@mui/material';
+import { TextareaAutosizeProps, type TypographyOwnProps } from '@mui/material';
 
 interface EditableInputProps
   extends Pick<TypographyOwnProps, 'variant' | 'fontWeight'>,
@@ -67,6 +62,7 @@ const EditableInputBase: FC<EditableInputProps> = forwardRef<
         />
       ) : (
         <StyledTypography
+          {...props}
           variant={variant}
           fontWeight={fontWeight}
           onClick={handleClickFromViewMode}

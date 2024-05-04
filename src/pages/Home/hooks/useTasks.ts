@@ -54,6 +54,15 @@ export function useTasks({ boardId, assigneeId }: IUseTasksProps) {
             field: 'comments',
             select: ['id'],
           },
+
+          {
+            field: 'checklists',
+            select: ['id'],
+          },
+          {
+            field: 'checklists.items',
+            select: ['isCompleted'],
+          },
           {
             field: 'labels',
             select: ['id', 'name', 'color'],
@@ -66,24 +75,16 @@ export function useTasks({ boardId, assigneeId }: IUseTasksProps) {
             ],
           },
           {
-            field: 'checklists',
+            field: 'watchers',
             select: ['id'],
+            // on: [
+            //   {
+            //     field: 'watchers.id',
+            //     operator: '$eq',
+            //     value: profile?.id,
+            //   },
+            // ],
           },
-          {
-            field: 'checklists.items',
-            select: ['isCompleted'],
-          },
-          // {
-          //   field: 'watchers',
-          //   select: ['id'],
-          //   on: [
-          //     {
-          //       field: 'watchers.id',
-          //       operator: '$eq',
-          //       value: profile?.id,
-          //     },
-          //   ],
-          // },
         ],
       }),
     enabled: !!boardId,
