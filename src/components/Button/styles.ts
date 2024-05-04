@@ -65,4 +65,10 @@ export const StyledButton = styled('a', {
     margin-left: -2px;
     font-size: 18px;
   }
+
+  & > .endIcon {
+    display: inherit;
+    margin-left: 8px;
+    font-size: 18px;
+  }
 `;

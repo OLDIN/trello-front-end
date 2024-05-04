@@ -9,7 +9,9 @@ import {
 } from '@dataui/crud-request';
 
 export interface IPartialUpdateTask
-  extends Partial<Pick<ITask, 'name' | 'description' | 'taskListId' | 'id'>> {
+  extends Partial<
+    Pick<ITask, 'name' | 'description' | 'taskListId' | 'id' | 'isTemplate'>
+  > {
   attachmentsIds?: string[];
   fileCoverId?: string | null;
   membersIds?: number[];

@@ -1,6 +1,6 @@
 import { EditableInput } from 'components/EditableInput';
 
-import { IconButton, Paper, styled, Typography } from '@mui/material';
+import { IconButton, Paper, styled } from '@mui/material';
 
 export const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#fff' : '#ebecf0',

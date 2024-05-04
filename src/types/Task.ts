@@ -22,6 +22,7 @@ export interface ITask {
   updatedAt: string;
   taskListId: number;
   assignees?: IUser[];
+  isTemplate: boolean;
   boardId: number;
   board?: Board;
   cover?: IFile;

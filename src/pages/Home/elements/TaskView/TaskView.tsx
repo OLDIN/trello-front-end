@@ -3,9 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 
-import { commentsApi, tasksApi } from 'services/api';
+import { commentsApi } from 'services/api';
 import { ICreateCommentPayload } from 'services/api/endpoints/comments';
-import { IPartialUpdateTask } from 'services/api/endpoints/tasks';
 import { QueryKey } from 'enums/QueryKey.enum';
 import useProfile from 'hooks/useProfile/useProfile';
 import { ITask } from 'types/Task';
@@ -15,6 +14,7 @@ import { Button } from 'components/Button';
 import { EditableInput } from 'components/EditableInput';
 
 import { useTaskDetails } from './hooks/useTaskDetails';
+import { useUpdateTask } from 'pages/Home/hooks/useUpdateTask';
 import { AddAttachmentPopover } from './elements/AddAttachmentPopover/AddAttachmentPopover';
 import { Attachment } from './elements/Attachment/Attachment';
 import { CheckList } from './elements/CheckList/CheckList';
@@ -62,7 +62,7 @@ interface TaskViewProps {
   boardId: number;
 }
 
-export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
+export function TaskView({ open, onClose, taskId }: TaskViewProps) {
   const queryClient = useQueryClient();
   const { hash } = useLocation();
   const [isReadOnlyDescription, setIsReadOnlyDescription] = useState(true);
@@ -79,18 +79,9 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
 
   const { data: task, isLoading } = useTaskDetails({ taskId });
   const { data: profile } = useProfile();
-  const { mutate: updateTask, isPending: isPendingTaskUpdate } = useMutation({
-    mutationFn: (data: IPartialUpdateTask) =>
-      tasksApi.partialUpdate(taskId, data),
-    onSuccess: (result) => {
-      queryClient.setQueryData([QueryKey.TASKS, taskId], (oldTask) => {
-        if (!oldTask) return;
-
-        return {
-          ...oldTask,
-          ...result,
-        };
-      });
+  const { mutate: updateTask, isPending: isPendingTaskUpdate } = useUpdateTask({
+    taskId,
+    onSuccess: () => {
       setIsReadOnlyDescription(true);
     },
   });
@@ -671,11 +662,7 @@ export function TaskView({ open, onClose, taskId, boardId }: TaskViewProps) {
                       ))}
                     </Container>
                   </Grid>
-                  <RightSideButtons
-                    boardId={boardId}
-                    taskId={taskId}
-                    taskLabels={task?.labels ?? []}
-                  />
+                  {task && <RightSideButtons task={task} />}
                 </Grid>
               </Grid>
             </Grid>

@@ -20,6 +20,7 @@ interface ButtonProps
   variant?: 'text' | 'outlined' | 'contained';
   type?: 'submit';
   startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
 }
 
 export function Button({
@@ -27,6 +28,7 @@ export function Button({
   onClick,
   type,
   startIcon,
+  endIcon,
   ...props
 }: ButtonProps) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -50,6 +52,7 @@ export function Button({
     <StyledButton onClick={handleClick} {...props}>
       {startIcon && <span className="startIcon">{startIcon}</span>}
       {children}
+      {startIcon && <span className="endIcon">{endIcon}</span>}
     </StyledButton>
   );
 }

@@ -11,7 +11,7 @@ import { Item, StyledEditableInput, TaskListItemOptionsBtn } from './styles';
 
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import RemoveRedEye from '@mui/icons-material/RemoveRedEye';
-import { Box, Icon, IconButton, List, Typography } from '@mui/material';
+import { Box, Icon, List, Typography } from '@mui/material';
 
 import { AddTaskBlock } from '../AddTaskBlock/AddTaskBlock';
 import { TaskCardDraggable } from './TaskCard/TaskCardDraggable';

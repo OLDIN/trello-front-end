@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
-import { TaskLabel } from 'types/TaskLabel';
+import { ITask } from 'types/Task';
 
 import { Popover } from 'components/Popover';
 
+import { useUpdateTask } from 'pages/Home/hooks/useUpdateTask';
 import { ActionsCopyPopoverContent } from './elements/ActionsCopyPopoverContent/ActionsCopyPopoverContent';
 import { ActionsMovePopoverContent } from './elements/ActionsMovePopoverContent/ActionsMovePopoverContent';
 import { AttachmentPopoverContent } from './elements/AttachmentPopoverContent/AttachmentPopoverContent';
@@ -12,7 +13,7 @@ import { CoverPopoverContent } from './elements/CoverPopoverContent/CoverPopover
 import { DatesPopoverContent } from './elements/DatesPopoverContent/DatesPopoverContent';
 import { MembersPopoverContent } from './elements/MembersPopoverContent/MembersPopoverContent';
 import { StyledDivider } from '../../styles';
-import { Button, RightSideButtonsWrapper } from './styles';
+import { Button, RightSideButtonsWrapper, TemplateCheckIcon } from './styles';
 
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import AttachmentIcon from '@mui/icons-material/Attachment';
@@ -27,20 +28,15 @@ import PowerInputIcon from '@mui/icons-material/PowerInput';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import ShareIcon from '@mui/icons-material/Share';
 import { Grid, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { LabelsPopoverContent } from '../LabelsPopoverContent/LabelsPopoverContent';
 
 interface RightSideBtnsProps {
-  boardId: number;
-  taskId: number;
-  taskLabels: TaskLabel[];
+  task: ITask;
 }
 
-export function RightSideButtons({
-  boardId,
-  taskId,
-  taskLabels,
-}: RightSideBtnsProps) {
+export function RightSideButtons({ task }: RightSideBtnsProps) {
   const [popoverSettings, setPopoverSettings] = useState<{
     isOpenPopover: boolean;
     anchorEl: HTMLElement | null;
@@ -51,6 +47,10 @@ export function RightSideButtons({
     anchorEl: null,
     title: null,
     component: null,
+  });
+
+  const { mutate: updateTask, isPending: isPendingTaskUpdate } = useUpdateTask({
+    taskId: task.id,
   });
 
   const closePopover = () =>
@@ -64,13 +64,15 @@ export function RightSideButtons({
   const content = useMemo(() => {
     switch (popoverSettings.component?.name) {
       case 'MembersPopoverContent':
-        return <MembersPopoverContent boardId={boardId} taskId={taskId} />;
+        return (
+          <MembersPopoverContent boardId={task.boardId} taskId={task.id} />
+        );
       case 'LabelsPopoverContent':
-        return <LabelsPopoverContent taskLabels={taskLabels} />;
+        return <LabelsPopoverContent taskLabels={task.labels ?? []} />;
       case 'ChecklistPopoverContent':
         return (
           <ChecklistPopoverContent
-            taskId={taskId}
+            taskId={task.id}
             onSuccessfulSubmit={() => closePopover()}
           />
         );
@@ -88,7 +90,11 @@ export function RightSideButtons({
       default:
         return <></>;
     }
-  }, [boardId, popoverSettings.component?.name, taskId, taskLabels]);
+  }, [popoverSettings.component?.name, task]);
+
+  const toggleIsTemplate = () => {
+    updateTask({ isTemplate: !task.isTemplate });
+  };
 
   return (
     <>
@@ -217,7 +223,20 @@ export function RightSideButtons({
           >
             Copy
           </Button>
-          <Button startIcon={<DashboardCustomizeIcon />}>Make template</Button>
+          <Button
+            startIcon={
+              isPendingTaskUpdate ? (
+                <CircularProgress size={16} />
+              ) : (
+                <DashboardCustomizeIcon />
+              )
+            }
+            endIcon={task.isTemplate && <TemplateCheckIcon />}
+            onClick={toggleIsTemplate}
+            disabled={isPendingTaskUpdate}
+          >
+            {task.isTemplate ? 'Template' : 'Make template'}
+          </Button>
           <StyledDivider flexItem />
           <Button startIcon={<ArchiveOutlinedIcon />}>Archive</Button>
           <Button startIcon={<ShareIcon />}>Share</Button>
