@@ -24,17 +24,17 @@ export function useUsers({ boardId }: IUseUsers) {
     queryFn: () =>
       usersApi.listSimple({
         filter: {
-          field: 'tasks.taskList.boardId',
+          field: 'assignedTasks.taskList.boardId',
           operator: 'eq',
           value: boardId,
         },
         join: [
           {
-            field: 'tasks',
+            field: 'assignedTasks',
             select: ['id'],
           },
           {
-            field: 'tasks.taskList',
+            field: 'assignedTasks.taskList',
             select: ['id'],
           },
           {

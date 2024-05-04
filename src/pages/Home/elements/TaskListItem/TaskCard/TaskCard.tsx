@@ -1,7 +1,8 @@
-import React, { type MouseEvent, useMemo, useState } from 'react';
+import React, { type MouseEvent, useMemo } from 'react';
 import { DraggableProvided } from 'react-beautiful-dnd';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import useProfile from 'hooks/useProfile/useProfile';
 import { findParentElementByClassName } from 'utils/helpers';
 import { useTaskStore } from '../../../../../store/boards/tasks/task.store';
 
@@ -21,6 +22,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import FormatAlignLeftOutlinedIcon from '@mui/icons-material/FormatAlignLeftOutlined';
+import RemoveRedEye from '@mui/icons-material/RemoveRedEye';
 import { AvatarGroup, Box, Tooltip, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 
@@ -52,6 +54,7 @@ export function TaskCard({
   const { setTaskModalSettings } = useTaskStore();
   const { boardId } = useParams();
   const navigate = useNavigate();
+  const { data: profile } = useProfile();
 
   const { all: allChecklistItems, completed: completedChecklistItems } =
     useMemo(
@@ -73,6 +76,11 @@ export function TaskCard({
         ),
       [task.checklists],
     );
+
+  const isWatched = useMemo(
+    () => task.watchers?.some((w) => w.id === profile?.id),
+    [profile?.id, task.watchers],
+  );
 
   const handleTaskClick = (taskId: number) => {
     if (disableDetailedView) return;
@@ -161,11 +169,11 @@ export function TaskCard({
                 columnGap: '4px',
               }}
             >
-              {/* {!!task.assignee?.id && (
-                    <IconButton size="small">
-                      <RemoveRedEye sx={{ fontSize: 16 }} />
-                    </IconButton>
-                  )} */}
+              {isWatched && (
+                <IconButton size="small">
+                  <RemoveRedEye sx={{ fontSize: 16 }} />
+                </IconButton>
+              )}
               {!!task.description && (
                 <Tooltip title="This task has a description" disableInteractive>
                   <IconButton size="small">

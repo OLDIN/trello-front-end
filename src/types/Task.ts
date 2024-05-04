@@ -31,4 +31,5 @@ export interface ITask {
   taskList?: TaskList;
   labels?: TaskLabel[];
   checklists?: TaskCheckList[];
+  watchers?: IUser[];
 }
