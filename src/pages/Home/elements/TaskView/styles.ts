@@ -1,5 +1,6 @@
 import {
   Button,
+  css,
   Divider,
   Grid,
   InputBase,
@@ -167,7 +168,11 @@ export const StyledDescriptionPlaceholder = styled(Typography)`
   width: 100%;
   cursor: pointer;
 `;
-export const StyledTemplateBannerWrapper = styled(Grid)`
+export const StyledTemplateBannerWrapper = styled(Grid, {
+  shouldForwardProp: (prop) => prop !== 'hasCover',
+})<{
+  hasCover: boolean;
+}>`
   background-color: #e4f0f6;
   border-bottom: 1px solid #091e4224;
   padding: 0 8px;
@@ -176,6 +181,12 @@ export const StyledTemplateBannerWrapper = styled(Grid)`
   & .MuiButton-Custom {
     background-color: #0c66e4;
     color: #fff;
+
+    ${({ hasCover }) =>
+      !hasCover &&
+      css`
+        margin-right: 56px;
+      `}
   }
 `;
 
