@@ -1,10 +1,28 @@
-import { type DefaultError, useQuery } from '@tanstack/react-query';
+import {
+  type DefaultError,
+  useQuery,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 
 import { usersApi } from 'services/api';
 import { QueryKey } from 'enums/QueryKey.enum';
 import type { IUser } from 'types/User';
 
-interface IUseUsers {
+interface IUseUsers
+  extends Omit<
+    UseQueryOptions<
+      IUser[],
+      DefaultError,
+      IUser[],
+      [
+        'users',
+        {
+          boardId: number;
+        },
+      ]
+    >,
+    'queryKey' | 'queryFn'
+  > {
   boardId: number;
 }
 

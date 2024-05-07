@@ -19,7 +19,11 @@ interface IUseCreateCommentProps
   taskId: number;
 }
 
-export function useCreateComment({ taskId, ...props }: IUseCreateCommentProps) {
+export function useCreateComment({
+  taskId,
+  onSuccess,
+  ...props
+}: IUseCreateCommentProps) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -35,7 +39,7 @@ export function useCreateComment({ taskId, ...props }: IUseCreateCommentProps) {
           },
         ],
       }),
-    onSuccess: (result) => {
+    onSuccess: (result, variables, context) => {
       queryClient.setQueryData<ITask>(
         [QueryKey.GET_TASK_BY_ID, taskId],
         (oldTask) => {
@@ -47,6 +51,7 @@ export function useCreateComment({ taskId, ...props }: IUseCreateCommentProps) {
           };
         },
       );
+      onSuccess?.(result, variables, context);
     },
   });
 }
