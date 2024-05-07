@@ -89,6 +89,18 @@ export const TextEditorWrapper = styled(Box, {
 
   .ck-toolbar__items {
     justify-content: space-around;
+
+    & .ck-character-grid {
+      & .ck-character-grid__tiles {
+        display: flex;
+        width: 300px;
+        flex-wrap: wrap;
+        height: 300px;
+        overflow: auto;
+        justify-content: center;
+        align-items: center;
+      }
+    }
   }
 
   .ck.ck-toolbar.ck-toolbar_grouping > .ck-toolbar__items {

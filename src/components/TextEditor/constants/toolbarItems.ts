@@ -1,21 +1,34 @@
 import type { ToolbarConfig } from '@ckeditor/ckeditor5-core';
 
+import Dots from 'assets/icons/dots.svg';
+
 export const toolbarItems: ToolbarConfig = {
   items: [
     'heading',
     '|',
     'bold',
     'italic',
-    'underline',
-    'strikethrough',
+    {
+      label: 'More formatting',
+      withText: false,
+      // icon: Dots,
+      tooltip: 'More formatting',
+      items: ['underline', 'strikethrough'],
+    },
     '|',
-    'bulletedList',
-    'numberedList',
+    {
+      label: 'Lists',
+      items: ['bulletedList', 'numberedList'],
+      tooltip: 'Lists',
+    },
+    '|',
+    {
+      label: 'Insert elements',
+      items: ['blockQuote', 'emoji'],
+      tooltip: 'Insert elements',
+    },
     '|',
     'link',
-    'blockQuote',
-    '|',
-    'image2',
     '|',
     'codeBlock',
   ],

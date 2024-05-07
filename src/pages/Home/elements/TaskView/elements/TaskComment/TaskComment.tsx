@@ -23,7 +23,7 @@ import {
 import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined';
 import { CircularProgress, Grid, Popover, Typography } from '@mui/material';
 import DOMPurify from 'dompurify';
-import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
+import EmojiPicker, { type EmojiClickData } from 'emoji-picker-react';
 
 import { CommentReaction } from '../CommentReaction/CommentReaction';
 
@@ -170,6 +170,7 @@ export function TaskComment({
           <CommentBody item>
             <Typography
               variant="body1"
+              component="div"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   trimParagraphContainer(comment.message),

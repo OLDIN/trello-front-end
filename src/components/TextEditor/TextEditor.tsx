@@ -1,18 +1,35 @@
-import React, {
-  CSSProperties,
-  FC,
-  useCallback,
-  useEffect,
-  useRef,
-} from 'react';
-import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
+import React, { CSSProperties, FC, useCallback, useEffect } from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
-import { fontSizeOptions } from './constants/fontSizeOptions';
 import { headingOptions } from './constants/headingOptions';
 import { toolbarItems } from './constants/toolbarItems';
 import { typedMemo } from '../../types/typedMemo';
 import * as Styled from './styles';
+
+import { SxProps } from '@mui/material';
+// import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
+import CustomEditor from 'ckeditor5-custom-build';
+
+import './TextEditor.scss';
+
+export type MentionFeedItem = string | MentionFeedObjectItem;
+export type MentionFeedObjectItem = {
+  /**
+   * A unique ID of the mention. It must start with the marker character.
+   */
+  id: string;
+  /**
+   * Text inserted into the editor when creating a mention.
+   */
+  text?: string;
+
+  userId?: number;
+
+  fullName?: string;
+};
+export type FeedCallback = (
+  searchString: string,
+) => Array<MentionFeedItem> | Promise<Array<MentionFeedItem>>;
 
 export interface TextEditorProps {
   data?: string;
@@ -22,6 +39,8 @@ export interface TextEditorProps {
   minHeight?: CSSProperties['minHeight'];
   maxHeight?: CSSProperties['maxHeight'];
   placeholder?: string;
+  getMentionFeedItems?: FeedCallback;
+  sx?: SxProps;
 }
 
 const TextEditorBase: FC<TextEditorProps> = ({
@@ -31,11 +50,13 @@ const TextEditorBase: FC<TextEditorProps> = ({
   minHeight,
   maxHeight,
   placeholder,
+  getMentionFeedItems,
+  sx,
   ...props
 }) => {
-  let editorInstance: DecoupledEditor | null = null;
+  let editorInstance: any | null = null;
 
-  const handleReady = (editor: DecoupledEditor) => {
+  const handleReady = (editor: any) => {
     editorInstance = editor;
     editor.focus();
 
@@ -70,11 +91,28 @@ const TextEditorBase: FC<TextEditorProps> = ({
   }, [editorInstance, isReadOnly]);
 
   const handleChange = useCallback(
-    (event: any, editor: DecoupledEditor) => {
+    (event: any, editor: CustomEditor) => {
       onChange?.(editor.getData());
     },
     [onChange],
   );
+
+  function customItemRenderer(item: any) {
+    const itemElement = document.createElement('span');
+
+    itemElement.classList.add('custom-item');
+    itemElement.id = `mention-list-item-id-${item.id}`;
+    itemElement.textContent = `${item.text} `;
+
+    const usernameElement = document.createElement('span');
+
+    usernameElement.classList.add('custom-item-username');
+    usernameElement.textContent = item.id;
+
+    itemElement.appendChild(usernameElement);
+
+    return itemElement;
+  }
 
   return (
     <Styled.TextEditorWrapper
@@ -82,22 +120,52 @@ const TextEditorBase: FC<TextEditorProps> = ({
       height={height}
       minHeight={minHeight}
       maxHeight={maxHeight}
+      sx={sx}
     >
-      <CKEditor
+      <CKEditor<CustomEditor>
         {...props}
-        editor={DecoupledEditor}
+        editor={CustomEditor}
         onReady={handleReady}
         onChange={handleChange}
-        config={{
-          placeholder,
-          heading: {
-            options: headingOptions,
-          },
-          fontSize: {
-            options: fontSizeOptions,
-          },
-          toolbar: toolbarItems,
-        }}
+        config={
+          {
+            placeholder,
+            mention: {
+              feeds: [
+                {
+                  marker: '@',
+                  itemRenderer: customItemRenderer,
+                  feed: getMentionFeedItems,
+                },
+                {
+                  marker: '#',
+                  feed: [
+                    { id: '#all_watchers', text: 'All watchers' },
+                    { id: '#all_assignees', text: 'All assignees' },
+                  ],
+                },
+              ],
+            },
+            fontSize: '12px',
+            fontFamily: {
+              options: [
+                '-apple-system',
+                'BlinkMacSystemFont',
+                'Segoe UI',
+                'Roboto',
+                'Noto Sans',
+                'Ubuntu',
+                'Droid Sans',
+                'Helvetica Neue',
+                'sans-serif',
+              ],
+            },
+            heading: {
+              options: headingOptions,
+            },
+            toolbar: toolbarItems,
+          } as any
+        }
       />
     </Styled.TextEditorWrapper>
   );

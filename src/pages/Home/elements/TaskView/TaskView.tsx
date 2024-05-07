@@ -1,4 +1,10 @@
-import React, { MouseEvent, useEffect, useMemo, useState } from 'react';
+import React, {
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
@@ -11,6 +17,7 @@ import { EditableInput } from 'components/EditableInput';
 import { useCreateComment } from './hooks/useCreateComment';
 import { useTaskDetails } from './hooks/useTaskDetails';
 import { useUpdateTask } from 'pages/Home/hooks/useUpdateTask';
+import { useUsers } from 'pages/Home/hooks/useUsers';
 import { AddAttachmentPopover } from './elements/AddAttachmentPopover/AddAttachmentPopover';
 import { Attachment } from './elements/Attachment/Attachment';
 import { CheckList } from './elements/CheckList/CheckList';
@@ -73,10 +80,14 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
     isOpenAddAttachmentPopover: false,
     anchorEl: null,
   });
+
   const [descriptionString, setDescriptionString] = useState<string>('');
   const [commentString, setCommentString] = useState<string>('');
 
   const { task, isLoading, enabledLabels } = useTaskDetails({ taskId });
+  const { data: users = [] } = useUsers({
+    boardId: task?.boardId ?? 0,
+  });
   const { data: profile } = useProfile();
   const { mutate: updateTask, isPending: isPendingTaskUpdate } = useUpdateTask({
     taskId,
@@ -110,6 +121,31 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
       return parseInt(hash.replace('#comment-', ''));
     }
   }, [hash]);
+
+  const getMentionFeedItems = useCallback(
+    () => [
+      ...users.map((user) => {
+        const userMentionId = `@${user.email.split('@')[0].replace('.', '_')}`;
+        const fullName = `${user.firstName} ${user.lastName}`;
+
+        return {
+          id: userMentionId,
+          text: fullName,
+          userId: user.id,
+          fullName,
+        };
+      }),
+      {
+        id: '@task',
+        text: 'All members on the Task',
+      },
+      {
+        id: '@board',
+        text: 'All members on the Board',
+      },
+    ],
+    [users],
+  );
 
   const handleOnPressEnterName = () => {
     updateTask({
@@ -219,7 +255,11 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                 </Grid>
               )}
               {task?.isTemplate && (
-                <StyledTemplateBannerWrapper container alignItems="center">
+                <StyledTemplateBannerWrapper
+                  container
+                  alignItems="center"
+                  hasCover={Boolean(task.cover)}
+                >
                   <TemplateBannerIconBlock src={TemplateBannerIcon} />
                   <Typography
                     component="h3"
@@ -456,31 +496,35 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                             <>
                               <TextEditor
                                 data={task?.description}
-                                height={300}
+                                height="auto"
+                                minHeight={300}
                                 isReadOnly={
                                   isReadOnlyDescription || isPendingTaskUpdate
                                 }
+                                getMentionFeedItems={getMentionFeedItems}
                                 onChange={(data) => setDescriptionString(data)}
                               />
-                              <ButtonBase
-                                variant="contained"
-                                disabled={isPendingTaskUpdate}
-                                onClick={() => handleSaveDescription()}
-                                startIcon={
-                                  isPendingTaskUpdate && (
-                                    <CircularProgress size={16} />
-                                  )
-                                }
-                              >
-                                Save
-                              </ButtonBase>
-                              <ButtonBase
-                                variant="text"
-                                onClick={() => handleCancelDescriptionEdit()}
-                                disabled={isPendingTaskUpdate}
-                              >
-                                Cancel
-                              </ButtonBase>
+                              <Grid item container gap={2}>
+                                <ButtonBase
+                                  variant="contained"
+                                  disabled={isPendingTaskUpdate}
+                                  onClick={() => handleSaveDescription()}
+                                  startIcon={
+                                    isPendingTaskUpdate && (
+                                      <CircularProgress size={16} />
+                                    )
+                                  }
+                                >
+                                  Save
+                                </ButtonBase>
+                                <ButtonBase
+                                  variant="text"
+                                  onClick={() => handleCancelDescriptionEdit()}
+                                  disabled={isPendingTaskUpdate}
+                                >
+                                  Cancel
+                                </ButtonBase>
+                              </Grid>
                             </>
                           ) : task?.description ? (
                             <StyledDescriptionPlaceholder
@@ -626,12 +670,14 @@ export function TaskView({ open, onClose, taskId }: TaskViewProps) {
                             onClick={() => setIsReadOnlyCommentInput(false)}
                           />
                         ) : (
-                          <Grid container>
+                          <Grid container gap={2}>
                             <TextEditor
+                              sx={{ width: '100%' }}
                               placeholder="Write a comment..."
                               isReadOnly={
                                 isReadOnlyCommentInput || isPendingCreateComment
                               }
+                              getMentionFeedItems={getMentionFeedItems}
                               onChange={(data) => setCommentString(data)}
                             />
                             <ButtonBase

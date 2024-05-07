@@ -1,3 +1,37 @@
+.mention {
+  background: rgba(153, 0, 48, 0.1);
+  color: #990030;
+}
+
+.MuiTypography-root {
+  & pre {
+    background: #091e420f;
+    border-radius: 2px;
+    box-shadow: none;
+    color: #172b4d;
+    counter-reset: linenumber;
+    display: flex;
+    font-size: 12px;
+    line-height: 24px;
+    margin: 10px 20px 10px 0;
+    overflow-x: auto;
+    padding: 0;
+    position: relative;
+
+    & code {
+      background: #0000;
+      border-radius: 0;
+      color: #172b4d;
+      cursor: text;
+      font-size: 1em;
+      height: 100%;
+      line-height: 24px;
+      padding: 8px;
+      white-space: pre;
+    }
+  }
+}
+
 .label-color-pattern-without {
   background-color: #091e420f;
   color: #172b4d;

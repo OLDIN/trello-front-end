@@ -25,6 +25,7 @@
     "@types/react": "^18.2.74",
     "@types/react-dom": "^18.2.24",
     "axios": "^1.6.8",
+    "ckeditor5-custom-build": "file:../../../../Downloads/ckeditor5-41.3.1-fgy9wqhji3n4",
     "dayjs": "^1.11.10",
     "dompurify": "^3.1.0",
     "emoji-picker-react": "^4.9.2",
