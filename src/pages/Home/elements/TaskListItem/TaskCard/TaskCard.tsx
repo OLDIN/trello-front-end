@@ -15,15 +15,17 @@ import {
   Task,
   TaskBody,
   TaskEditButton,
+  TaskTemplateLabel,
 } from './styles';
 
 import AttachFile from '@mui/icons-material/AttachFile';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 import EditIcon from '@mui/icons-material/Edit';
 import FormatAlignLeftOutlinedIcon from '@mui/icons-material/FormatAlignLeftOutlined';
 import RemoveRedEye from '@mui/icons-material/RemoveRedEye';
-import { AvatarGroup, Box, Tooltip, Typography } from '@mui/material';
+import { Box, Icon, Tooltip, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 
 interface TaskCardPosition {
@@ -167,12 +169,30 @@ export function TaskCard({
               sx={{
                 display: 'flex',
                 columnGap: '4px',
+                flexWrap: 'wrap',
+                rowGap: '4px',
               }}
             >
+              {task.isTemplate && (
+                <Tooltip title="This task is a template." disableInteractive>
+                  <TaskTemplateLabel
+                    variant="body2"
+                    component="span"
+                    color="text.secondary"
+                  >
+                    <Icon fontSize="small">
+                      <CreditCardIcon fontSize="small" />
+                    </Icon>
+                    <span>This task is a template.</span>
+                  </TaskTemplateLabel>
+                </Tooltip>
+              )}
               {isWatched && (
-                <IconButton size="small">
-                  <RemoveRedEye sx={{ fontSize: 16 }} />
-                </IconButton>
+                <Tooltip title="You are watching this task." disableInteractive>
+                  <IconButton size="small">
+                    <RemoveRedEye sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
               )}
               {!!task.description && (
                 <Tooltip title="This task has a description" disableInteractive>
@@ -220,29 +240,30 @@ export function TaskCard({
                 </Tooltip>
               )}
             </Box>
-            {!!task.assignees?.length && (
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <AvatarGroup max={4}>
-                  {task.assignees.map((assignee) => (
-                    <Avatar
-                      key={assignee.id}
-                      alt={assignee?.firstName + ' ' + assignee?.lastName}
-                      src={assignee?.photo?.path}
-                      sx={{ width: 24, height: 24, fontSize: 14 }}
-                      title={`${assignee?.firstName} ${assignee?.lastName} (${assignee?.email})`}
-                    >
-                      {assignee?.firstName[0] + assignee?.lastName[0]}
-                    </Avatar>
-                  ))}
-                </AvatarGroup>
-              </Box>
-            )}
           </Box>
+          {!!task.assignees?.length && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: '4px',
+                marginBottom: '4px',
+              }}
+            >
+              {task.assignees.map((assignee) => (
+                <Avatar
+                  key={assignee.id}
+                  alt={assignee?.firstName + ' ' + assignee?.lastName}
+                  src={assignee?.photo?.path}
+                  sx={{ width: 24, height: 24, fontSize: 14 }}
+                  title={`${assignee?.firstName} ${assignee?.lastName} (${assignee?.email})`}
+                >
+                  {assignee?.firstName[0] + assignee?.lastName[0]}
+                </Avatar>
+              ))}
+            </Box>
+          )}
         </TaskBody>
       </Box>
     </Task>

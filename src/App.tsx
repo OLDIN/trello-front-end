@@ -58,7 +58,6 @@ const theme = createTheme({
         },
       },
     },
-    MuiIcon: {},
   },
   palette: {
     mode: 'light',

@@ -1,9 +1,9 @@
 import {
   Badge,
-  BadgeProps,
   Box,
   IconButton as IconButtonBase,
   ListItem,
+  Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
 
@@ -42,13 +42,19 @@ export const Task = styled(ListItem)`
 `;
 
 export const StyledBadge = styled(Badge)`
+  align-items: center;
+
   & .MuiBadge-badge {
     border: none;
-    transform: scale(1) translate(90%, -10%);
+    transform: none;
+    position: relative;
+    padding: 0 2px;
   }
 `;
 
 export const IconButton = styled(IconButtonBase)`
+  padding: 2px;
+
   &:hover {
     background-color: transparent;
   }
@@ -80,3 +86,19 @@ export const TaskBody = styled(Box)`
   padding: 8px 12px 4px;
   min-height: 24px;
 `;
+
+export const TaskTemplateLabel = styled(Typography)`
+  display: inline-flex;
+  align-items: center;
+  column-gap: 4px;
+  width: max-content;
+  background-color: #cce0ff;
+  color: #0055cc;
+  padding: 2px;
+  border-radius: 3px;
+
+  & .MuiIcon-root {
+    align-items: center;
+    display: inline-flex;
+  }
+` as typeof Typography;
