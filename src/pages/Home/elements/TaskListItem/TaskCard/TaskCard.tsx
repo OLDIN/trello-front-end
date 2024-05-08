@@ -1,12 +1,15 @@
 import React, { type MouseEvent, useMemo } from 'react';
 import { DraggableProvided } from 'react-beautiful-dnd';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
+import { QueryKey } from 'enums/QueryKey.enum';
 import useProfile from 'hooks/useProfile/useProfile';
 import { findParentElementByClassName } from 'utils/helpers';
 import { useTaskStore } from '../../../../../store/boards/tasks/task.store';
 
-import type { ITask } from '../../../../../types/Task';
+import { useUpdateTask } from '../../../hooks/useUpdateTask';
+import { ITask, TaskLabelsViewModeEnum } from '../../../../../types/Task';
 import { TaskCover } from './elements/TaskCover';
 import {
   IconButton,
@@ -53,10 +56,33 @@ export function TaskCard({
   disableEditBtn = false,
   disableDetailedView = false,
 }: TaskCardProps) {
+  const queryClient = useQueryClient();
   const { setTaskModalSettings } = useTaskStore();
   const { boardId } = useParams();
   const navigate = useNavigate();
   const { data: profile } = useProfile();
+  const { mutate: updateTask } = useUpdateTask({
+    taskId: task.id,
+    onSuccess: (data) => {
+      queryClient.setQueryData(
+        [QueryKey.GET_TASKS_LIST, { boardId: Number(boardId) }],
+        (oldTasks: ITask[]) => {
+          if (!oldTasks) return;
+
+          return [
+            ...oldTasks.map((t) =>
+              t.id === data.id
+                ? {
+                    ...t,
+                    ...data,
+                  }
+                : t,
+            ),
+          ];
+        },
+      );
+    },
+  });
 
   const { all: allChecklistItems, completed: completedChecklistItems } =
     useMemo(
@@ -112,6 +138,17 @@ export function TaskCard({
     });
   };
 
+  const handleLabelClick = (e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+
+    updateTask({
+      labelsViewMode:
+        task.labelsViewMode === TaskLabelsViewModeEnum.COLOR_AND_NAME
+          ? TaskLabelsViewModeEnum.ONLY_COLOR
+          : TaskLabelsViewModeEnum.COLOR_AND_NAME,
+    });
+  };
+
   return (
     <Task
       ref={provided?.innerRef}
@@ -138,12 +175,15 @@ export function TaskCard({
                 display: 'flex',
                 gap: '4px',
                 marginBottom: '4px',
+                flexWrap: 'wrap',
               }}
             >
               {task.labels.map((label) => (
                 <Label
                   key={label.id}
-                  className={`label-color-pattern-${label.color ?? 'without'}`}
+                  className={`label-color-pattern-${label.color ?? 'without'} `}
+                  labelViewMode={task.labelsViewMode}
+                  onClick={handleLabelClick}
                 >
                   {label.name}
                 </Label>

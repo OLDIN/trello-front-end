@@ -12,6 +12,11 @@ export enum TaskPriorityEnum {
   HIGH = 'high',
 }
 
+export enum TaskLabelsViewModeEnum {
+  ONLY_COLOR = 'only_color',
+  COLOR_AND_NAME = 'color_and_name',
+}
+
 export interface ITask {
   id: number;
   name: string;
@@ -27,6 +32,7 @@ export interface ITask {
   board?: Board;
   cover?: IFile;
   coverBgColor?: string;
+  labelsViewMode: TaskLabelsViewModeEnum;
   attachments?: IFile[];
   comments?: TaskComment[];
   taskList?: TaskList;

@@ -1,3 +1,5 @@
+import { TaskLabelsViewModeEnum } from 'types/Task';
+
 import {
   Badge,
   Box,
@@ -5,7 +7,7 @@ import {
   ListItem,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/system';
+import { css, styled } from '@mui/system';
 
 export const TaskEditButton = styled(IconButtonBase)`
   display: none;
@@ -60,17 +62,19 @@ export const IconButton = styled(IconButtonBase)`
   }
 `;
 
-export const Label = styled(Badge)`
-  padding: '4px 8px';
-  margin: '4px';
-  min-width: 40px;
-  max-width: 40px;
-  height: 8px;
-  color: transparent;
+export const Label = styled(Badge, {
+  shouldForwardProp: (prop) => prop !== 'labelViewMode',
+})<{
+  labelViewMode: TaskLabelsViewModeEnum;
+}>`
   display: inline-block;
   position: relative;
+  margin-bottom: 0;
   border-radius: 4px;
   padding: 0 8px;
+  min-width: 56px;
+  max-width: 100%;
+  height: 16px;
   box-sizing: border-box;
   line-height: 16px;
   font-size: 12px;
@@ -80,6 +84,19 @@ export const Label = styled(Badge)`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  ${({ labelViewMode }) =>
+    labelViewMode === TaskLabelsViewModeEnum.ONLY_COLOR &&
+    css`
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-right: 0;
+      padding-left: 0;
+      min-width: 40px;
+      max-width: 40px;
+      height: 8px;
+      color: transparent;
+    `}
 `;
 
 export const TaskBody = styled(Box)`

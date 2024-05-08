@@ -10,7 +10,15 @@ import {
 
 export interface IPartialUpdateTask
   extends Partial<
-    Pick<ITask, 'name' | 'description' | 'taskListId' | 'id' | 'isTemplate'>
+    Pick<
+      ITask,
+      | 'name'
+      | 'description'
+      | 'taskListId'
+      | 'id'
+      | 'isTemplate'
+      | 'labelsViewMode'
+    >
   > {
   attachmentsIds?: string[];
   fileCoverId?: string | null;
