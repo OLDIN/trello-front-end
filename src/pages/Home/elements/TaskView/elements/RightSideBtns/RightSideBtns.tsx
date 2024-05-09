@@ -243,7 +243,7 @@ export function RightSideButtons({ task }: RightSideBtnsProps) {
         </Grid>
       </RightSideButtonsWrapper>
       <Popover
-        openPopover={popoverSettings.isOpenPopover}
+        open={popoverSettings.isOpenPopover}
         anchorEl={popoverSettings.anchorEl}
         title={popoverSettings.title ?? ''}
         onClose={() => closePopover()}

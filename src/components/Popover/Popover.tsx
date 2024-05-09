@@ -1,32 +1,37 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { PopoverBody, PopoverTitle } from './styles';
 
 import CloseIcon from '@mui/icons-material/Close';
-import InfoIcon from '@mui/icons-material/Info';
 import {
   Grid,
   IconButton,
   Popover as PopoverBase,
-  PopoverOrigin,
-  Typography,
+  PopoverProps as PopoverPropsBase,
 } from '@mui/material';
 
-interface PopoverProps {
-  id?: string;
-  openPopover: boolean;
-  anchorEl: HTMLElement | null;
-  onClose: () => void;
-  children: React.ReactNode;
+interface PopoverProps
+  extends Pick<
+    PopoverPropsBase,
+    | 'id'
+    | 'open'
+    | 'anchorEl'
+    | 'onClose'
+    | 'children'
+    | 'anchorOrigin'
+    | 'transformOrigin'
+  > {
   isDisabledClosing?: boolean;
   title: string;
   titleIcon?: React.ReactNode;
-  anchorOrigin?: PopoverOrigin;
-  transformOrigin?: PopoverOrigin;
+  onClose?: (
+    event: object,
+    reason: 'backdropClick' | 'escapeKeyDown' | 'closeIconClick',
+  ) => void;
 }
 
 export function Popover({
-  openPopover,
+  open,
   anchorEl,
   onClose,
   id,
@@ -43,14 +48,17 @@ export function Popover({
     horizontal: 'center',
   },
 }: PopoverProps) {
-  const handleOnClose = () => {
+  const handleOnClose = (
+    event: object,
+    reason: 'backdropClick' | 'escapeKeyDown' | 'closeIconClick',
+  ) => {
     if (isDisabledClosing) return;
-    onClose();
+    onClose?.(event, reason);
   };
 
   return (
     <PopoverBase
-      open={openPopover}
+      open={open}
       anchorEl={anchorEl}
       onClose={handleOnClose}
       id={id}
@@ -75,7 +83,7 @@ export function Popover({
           <Grid item>
             <IconButton
               aria-label="close"
-              onClick={handleOnClose}
+              onClick={(e) => handleOnClose(e, 'closeIconClick')}
               sx={{
                 position: 'absolute',
                 right: 5,
