@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ITask } from 'types/Task';
 
-import { StyledDialog } from './styles';
+import { MenuButton, MenuButtonsWrapper, StyledDialog } from './styles';
 
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -55,16 +55,22 @@ export function TaskContextMenu({
               <Button>Save</Button>
             </Grid>
           </Grid>
-          <Grid item container direction="column" gap="5px" width="auto">
-            <Button startIcon={<ArchiveOutlinedIcon />}>Open task</Button>
-            <Button startIcon={<LabelOutlinedIcon />}>Edit labels</Button>
-            <Button startIcon={<Person2OutlinedIcon />}>Change members</Button>
-            <Button startIcon={<CreditCardIcon />}>Change cover</Button>
-            <Button startIcon={<ScheduleIcon />}>Edit dates</Button>
-            <Button startIcon={<EastIcon />}>Move</Button>
-            <Button startIcon={<ContentCopyIcon />}>Copy</Button>
-            <Button startIcon={<ArchiveOutlinedIcon />}>Archive</Button>
-          </Grid>
+          <MenuButtonsWrapper item container direction="column" gap="5px">
+            <MenuButton startIcon={<ArchiveOutlinedIcon />}>
+              Open task
+            </MenuButton>
+            <MenuButton startIcon={<LabelOutlinedIcon />}>
+              Edit labels
+            </MenuButton>
+            <MenuButton startIcon={<Person2OutlinedIcon />}>
+              Change members
+            </MenuButton>
+            <MenuButton startIcon={<CreditCardIcon />}>Change cover</MenuButton>
+            <MenuButton startIcon={<ScheduleIcon />}>Edit dates</MenuButton>
+            <MenuButton startIcon={<EastIcon />}>Move</MenuButton>
+            <MenuButton startIcon={<ContentCopyIcon />}>Copy</MenuButton>
+            <MenuButton startIcon={<ArchiveOutlinedIcon />}>Archive</MenuButton>
+          </MenuButtonsWrapper>
         </Grid>
       </DialogContent>
     </StyledDialog>

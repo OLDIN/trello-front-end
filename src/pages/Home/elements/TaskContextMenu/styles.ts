@@ -1,4 +1,4 @@
-import { Dialog, type DialogProps, styled } from '@mui/material';
+import { Button, Dialog, type DialogProps, Grid, styled } from '@mui/material';
 
 export const StyledDialog = styled(Dialog, {
   shouldForwardProp: (prop) => !['top', 'left'].includes(prop.toString()),
@@ -27,3 +27,12 @@ export const StyledDialog = styled(Dialog, {
     }
   }
 ` as (props: DialogProps & { top: number; left: number }) => JSX.Element;
+
+export const MenuButtonsWrapper = styled(Grid)`
+  width: auto;
+  height: fit-content;
+`;
+
+export const MenuButton = styled(Button)`
+  justify-content: flex-start;
+`;
