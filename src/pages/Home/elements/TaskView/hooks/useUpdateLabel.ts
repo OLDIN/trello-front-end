@@ -4,14 +4,17 @@ import { labelsApi } from 'services/api';
 import { PartialUpdateLabel } from 'services/api/endpoints/labels';
 import { QueryKey } from 'enums/QueryKey.enum';
 import { ITask } from 'types/Task';
+import { TaskLabel } from 'types/TaskLabel';
 
 interface IUseUpdateLabelProps {
+  boardId: number;
   taskId: number;
   labelId: number;
   onSuccess?: (data: PartialUpdateLabel) => void;
 }
 
 export function useUpdateLabel({
+  boardId,
   taskId,
   labelId,
   onSuccess,
@@ -46,6 +49,28 @@ export function useUpdateLabel({
           ...data,
         };
       });
+
+      queryClient.invalidateQueries({
+        queryKey: [QueryKey.GET_TASKS],
+      });
+
+      queryClient.setQueryData<TaskLabel[]>(
+        [QueryKey.LABELS, { taskId }],
+        (oldLabels) => {
+          if (!oldLabels) return oldLabels;
+
+          return oldLabels.map((label) => {
+            if (label.id === labelId) {
+              return {
+                ...label,
+                ...data,
+              };
+            }
+
+            return label;
+          });
+        },
+      );
 
       onSuccess?.(data);
     },

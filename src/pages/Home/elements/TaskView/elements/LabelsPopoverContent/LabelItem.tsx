@@ -12,21 +12,27 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { Checkbox, Grid, IconButton, Tooltip } from '@mui/material';
 
 interface LabelItemProps {
+  boardId: number;
   label: TaskLabel;
   onClickEditLabel: (labelId: number) => void;
 }
 
-export function LabelItem({ label, onClickEditLabel }: LabelItemProps) {
+export function LabelItem({
+  boardId,
+  label,
+  onClickEditLabel,
+}: LabelItemProps) {
   const { register, getValues, handleSubmit, setValue } = useForm<{
     isEnable: boolean;
   }>({
     mode: 'onChange',
-    defaultValues: {
+    values: {
       isEnable: label.isEnable,
     },
   });
   const formRef = useRef<HTMLFormElement | null>(null);
   const { mutate: updateLabel, isPending: isPendingUpdate } = useUpdateLabel({
+    boardId,
     taskId: label.taskId,
     labelId: label.id,
   });

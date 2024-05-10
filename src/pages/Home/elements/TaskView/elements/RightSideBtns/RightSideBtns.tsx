@@ -1,17 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { type MouseEvent, useMemo, useState } from 'react';
 
 import { ITask } from 'types/Task';
 
-import { Popover } from 'components/Popover';
-
 import { useUpdateTask } from 'pages/Home/hooks/useUpdateTask';
-import { ActionsCopyPopoverContent } from './elements/ActionsCopyPopoverContent/ActionsCopyPopoverContent';
-import { ActionsMovePopoverContent } from './elements/ActionsMovePopoverContent/ActionsMovePopoverContent';
-import { AttachmentPopoverContent } from './elements/AttachmentPopoverContent/AttachmentPopoverContent';
-import { ChecklistPopoverContent } from './elements/ChecklistPopoverContent/ChecklistPopoverContent';
-import { CoverPopoverContent } from './elements/CoverPopoverContent/CoverPopoverContent';
-import { DatesPopoverContent } from './elements/DatesPopoverContent/DatesPopoverContent';
-import { MembersPopoverContent } from './elements/MembersPopoverContent/MembersPopoverContent';
+import { LabelsPopover } from 'pages/Home/elements/LabelsPopover';
 import { StyledDivider } from '../../styles';
 import { Button, RightSideButtonsWrapper, TemplateCheckIcon } from './styles';
 
@@ -30,13 +22,28 @@ import ShareIcon from '@mui/icons-material/Share';
 import { Grid, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { ActionsCopyPopoverContent } from '../ActionsCopyPopoverContent/ActionsCopyPopoverContent';
+import { ActionsMovePopoverContent } from '../ActionsMovePopoverContent/ActionsMovePopoverContent';
+import { AttachmentPopoverContent } from '../AttachmentPopoverContent/AttachmentPopoverContent';
+import { ChecklistPopoverContent } from '../ChecklistPopoverContent/ChecklistPopoverContent';
+import { CoverPopoverContent } from '../CoverPopoverContent/CoverPopoverContent';
+import { DatesPopoverContent } from '../DatesPopoverContent/DatesPopoverContent';
 import { LabelsPopoverContent } from '../LabelsPopoverContent/LabelsPopoverContent';
+import { MembersPopoverContent } from '../MembersPopoverContent/MembersPopoverContent';
 
-interface RightSideBtnsProps {
+interface RightSideButtonsProps {
   task: ITask;
 }
 
-export function RightSideButtons({ task }: RightSideBtnsProps) {
+type PopoverName =
+  | 'labels'
+  | 'members'
+  | 'checklist'
+  | 'dates'
+  | 'attachment'
+  | 'cover';
+
+export function RightSideButtons({ task }: RightSideButtonsProps) {
   const [popoverSettings, setPopoverSettings] = useState<{
     isOpenPopover: boolean;
     anchorEl: HTMLElement | null;
@@ -49,17 +56,33 @@ export function RightSideButtons({ task }: RightSideBtnsProps) {
     component: null,
   });
 
+  const [popoverSettings2, setPopoverSettings2] = useState<{
+    open: boolean;
+    anchorEl: HTMLElement | null;
+    component: PopoverName | null;
+  }>({
+    open: false,
+    anchorEl: null,
+    component: null,
+  });
+
   const { mutate: updateTask, isPending: isPendingTaskUpdate } = useUpdateTask({
     taskId: task.id,
   });
 
-  const closePopover = () =>
+  const closePopover = () => {
     setPopoverSettings({
       anchorEl: null,
       title: null,
       isOpenPopover: false,
       component: null,
     });
+    setPopoverSettings2({
+      anchorEl: null,
+      open: false,
+      component: null,
+    });
+  };
 
   const content = useMemo(() => {
     switch (popoverSettings.component?.name) {
@@ -68,7 +91,7 @@ export function RightSideButtons({ task }: RightSideBtnsProps) {
           <MembersPopoverContent boardId={task.boardId} taskId={task.id} />
         );
       case 'LabelsPopoverContent':
-        return <LabelsPopoverContent taskLabels={task.labels ?? []} />;
+        return <LabelsPopoverContent boardId={task.boardId} taskId={task.id} />;
       case 'ChecklistPopoverContent':
         return (
           <ChecklistPopoverContent
@@ -94,6 +117,14 @@ export function RightSideButtons({ task }: RightSideBtnsProps) {
 
   const toggleIsTemplate = () => {
     updateTask({ isTemplate: !task.isTemplate });
+  };
+
+  const openPopover = (e: MouseEvent<HTMLElement>, component: PopoverName) => {
+    setPopoverSettings2({
+      anchorEl: e.currentTarget,
+      open: true,
+      component,
+    });
   };
 
   return (
@@ -122,14 +153,7 @@ export function RightSideButtons({ task }: RightSideBtnsProps) {
           </Button>
           <Button
             startIcon={<LabelOutlinedIcon />}
-            onClick={(e) =>
-              setPopoverSettings({
-                anchorEl: e.currentTarget,
-                title: 'Labels',
-                isOpenPopover: true,
-                component: LabelsPopoverContent,
-              })
-            }
+            onClick={(e) => openPopover(e, 'labels')}
           >
             Labels
           </Button>
@@ -242,14 +266,21 @@ export function RightSideButtons({ task }: RightSideBtnsProps) {
           <Button startIcon={<ShareIcon />}>Share</Button>
         </Grid>
       </RightSideButtonsWrapper>
-      <Popover
+      {/* <Popover
         open={popoverSettings.isOpenPopover}
         anchorEl={popoverSettings.anchorEl}
         title={popoverSettings.title ?? ''}
         onClose={() => closePopover()}
       >
         {content}
-      </Popover>
+      </Popover> */}
+      <LabelsPopover
+        boardId={task.boardId}
+        taskId={task.id}
+        open={popoverSettings2.open && popoverSettings2.component === 'labels'}
+        anchorEl={popoverSettings2.anchorEl}
+        onClose={closePopover}
+      />
     </>
   );
 }

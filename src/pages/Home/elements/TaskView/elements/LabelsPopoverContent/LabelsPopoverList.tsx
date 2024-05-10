@@ -9,12 +9,14 @@ import { FormControl, Grid, TextField, Typography } from '@mui/material';
 import { LabelItem } from './LabelItem';
 
 interface LabelsPopoverListProps {
+  boardId: number;
   taskLabels: TaskLabel[];
   onClickAddNewLabel: () => void;
   onClickEditLabel: (labelId: number) => void;
 }
 
 export function LabelsPopoverList({
+  boardId,
   taskLabels,
   onClickAddNewLabel,
   onClickEditLabel,
@@ -32,6 +34,7 @@ export function LabelsPopoverList({
           {taskLabels.map((label) => (
             <LabelItem
               key={label.id}
+              boardId={boardId}
               label={label}
               onClickEditLabel={onClickEditLabel}
             />

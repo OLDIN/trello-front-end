@@ -28,12 +28,14 @@ import {
 } from '@mui/material';
 
 interface LabelsPopoverEditProps {
+  boardId: number;
   labelId: number;
   onEditComplete: () => void;
   onCancel: () => void;
 }
 
 export function LabelsPopoverEdit({
+  boardId,
   labelId,
   onEditComplete,
   onCancel,
@@ -41,6 +43,7 @@ export function LabelsPopoverEdit({
   const labelColors = useMemo(() => Object.values(LabelColor), []);
   const { data: label } = useFetchLabelDetailed(labelId);
   const { mutate: updateLabel } = useUpdateLabel({
+    boardId,
     taskId: label?.taskId ?? 0,
     labelId: labelId,
     onSuccess: () => {
