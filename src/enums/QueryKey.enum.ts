@@ -7,4 +7,5 @@ export enum QueryKey {
   TASK_LISTS = 'task_lists',
   CHECKLISTS = 'checklists',
   LABELS = 'labels',
+  UNSPLASH_PHOTOS = 'unsplash_photos',
 }

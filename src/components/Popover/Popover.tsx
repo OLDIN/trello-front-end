@@ -71,7 +71,12 @@ export function Popover({
         ...sx,
       }}
     >
-      <PopoverBody container direction="column" component="section">
+      <PopoverBody
+        container
+        direction="column"
+        component="section"
+        className="Popover-Body"
+      >
         <Grid
           item
           container

@@ -5,7 +5,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import tasksApi, { IPartialUpdateTask } from 'services/api/endpoints/tasks';
 import { QueryKey } from 'enums/QueryKey.enum';
-import { Board } from 'types/Board';
 import { ITask } from 'types/Task';
 import { useBoardStore } from 'store/boards/board.store';
 import { useTaskStore } from 'store/boards/tasks/task.store';
@@ -13,48 +12,33 @@ import { useTaskStore } from 'store/boards/tasks/task.store';
 import { useBoards, useTaskLists } from './hooks';
 import { useTasks } from './hooks/useTasks';
 import { useUsers } from './hooks/useUsers';
-import { drawerWidth } from './constants/drawer.constants';
 import { AddAnotherListBlock } from './elements/AddAnotherListBlock/AddAnotherListBlock';
+import { LeftMenu } from './elements/LeftMenu';
 import { TaskListItem } from './elements/TaskListItem';
 import { TaskView } from './elements/TaskView';
 import {
   AppBar,
-  Divider,
-  DrawerHeader,
-  DrawerListItemButton,
   Main,
   Search,
   SearchIconWrapper,
   StyledInputBase,
 } from './styles';
 
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
-import MailIcon from '@mui/icons-material/Mail';
 import MenuIcon from '@mui/icons-material/Menu';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Avatar,
   AvatarGroup,
   Box,
-  Drawer,
   IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Stack,
   Toolbar,
   Typography,
-  useTheme,
 } from '@mui/material';
 
 import './Home.scss';
 
 export default function Home() {
-  const theme = useTheme();
   const queryClient = useQueryClient();
   const { boardId, taskId } = useParams();
   const navigate = useNavigate();
@@ -161,16 +145,6 @@ export default function Home() {
 
   const handleDrawerOpen = () => {
     setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const handleBoardClick = (board: Board) => {
-    setSelectedBoard(board);
-    setSelectedBoardBackgroundImagePath(board.backgroundImage?.path ?? null);
-    navigate(`/boards/${board.id}`);
   };
 
   const toggleSelectedAssigneeId = (id: number) => {
@@ -293,61 +267,7 @@ export default function Home() {
           </Box>
         </Toolbar>
       </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-            marginTop: '68.5px',
-            backgroundColor: 'hsla(52,6.8%,34.6%,0.9)',
-            color: '#FFFFFF',
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <DrawerListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </DrawerListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider textAlign="left">Your Boards</Divider>
-        <List>
-          {boards.map((board) => (
-            <ListItem key={board.id} disablePadding>
-              <DrawerListItemButton
-                selected={selectedBoard?.id === board.id}
-                onClick={() => handleBoardClick(board)}
-              >
-                <ListItemIcon>
-                  <DashboardCustomize />
-                </ListItemIcon>
-                <ListItemText primary={board.name} />
-              </DrawerListItemButton>
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
+      <LeftMenu boards={boards} onClose={() => setOpen(false)} open={open} />
       {/* <Container maxWidth={false} style={{ marginTop: 20 }}> */}
       <Main open={open} sx={{ marginLeft: open ? '240px' : 0 }}>
         <Stack

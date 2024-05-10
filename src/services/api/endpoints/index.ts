@@ -9,3 +9,4 @@ export { default as checklistApi } from './checklist';
 export { default as commentsApi } from './comments';
 export { default as commentReactionsApi } from './comment-reactions';
 export { default as labelsApi } from './labels';
+export { default as unsplashApi } from './unsplash';
