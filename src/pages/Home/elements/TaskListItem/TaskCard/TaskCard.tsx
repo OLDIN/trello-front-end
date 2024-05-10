@@ -65,7 +65,7 @@ export function TaskCard({
     taskId: task.id,
     onSuccess: (data) => {
       queryClient.setQueryData(
-        [QueryKey.GET_TASKS_LIST, { boardId: Number(boardId) }],
+        [QueryKey.GET_TASKS, { boardId: Number(boardId) }],
         (oldTasks: ITask[]) => {
           if (!oldTasks) return;
 

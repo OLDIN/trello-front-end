@@ -20,6 +20,7 @@ interface PopoverProps
     | 'children'
     | 'anchorOrigin'
     | 'transformOrigin'
+    | 'sx'
   > {
   isDisabledClosing?: boolean;
   title: string;
@@ -47,6 +48,7 @@ export function Popover({
     vertical: 'top',
     horizontal: 'center',
   },
+  sx,
 }: PopoverProps) {
   const handleOnClose = (
     event: object,
@@ -66,6 +68,7 @@ export function Popover({
       transformOrigin={transformOrigin}
       sx={{
         marginTop: '10px',
+        ...sx,
       }}
     >
       <PopoverBody container direction="column" component="section">

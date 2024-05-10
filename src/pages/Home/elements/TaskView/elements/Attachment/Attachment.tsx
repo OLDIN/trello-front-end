@@ -68,7 +68,7 @@ export function Attachment({
         }),
       );
       queryClient.invalidateQueries({
-        queryKey: [QueryKey.GET_TASKS_LIST],
+        queryKey: [QueryKey.GET_TASKS],
         refetchType: 'active',
       });
     },

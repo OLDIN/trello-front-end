@@ -70,7 +70,7 @@ export function AddTaskBlock({ taskListId }: AddTaskBlockProps) {
       }),
     onSuccess: (task) => {
       queryClient.setQueryData<ITask[]>(
-        [QueryKey.GET_TASKS_LIST, { boardId: selectedBoard?.id }],
+        [QueryKey.GET_TASKS, { boardId: selectedBoard?.id }],
         (oldTasks) => {
           if (!oldTasks) return oldTasks;
 
@@ -82,7 +82,6 @@ export function AddTaskBlock({ taskListId }: AddTaskBlockProps) {
   });
 
   const onSubmit = (data: CreateTaskPayload) => {
-    console.log('data = ', data);
     createTask(data);
   };
 

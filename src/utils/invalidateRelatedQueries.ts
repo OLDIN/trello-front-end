@@ -7,7 +7,7 @@ const getRelatedQueryKeysByQueryEntity = (
 ): QueryKey[] | undefined => {
   switch (appEvent) {
     case AppEvent.TaskUpdate:
-      return [QueryKey.GET_TASKS_LIST, QueryKey.GET_TASK_BY_ID];
+      return [QueryKey.GET_TASKS, QueryKey.GET_TASK_BY_ID];
 
     default:
       return undefined;
