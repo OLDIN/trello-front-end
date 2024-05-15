@@ -100,6 +100,11 @@ const IconButton = styled(IconButtonBase)`
   width: 100%;
   height: 56px;
   padding: 0;
+  border-radius: 3px;
+
+  &:hover {
+    border-radius: 3px;
+  }
 
   &:hover::before {
     background: rgba(0, 0, 0, 0.15);

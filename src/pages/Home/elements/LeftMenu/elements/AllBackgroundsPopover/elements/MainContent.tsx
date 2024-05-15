@@ -10,9 +10,9 @@ import Styled from '../styles';
 import CheckIcon from '@mui/icons-material/Check';
 import { Grid, ImageList, ImageListItem, Typography } from '@mui/material';
 
-import { backGroundColorGradientIcons } from '../gradients';
+import { backgroundColorGradientIcons } from '../../../gradients';
 
-const backgroundGradientColorsForPreview = backGroundColorGradientIcons.slice(
+const backgroundGradientColorsForPreview = backgroundColorGradientIcons.slice(
   0,
   6,
 );

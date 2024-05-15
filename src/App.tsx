@@ -79,6 +79,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiDivider: {
+      styleOverrides: {
+        root: {
+          width: '100%',
+        },
+      },
+    },
   },
   palette: {
     mode: 'light',

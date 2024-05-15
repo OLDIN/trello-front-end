@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 
 import { UnsplashPhoto } from 'types/Unsplash-photo';
 
+import { ColorsListContent } from './elements/ColorsListContent';
 import { MainContent } from './elements/MainContent';
 import { PhotosListContent } from './elements/PhotosListContent';
 import Styled from './styles';
@@ -35,6 +36,9 @@ export function AllBackgroundsPopover({
         return <MainContent photoPages={photoPages} setMode={setMode} />;
       case 'photos':
         return <PhotosListContent />;
+
+      case 'colors':
+        return <ColorsListContent />;
 
       default:
         return <></>;

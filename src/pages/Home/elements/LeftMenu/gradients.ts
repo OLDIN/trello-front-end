@@ -26,7 +26,7 @@ import GradientVolcanoIconSrc, {
   ReactComponent as GradientVolcanoIcon,
 } from 'assets/backgrounds/gradient-volcano.svg';
 
-export const backGroundColorGradientIcons = [
+export const backgroundColorGradientIcons = [
   { component: GradientSnowIcon, src: GradientSnowIconSrc },
   { component: GradientOceanIcon, src: GradientOceanIconSrc },
   { component: GradientCrystalIcon, src: GradientCrystalIconSrc },

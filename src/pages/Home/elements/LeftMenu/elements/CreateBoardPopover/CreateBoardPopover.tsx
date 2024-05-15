@@ -1,19 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  DefaultError,
-  InfiniteData,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { boardsApi, unsplashApi } from 'services/api';
+import { boardsApi } from 'services/api';
 import { CreateBoardPayload } from 'services/api/endpoints/boards';
 import { QueryKey } from 'enums/QueryKey.enum';
-import { useInfinityList } from 'hooks/useInfiniteQuery';
 import { Board } from 'types/Board';
-import { UnsplashPhoto } from 'types/Unsplash-photo';
 import { useCreateBoardPopoverStore } from './createBoardPopover.store';
 
 import { useUnsplashList } from '../../hooks/useUnsplashList';
@@ -33,34 +26,8 @@ import {
   TextField,
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import GradientAlienIconSrc, {
-  ReactComponent as GradientAlienIcon,
-} from 'assets/backgrounds/gradient-alien.svg';
-import GradientCrystalIconSrc, {
-  ReactComponent as GradientCrystalIcon,
-} from 'assets/backgrounds/gradient-crystal.svg';
-import GradientEarthIconSrc, {
-  ReactComponent as GradientEarthIcon,
-} from 'assets/backgrounds/gradient-earth.svg';
-import GradientFlowerIconSrc, {
-  ReactComponent as GradientFlowerIcon,
-} from 'assets/backgrounds/gradient-flower.svg';
-import GradientOceanIconSrc, {
-  ReactComponent as GradientOceanIcon,
-} from 'assets/backgrounds/gradient-ocean.svg';
-import GradientPeachIconSrc, {
-  ReactComponent as GradientPeachIcon,
-} from 'assets/backgrounds/gradient-peach.svg';
-import GradientRainbowIconSrc, {
-  ReactComponent as GradientRainbowIcon,
-} from 'assets/backgrounds/gradient-rainbow.svg';
-import GradientSnowIconSrc, {
-  ReactComponent as GradientSnowIcon,
-} from 'assets/backgrounds/gradient-snow.svg';
-import GradientVolcanoIconSrc, {
-  ReactComponent as GradientVolcanoIcon,
-} from 'assets/backgrounds/gradient-volcano.svg';
 
+import { backgroundColorGradientIcons } from '../../gradients';
 import { AllBackgroundsPopover } from '../AllBackgroundsPopover';
 import createBoardValidation from './validation';
 
@@ -70,19 +37,7 @@ interface CreateBoardPopoverProps {
   onClose: () => void;
 }
 
-const backGroundColorGradientIcons = [
-  { component: GradientSnowIcon, src: GradientSnowIconSrc },
-  { component: GradientOceanIcon, src: GradientOceanIconSrc },
-  { component: GradientCrystalIcon, src: GradientCrystalIconSrc },
-  { component: GradientRainbowIcon, src: GradientRainbowIconSrc },
-  { component: GradientPeachIcon, src: GradientPeachIconSrc },
-  { component: GradientFlowerIcon, src: GradientFlowerIconSrc },
-  { component: GradientEarthIcon, src: GradientEarthIconSrc },
-  { component: GradientAlienIcon, src: GradientAlienIconSrc },
-  { component: GradientVolcanoIcon, src: GradientVolcanoIconSrc },
-];
-
-const backgroundGradientColorsForPreview = backGroundColorGradientIcons.slice(
+const backgroundGradientColorsForPreview = backgroundColorGradientIcons.slice(
   0,
   5,
 );
@@ -160,6 +115,7 @@ export function CreateBoardPopover({
   const handleClose = () => {
     reset();
     onClose();
+    setIsOpenedAllBgsPopover(false);
   };
 
   return (
@@ -202,6 +158,12 @@ export function CreateBoardPopover({
             item
             container
             justifyContent="center"
+            className={[
+              'BackGroup-color',
+              selectedBackground?.type === 'color'
+                ? selectedBackground.color
+                : '',
+            ].join(' ')}
             backgroundImage={
               selectedBackground?.type === 'photo'
                 ? selectedBackground.photo?.urls.small

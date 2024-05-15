@@ -111,7 +111,6 @@ const PreviewWrapperGrid = styled(Grid, {
     !['backgroundImage', 'backgroundColor'].includes(prop.toString()),
 })<{
   backgroundImage?: string;
-  backgroundColor?: string;
 }>`
   background-position: center center;
   background-size: cover;
@@ -123,12 +122,6 @@ const PreviewWrapperGrid = styled(Grid, {
     backgroundImage &&
     css`
       background-image: url(${backgroundImage});
-    `}
-
-  ${({ backgroundColor }) =>
-    backgroundColor &&
-    css`
-      background-color: ${backgroundColor};
     `}
 `;
 
