@@ -117,6 +117,10 @@ const IconButton = styled(IconButtonBase)`
   & > .MuiButton-icon {
     margin-right: 0;
   }
+
+  & > .background-selected-icon {
+    position: absolute;
+  }
 `;
 
 const CreatorLink = styled(Link)`

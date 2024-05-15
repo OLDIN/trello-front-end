@@ -75,23 +75,20 @@ export function MainContent({ setMode, photoPages }: MainContentProps) {
             ({ component: GradientIcon, src }, index) => (
               <Styled.ListItem key={index}>
                 <Styled.IconButton
-                // startIcon={
-                //   selectedBackground.type === 'color' &&
-                //   selectedBackground.value === GradientIcon.name && (
-                //     <CheckIcon color="primary" />
-                //   )
-                // }
-                // onClick={() => {
-                //   console.log(
-                //     'GradientIcon.propTypes = ',
-                //     GradientIcon,
-                //   );
-                //   setSelectedBackground({
-                //     type: 'gradient-color',
-                //     src,
-                //   });
-                // }}
+                  onClick={() => {
+                    setSelectedBackground({
+                      type: 'gradient-color',
+                      src,
+                    });
+                  }}
                 >
+                  {selectedBackground?.type === 'gradient-color' &&
+                    selectedBackground?.src === src && (
+                      <CheckIcon
+                        className="background-selected-icon"
+                        color="primary"
+                      />
+                    )}
                   <GradientIcon
                     // viewBox="0 0 100% 56"
                     // width="100%"

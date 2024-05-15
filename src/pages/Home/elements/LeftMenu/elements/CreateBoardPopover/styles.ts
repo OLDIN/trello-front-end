@@ -1,7 +1,6 @@
 import { Popover as PopoverBase } from 'components/Popover';
 
 import {
-  Button,
   css,
   Grid,
   Icon,
@@ -84,6 +83,10 @@ const IconButton = styled(IconButtonBase)`
     top: 0;
     border-radius: 3px;
     z-index: 0;
+  }
+
+  & > .background-selected-icon {
+    position: absolute;
   }
 `;
 

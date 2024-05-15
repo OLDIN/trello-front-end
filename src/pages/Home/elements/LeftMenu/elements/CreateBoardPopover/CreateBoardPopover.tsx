@@ -141,7 +141,10 @@ export function CreateBoardPopover({
         photo.id === selectedBackground.photo.id,
     );
     const isOverlapView = selectedPhotoIndex !== -1 && selectedPhotoIndex <= 3;
-    const firstFromList = photoPages[0].slice(isOverlapView ? 0 : 1, 4);
+    const firstFromList = photoPages[0].slice(
+      isOverlapView || selectedBackground?.type !== 'photo' ? 0 : 1,
+      4,
+    );
 
     if (!isOverlapView && selectedBackground?.type === 'photo') {
       firstFromList.unshift(selectedBackground.photo);
@@ -244,23 +247,20 @@ export function CreateBoardPopover({
                   ({ component: GradientIcon, src }, index) => (
                     <Styled.ListItem key={index}>
                       <Styled.IconButton
-                        // startIcon={
-                        //   selectedBackground.type === 'color' &&
-                        //   selectedBackground.value === GradientIcon.name && (
-                        //     <CheckIcon color="primary" />
-                        //   )
-                        // }
                         onClick={() => {
-                          console.log(
-                            'GradientIcon.propTypes = ',
-                            GradientIcon,
-                          );
                           setSelectedBackground({
                             type: 'gradient-color',
                             src,
                           });
                         }}
                       >
+                        {selectedBackground?.type === 'gradient-color' &&
+                          selectedBackground?.src === src && (
+                            <CheckIcon
+                              className="background-selected-icon"
+                              color="primary"
+                            />
+                          )}
                         <GradientIcon
                           viewBox="0 0 40 32"
                           width="40px"
