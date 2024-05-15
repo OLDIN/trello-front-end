@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { PopoverBody, PopoverTitle } from './styles';
+import useWindowDimensions from 'hooks/useWindowDimensions';
+
+import { Popover as PopoverBase, PopoverBody, PopoverTitle } from './styles';
 
 import CloseIcon from '@mui/icons-material/Close';
 import {
   Grid,
   IconButton,
-  Popover as PopoverBase,
   PopoverProps as PopoverPropsBase,
 } from '@mui/material';
 
@@ -21,6 +22,7 @@ interface PopoverProps
     | 'anchorOrigin'
     | 'transformOrigin'
     | 'sx'
+    | 'ref'
   > {
   isDisabledClosing?: boolean;
   title: string;
@@ -50,6 +52,8 @@ export function Popover({
   },
   sx,
 }: PopoverProps) {
+  const { height } = useWindowDimensions();
+
   const handleOnClose = (
     event: object,
     reason: 'backdropClick' | 'escapeKeyDown' | 'closeIconClick',
@@ -68,6 +72,9 @@ export function Popover({
       transformOrigin={transformOrigin}
       sx={{
         marginTop: '10px',
+        '& > .MuiPaper-root': {
+          overflow: 'hidden',
+        },
         ...sx,
       }}
     >
@@ -76,6 +83,7 @@ export function Popover({
         direction="column"
         component="section"
         className="Popover-Body"
+        wrap="nowrap"
       >
         <Grid
           item
@@ -91,11 +99,9 @@ export function Popover({
           <Grid item>
             <IconButton
               aria-label="close"
+              size="small"
               onClick={(e) => handleOnClose(e, 'closeIconClick')}
               sx={{
-                position: 'absolute',
-                right: 5,
-                top: 5,
                 color: (theme) => theme.palette.grey[500],
               }}
               disabled={isDisabledClosing}
@@ -104,7 +110,16 @@ export function Popover({
             </IconButton>
           </Grid>
         </Grid>
-        <Grid item>{children}</Grid>
+        <Grid
+          item
+          container
+          sx={{
+            maxHeight: height - 90,
+            overflowY: 'auto',
+          }}
+        >
+          {children}
+        </Grid>
       </PopoverBody>
     </PopoverBase>
   );

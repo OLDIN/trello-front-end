@@ -1,4 +1,9 @@
-import { Grid, styled, Typography } from '@mui/material';
+import {
+  Grid,
+  Popover as PopoverBase,
+  styled,
+  Typography,
+} from '@mui/material';
 
 export const PopoverBody = styled(Grid)`
   width: 304px;
@@ -24,4 +29,14 @@ export const PopoverTitle = styled(Typography)`
   text-overflow: ellipsis;
   white-space: nowrap;
   z-index: 1;
+`;
+
+export const Popover = styled(PopoverBase)`
+  & header .MuiGrid-root.MuiGrid-item:nth-of-type(1) .MuiSvgIcon-root {
+    /* &:hover {
+      background-color: #091e4224;
+      color: #44546f;
+      text-decoration: none;
+    } */
+  }
 `;

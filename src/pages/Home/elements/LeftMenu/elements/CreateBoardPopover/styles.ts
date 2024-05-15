@@ -11,7 +11,7 @@ import {
   styled,
 } from '@mui/material';
 
-const PhotoPreview = styled(Button, {
+const PhotoPreview = styled(IconButtonBase, {
   shouldForwardProp: (prop) => prop !== 'backgroundImage',
 })<{
   backgroundImage: string;
@@ -38,6 +38,10 @@ const PhotoPreview = styled(Button, {
   position: relative;
   line-height: 0;
   width: 64px;
+
+  &:hover {
+    border-radius: 3px;
+  }
 
   &:hover::before,
   &:focus::before,

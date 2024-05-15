@@ -58,6 +58,27 @@ const theme = createTheme({
         },
       },
     },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            borderRadius: '8px',
+            backgroundColor: '#091e4224',
+            color: '#44546f',
+            textDecoration: 'none',
+          },
+        },
+        sizeSmall: {
+          fontSize: '16px',
+          width: '32px',
+          height: '32px',
+
+          '& .MuiSvgIcon-root': {
+            fontSize: '16px',
+          },
+        },
+      },
+    },
   },
   palette: {
     mode: 'light',

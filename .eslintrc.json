@@ -41,6 +41,8 @@
     "simple-import-sort"
   ],
   "rules": {
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
     "import/no-unresolved": [2, { "commonjs": true, "amd": true }],
     "react-hooks/exhaustive-deps": "error",
     "@typescript-eslint/interface-name-prefix": "off",

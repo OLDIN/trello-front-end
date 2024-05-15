@@ -65,3 +65,11 @@ export interface Basic extends VeryBasic {
 }
 
 export type UnsplashPhoto = Basic;
+
+interface Response<A> {
+  results: A[];
+  total: number;
+  total_pages: number;
+}
+
+export type SearchPhotosResponse = Response<UnsplashPhoto>;
