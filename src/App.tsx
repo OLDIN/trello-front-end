@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { useBoardStore } from './store/boards/board.store';
+import { AppWrapper } from 'styles';
 
 import Header from './components/Header/Header';
 
 import {
-  Box,
   createTheme,
   CssBaseline,
   GlobalStyles,
@@ -123,7 +123,8 @@ const theme = createTheme({
 });
 
 function App() {
-  const { selectedBoardBackgroundImagePath } = useBoardStore();
+  const { selectedBoard } = useBoardStore();
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -135,16 +136,19 @@ function App() {
           },
         }}
       />
-      <Box
-        sx={{
-          backgroundImage: selectedBoardBackgroundImagePath
-            ? `url(${selectedBoardBackgroundImagePath})`
-            : 'none',
-        }}
+      <AppWrapper
+        className={[
+          'BackGroup-color',
+          selectedBoard?.backgroundType === 'simple_color'
+            ? selectedBoard?.background
+            : '',
+        ].join(' ')}
+        background={selectedBoard?.background}
+        backgroundType={selectedBoard?.backgroundType}
       >
         <Header />
         <Routers />
-      </Box>
+      </AppWrapper>
     </ThemeProvider>
   );
 }

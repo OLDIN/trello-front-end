@@ -5,7 +5,10 @@ import { Board } from '../../../types/Board';
 
 import { CreateQueryParams, RequestQueryBuilder } from '@dataui/crud-request';
 
-export type CreateBoardPayload = Pick<Board, 'name'>;
+export type CreateBoardPayload = Pick<
+  Board,
+  'name' | 'background' | 'backgroundType'
+>;
 
 export default {
   getBoards: (query?: CreateQueryParams) => {

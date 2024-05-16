@@ -1,7 +1,8 @@
-import { IFile } from './File';
+export type BackgroundType = 'image' | 'gradient_color' | 'simple_color';
 
 export interface Board {
   id: number;
   name: string;
-  backgroundImage?: IFile;
+  backgroundType?: BackgroundType;
+  background?: string;
 }

@@ -49,11 +49,7 @@ export default function Home() {
   >(undefined);
 
   const { taskModalSettings, setTaskModalSettings } = useTaskStore();
-  const {
-    setSelectedBoardBackgroundImagePath,
-    setSelectedBoard,
-    selectedBoard,
-  } = useBoardStore();
+  const { setSelectedBoard, selectedBoard } = useBoardStore();
 
   const { data: boards = [] } = useBoards();
   const { data: taskLists = [] } = useTaskLists({
@@ -88,12 +84,8 @@ export default function Home() {
   useEffect(() => {
     if (boards.length) {
       setSelectedBoard(boards[0]);
-
-      setSelectedBoardBackgroundImagePath(
-        boards[0].backgroundImage?.path ?? null,
-      );
     }
-  }, [boards, setSelectedBoard, setSelectedBoardBackgroundImagePath]);
+  }, [boards, setSelectedBoard]);
 
   useEffect(() => {
     if (boards.length && boardId) {
@@ -101,26 +93,14 @@ export default function Home() {
 
       if (board) {
         setSelectedBoard(board);
-        setSelectedBoardBackgroundImagePath(
-          board.backgroundImage?.path ?? null,
-        );
         document.title = `${board.name} | Trello`;
       }
     } else if (boards.length && !boardId) {
       setSelectedBoard(boards[0]);
-      setSelectedBoardBackgroundImagePath(
-        boards[0].backgroundImage?.path ?? null,
-      );
       navigate(`/boards/${boards[0].id}`);
       document.title = `${boards[0].name} | Trello`;
     }
-  }, [
-    boardId,
-    boards,
-    navigate,
-    setSelectedBoard,
-    setSelectedBoardBackgroundImagePath,
-  ]);
+  }, [boardId, boards, navigate, setSelectedBoard]);
 
   useEffect(() => {
     if (taskId) {

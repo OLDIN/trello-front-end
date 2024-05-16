@@ -37,18 +37,13 @@ interface LeftMenuProps {
 
 export function LeftMenu({ boards, open, onClose }: LeftMenuProps) {
   const theme = useTheme();
-  const {
-    setSelectedBoardBackgroundImagePath,
-    setSelectedBoard,
-    selectedBoard,
-  } = useBoardStore();
+  const { setSelectedBoard, selectedBoard } = useBoardStore();
   const navigate = useNavigate();
   const [isOpenedBoardCreation, setIsOpenedBoardCreation] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
 
   const handleBoardClick = (board: Board) => {
     setSelectedBoard(board);
-    setSelectedBoardBackgroundImagePath(board.backgroundImage?.path ?? null);
     navigate(`/boards/${board.id}`);
   };
 

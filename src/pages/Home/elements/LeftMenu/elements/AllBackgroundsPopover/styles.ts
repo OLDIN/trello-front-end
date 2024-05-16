@@ -1,7 +1,6 @@
 import { Popover as PopoverBase } from 'components/Popover';
 
 import {
-  Button,
   css,
   IconButton as IconButtonBase,
   Link,
@@ -142,8 +141,6 @@ const CreatorLink = styled(Link)`
   text-align: start;
   padding: 2px 4px;
 `;
-
-const SelectedPhotoIconButton = styled(IconButtonBase)``;
 
 export default {
   Popover,

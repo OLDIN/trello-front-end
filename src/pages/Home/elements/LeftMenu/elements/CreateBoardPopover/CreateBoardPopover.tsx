@@ -75,6 +75,8 @@ export function CreateBoardPopover({
 
         return [...oldBoards, result];
       });
+
+      handleClose();
     },
   });
 
@@ -109,12 +111,34 @@ export function CreateBoardPopover({
   }, [photoPages, selectedBackground]);
 
   const onSubmit = (data: CreateBoardPayload) => {
-    createBoard(data);
+    createBoard({
+      name: data.name,
+      backgroundType:
+        selectedBackground?.type === 'photo'
+          ? 'image'
+          : selectedBackground?.type === 'gradient-color'
+            ? 'gradient_color'
+            : 'simple_color',
+      background:
+        selectedBackground?.type === 'photo'
+          ? selectedBackground.photo.urls.full
+          : selectedBackground?.type === 'gradient-color'
+            ? selectedBackground.src
+            : selectedBackground?.color,
+    });
   };
 
   const handleClose = () => {
     reset();
     onClose();
+
+    if (photoPages.length && photoPages[0].length) {
+      setSelectedBackground({
+        type: 'photo',
+        photo: photoPages[0][0],
+      });
+    }
+
     setIsOpenedAllBgsPopover(false);
   };
 
